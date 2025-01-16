@@ -13,5 +13,7 @@ namespace TV5_VolunteerEventMgmtApp.Models
 
         [DataType(DataType.PhoneNumber)]
         public string? Phone {  get; set; }
+
+        bool isActive { get; set; } = true;
     }
 }
