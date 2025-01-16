@@ -50,6 +50,8 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     VolunteerEventMgmtAppInitializer.Initialize(serviceProvider: services, DeleteDatabase: false, UseMigrations: true, SeedSampleData: true);
 
+    //this is a change
+
 }
 
 
