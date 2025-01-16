@@ -4,7 +4,9 @@ namespace TV5_VolunteerEventMgmtApp.Models
 {
     public class Singer
     {
-        public int Id { get; set; } //
+        public int Id { get; set; } /// <summary>
+        /// 
+        /// </summary>
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateOnly DOB { get; set; }
