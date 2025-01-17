@@ -18,5 +18,7 @@ namespace TV5_VolunteerEventMgmtApp.Models
 
         public ICollection<AttendanceSheet> AttendanceSheets { get; set; } = new HashSet<AttendanceSheet>();
 
+        public ICollection<Venue> Venues { get; set; } = new HashSet<Venue>();
+
     }
 }
