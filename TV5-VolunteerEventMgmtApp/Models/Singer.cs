@@ -10,7 +10,7 @@ namespace TV5_VolunteerEventMgmtApp.Models
         public string LastName { get; set; }
         public DateOnly DOB { get; set; }
 
-        
+        [DataType(DataType.EmailAddress)]
         public string? Email { get; set; }
         [DataType(DataType.PhoneNumber)]
         public string? Phone {  get; set; }
