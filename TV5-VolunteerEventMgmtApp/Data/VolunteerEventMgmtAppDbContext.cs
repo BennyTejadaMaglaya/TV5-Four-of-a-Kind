@@ -33,5 +33,64 @@ namespace TV5_VolunteerEventMgmtApp.Data
             _httpContextAccessor = null!;
             UserName = "Seed Data";
         }
+
+        public DbSet<Director> Directors { get; set; }
+        public DbSet<Location> Locations { get; set; }
+        public DbSet<DirectorLocation> DirectorLocations { get; set; }
+        public DbSet<Singer> Singers { get; set; }
+        public DbSet<Attendee> Attendees { get; set; }
+        public DbSet<AttendanceSheet> AttendeesSheets { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //this disables the delete from a director to the Location.
+            modelBuilder.Entity<Director>()
+                .HasMany<DirectorLocation>(d => d.DirectorLocations)
+                .WithOne(d => d.Director)
+                .HasForeignKey(d => d.DirectorID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //i believe this one will require cascade delete
+            modelBuilder.Entity<Location>()
+                .HasMany<AttendanceSheet>(d => d.AttendanceSheets)
+                .WithOne(d => d.Location)
+                .HasForeignKey(d => d.LocationId);
+
+            modelBuilder.Entity<Location>()
+                .HasMany<Venue>(d => d.Venues)
+                .WithOne(d => d.Location)
+                .HasForeignKey(d => d.LocationId);
+
+            modelBuilder.Entity<Singer>()
+                .HasMany<Attendee>(d => d.Attendance)
+                .WithOne(d => d.Singer)
+                .HasForeignKey(d => d.SingerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // this might need cascade delete?
+            modelBuilder.Entity<AttendanceSheet>()
+                .HasMany<Attendee>(d => d.Attendees)
+                .WithOne(d => d.AttendanceSheet)
+                .HasForeignKey(d => d.AttendenceSheetId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Venue>()
+                .HasMany<AttendanceSheet>(d => d.AttendanceSheets)
+                .WithOne(d => d.Venue)
+                .HasForeignKey(d => d.VenueId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
+            //Many to Many intersections
+
+            modelBuilder.Entity<Attendee>()
+                .HasKey(d => new { d.SingerId, d.AttendenceSheetId });
+
+            modelBuilder.Entity<DirectorLocation>()
+                .HasKey(d => new { d.LocationID, d.DirectorID });
+
+
+        }
     }
 }
