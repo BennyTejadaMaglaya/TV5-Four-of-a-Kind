@@ -26,6 +26,6 @@ namespace TV5_VolunteerEventMgmtApp.Models
         [DataType(DataType.EmailAddress, ErrorMessage = "Please enter a valid EmailAddress")]
         public string Email { get; set; }
 
-        public ICollection<DirectorLocation> DirectorLocations { get; set; }
+        public ICollection<DirectorLocation> DirectorLocations { get; set; } = new HashSet<DirectorLocation>();
     }
 }
