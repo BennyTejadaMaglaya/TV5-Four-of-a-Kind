@@ -14,7 +14,9 @@ namespace TV5_VolunteerEventMgmtApp.Models
 
         public ICollection<Director> Directors { get; set; }
 
-        public ICollection<VolunteerEvent> VolunteerEvents { get; set; }
+        public ICollection<Venue> Venues { get; set; }
+
+        // public ICollection<VolunteerEvent> VolunteerEvents { get; set; }
 
         public ICollection<AttendanceSheet> AttendanceSheets { get; set; }
 
