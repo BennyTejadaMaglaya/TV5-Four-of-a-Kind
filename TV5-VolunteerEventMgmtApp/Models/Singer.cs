@@ -7,10 +7,13 @@ namespace TV5_VolunteerEventMgmtApp.Models
         public int Id { get; set; }
 
         [Display(Name ="First Name")]//
+        [Required(ErrorMessage = "Please enter a first name")]
         public string FirstName { get; set; }
-        [Display(Name = "Last Name")]
+        [Required(ErrorMessage = "Please enter a last name")]
+        [Display(Name = "Last Name")]//
         public string LastName { get; set; }
-        [Display(Name = "DOB")]
+        [Display(Name = "Date of Birth")]
+        [Required(ErrorMessage ="Please enter the singers DOB")]
         public DateOnly DOB { get; set; }
 
         [DataType(DataType.EmailAddress)]
