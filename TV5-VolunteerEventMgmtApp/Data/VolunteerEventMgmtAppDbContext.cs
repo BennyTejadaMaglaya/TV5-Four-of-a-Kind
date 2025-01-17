@@ -54,7 +54,7 @@ namespace TV5_VolunteerEventMgmtApp.Data
             modelBuilder.Entity<Location>()
                 .HasMany<AttendanceSheet>(d => d.AttendanceSheets)
                 .WithOne(d => d.Location)
-                .HasForeignKey(d => d.LocationId);
+                .HasForeignKey(d => d.LocationID);
 
             modelBuilder.Entity<Location>()
                 .HasMany<Venue>(d => d.Venues)
