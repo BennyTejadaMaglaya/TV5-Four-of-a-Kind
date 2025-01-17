@@ -18,7 +18,7 @@ namespace TV5_VolunteerEventMgmtApp.Models
         [Required(ErrorMessage ="Please enter a end time")]
         public DateTime EndTime { get; set; }
 
-        public int LocationID { get; set; }
+        public int LocationId { get; set; }
         public Location? Location { get; set; }
 
         public int VenueId { get; set; }
