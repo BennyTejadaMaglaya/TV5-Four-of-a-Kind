@@ -17,4 +17,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ViewModels\" />
+  </ItemGroup>
+
 </Project>
