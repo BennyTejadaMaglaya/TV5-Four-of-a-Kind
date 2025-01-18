@@ -22,7 +22,15 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // GET: Location
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Locations.ToListAsync());
+            var locations = _context.Locations
+                .Include(l => l.Directors)
+                .Include(l => l.AttendanceSheets)
+                .Include(l => l.Venues);
+
+            // sort/filter by director
+            // preview of this weeks attendence numbers? 
+            
+            return View(await locations.ToListAsync());
         }
 
         // GET: Location/Details/5
@@ -46,6 +54,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // GET: Location/Create
         public IActionResult Create()
         {
+            ViewData["availableDirectors"] = DirectorSelectList();
             return View();
         }
 
@@ -54,13 +63,20 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,City,IsActive")] Location location)
+        public async Task<IActionResult> Create([Bind("City,IsActive")] Location location)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(location);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    _context.Add(location);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch
+            { // todo update when we get to concurrency
+                ModelState.AddModelError("", "Error when creating this location");
             }
             return View(location);
         }
@@ -86,7 +102,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,City,IsActive")] Location location)
+        public async Task<IActionResult> Edit(int id, [Bind("City,IsActive")] Location location)
         {
             if (id != location.ID)
             {
@@ -153,5 +169,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         {
             return _context.Locations.Any(e => e.ID == id);
         }
+
+        private SelectList DirectorSelectList()
+        {
+            return new SelectList( _context.Directors, "ID", "NameSummary");
+        }
+
+
     }
 }

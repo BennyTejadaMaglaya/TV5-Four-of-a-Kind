@@ -27,5 +27,11 @@ namespace TV5_VolunteerEventMgmtApp.Models
         public string Email { get; set; }
 
         public ICollection<DirectorLocation> DirectorLocations { get; set; } = new HashSet<DirectorLocation>();
+
+
+        public string NameSummary()
+        {
+            return $"{FirstName} {LastName}";
+        }
     }
 }
