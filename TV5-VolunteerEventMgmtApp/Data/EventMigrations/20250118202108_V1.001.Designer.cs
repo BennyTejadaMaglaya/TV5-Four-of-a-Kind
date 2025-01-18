@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TV5_VolunteerEventMgmtApp.Data;
 
@@ -10,9 +11,11 @@ using TV5_VolunteerEventMgmtApp.Data;
 namespace TV5_VolunteerEventMgmtApp.Data.EventMigrations
 {
     [DbContext(typeof(VolunteerEventMgmtAppDbContext))]
-    partial class VolunteerEventMgmtAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250118202108_V1.001")]
+    partial class V1001
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");

@@ -41,6 +41,7 @@ namespace TV5_VolunteerEventMgmtApp.Data
         public DbSet<Attendee> Attendees { get; set; }
         public DbSet<AttendanceSheet> AttendeesSheets { get; set; }
         public DbSet<Venue> Venues { get; set; }
+        public DbSet<SingerLocation> SingerLocations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -81,6 +82,17 @@ namespace TV5_VolunteerEventMgmtApp.Data
                 .HasForeignKey(d => d.VenueId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Singer>()
+                .HasMany<SingerLocation>(d => d.SingerLocation)
+                .WithOne(d => d.Singer)
+                .HasForeignKey(d => d.SingerId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Location>()
+                .HasMany<SingerLocation>(d => d.SingerLocations)
+                .WithOne(d => d.Location)
+                .HasForeignKey(d => d.LocationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
 
             //Many to Many intersections
@@ -90,6 +102,8 @@ namespace TV5_VolunteerEventMgmtApp.Data
 
             modelBuilder.Entity<DirectorLocation>()
                 .HasKey(d => new { d.LocationID, d.DirectorID });
+            modelBuilder.Entity<SingerLocation>()
+                .HasKey(d => new { d.SingerId, d.LocationId });
 
 
         }
