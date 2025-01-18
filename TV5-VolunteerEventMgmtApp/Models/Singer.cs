@@ -25,6 +25,8 @@ namespace TV5_VolunteerEventMgmtApp.Models
         public ICollection<Attendee> Attendance {  get; set; } = new HashSet<Attendee>();
 
         [Display(Name = "Active")]
-        bool isActive { get; set; } = true;
+        public bool isActive { get; set; } = true;
+
+        public ICollection<SingerLocation> SingerLocation { get; set; } = new HashSet<SingerLocation>();
     }
 }
