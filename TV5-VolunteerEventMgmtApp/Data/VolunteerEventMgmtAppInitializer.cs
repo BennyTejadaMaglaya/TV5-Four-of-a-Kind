@@ -252,10 +252,9 @@ namespace TV5_VolunteerEventMgmtApp.Data
                         {
                             string[] firstNames = new string[] { "Woodstock", "Violet", "Charlie", "Lucy", "Linus", "Franklin", "Marcie", "Schroeder", "Lyric", "Antoinette", "Kendal", "Vivian", "Ruth", "Jamison", "Emilia", "Natalee", "Yadiel", "Jakayla", "Lukas", "Moses", "Kyler", "Karla", "Chanel", "Tyler", "Camilla", "Quintin", "Braden", "Clarence" };
                             string[] lastNames = new string[] { "Hightower", "Broomspun", "Jones", "Bloggs" };
-                            foreach (string lastName in lastNames)
-                            {
-                                //Choose a random HashSet of 5 first names
-                                HashSet<string> selectedFirstNames = new HashSet<string>();
+
+                            //Choose a random HashSet of 5 first names
+                            List<string> selectedFirstNames = new List<string>();
                                 while (selectedFirstNames.Count() < 100)
                                 {
                                     selectedFirstNames.Add(firstNames[random.Next(firstNames.Length)]);
@@ -268,8 +267,8 @@ namespace TV5_VolunteerEventMgmtApp.Data
                                     Singer singer = new Singer()
                                     {
                                         FirstName = firstName,
-                                        LastName = lastName,
-                                        Email = (firstName.Substring(0, 2) + lastName + random.Next(11, 111).ToString() + "@outlook.com").ToLower(),
+                                        LastName = lastNames[random.Next(0,lastNames.Length)],
+                                        Email = (firstName + random.Next(11, 111).ToString() + "@outlook.com").ToLower(),
                                         DOB = DateOnly.FromDateTime(DateTime.Today.AddDays(-random.Next(2922, 6575))),
                                         Phone = random.Next(2, 10).ToString() + random.Next(213214131, 989898989).ToString(),
                                         isActive = true
@@ -286,7 +285,7 @@ namespace TV5_VolunteerEventMgmtApp.Data
                                         context.Singers.Remove(singer);
                                     }
                                 }
-                            }
+                            
 
                         }
 
