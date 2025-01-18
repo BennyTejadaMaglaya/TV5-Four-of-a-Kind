@@ -153,5 +153,10 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         {
             return _context.Directors.Any(e => e.ID == id);
         }
+
+        private SelectList LocationSelectList()
+        {
+            return new SelectList(_context.Locations, "ID", "City");
+        }
     }
 }

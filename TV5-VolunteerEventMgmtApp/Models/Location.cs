@@ -12,7 +12,7 @@ namespace TV5_VolunteerEventMgmtApp.Models
 
         public bool IsActive { get; set; }
 
-        public ICollection<Director> Directors { get; set; } = new HashSet<Director>();
+        public ICollection<DirectorLocation> Directors { get; set; } = new HashSet<DirectorLocation>();
 
         // public ICollection<VolunteerEvent> VolunteerEvents { get; set; }
 
