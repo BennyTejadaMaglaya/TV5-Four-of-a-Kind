@@ -22,9 +22,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // GET: Singer
         public async Task<IActionResult> Index(
             string? actionButton,
-            string? searchFirst,
-            string? searchLast,
-            string? searchString,
+            string? searchFirst ="",
+            string? searchLast ="",
             string sortDirection = "asc", 
             string sortField = "First Name"
             )
@@ -72,6 +71,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             }
 
             ViewData["sortField"] = sortField;
+            ViewData["searchFirst"] = searchFirst;
+            ViewData["searchLast"] = searchLast;
             ViewData["sortDirection"] = sortDirection;
 
             return View(await singers.ToListAsync());
