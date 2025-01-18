@@ -40,6 +40,7 @@ namespace TV5_VolunteerEventMgmtApp.Data
         public DbSet<Singer> Singers { get; set; }
         public DbSet<Attendee> Attendees { get; set; }
         public DbSet<AttendanceSheet> AttendeesSheets { get; set; }
+        public DbSet<Venue> Venues { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
