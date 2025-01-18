@@ -69,6 +69,11 @@ namespace TV5_VolunteerEventMgmtApp.Data
                             {
                                 City = "Surrey",
                                 IsActive = true
+                            },
+                            new Location
+                            {
+                                City = "Vancouver",
+                                IsActive = false
                             }
                             );
                         context.SaveChanges();
@@ -130,7 +135,112 @@ namespace TV5_VolunteerEventMgmtApp.Data
                         context.SaveChanges();
                     }
 
-                    if(!context.AttendeesSheets)
+                    if (!context.Venues.Any())
+                    {
+                        context.Venues.AddRange(
+                            new Venue
+                            {
+                                VenueName = "Building 1",
+                                Description = "its a building that can host 75 people",
+                                Address = "123 tasker street",
+                                ContactName = "Barack Obama",
+                                ContactEmail = "building1@email.com",
+                                ContactPhone = "7862653765",
+                                LocationId = 1
+                            },
+                        new Venue
+                        {
+                            VenueName = "Building 2",
+                            Description = "This building is used for choir and Volunteer Events",
+                            Address = "165 Front Street",
+                            ContactName = "James Target",
+                            ContactEmail = "building2@email.com",
+                            ContactPhone = "8764352098",
+                            LocationId = 1
+                        },
+                        new Venue
+                        {
+                            VenueName = "Building 3",
+                            Description = "This venue hosts up to 60 people",
+                            Address = "7654 Younge street",
+                            ContactName = "Jennifer Cooke",
+                            ContactEmail = "Building3@email.com",
+                            ContactPhone = "6547891234",
+                            LocationId = 2
+                        },
+                        new Venue
+                        {
+                            VenueName = "Building 4",
+                            Description = "this venue hosts up to 80 people",
+                            Address = "876 Queen Street",
+                            ContactName = "Laura Bates",
+                            ContactEmail = "building4@email.com",
+                            ContactPhone = "7652349876",
+                            LocationId = 3
+                        },
+                        new Venue
+                        {
+                            VenueName = "",
+                            Description = "",
+                            Address = "",
+                            ContactName = "",
+                            ContactEmail = "",
+                            ContactPhone = "",
+                            LocationId = 1
+                        },
+                        new Venue
+                        {
+                            VenueName = "",
+                            Description = "",
+                            Address = "",
+                            ContactName = "",
+                            ContactEmail = "",
+                            ContactPhone = "",
+                            LocationId = 1
+                        },
+                        new Venue
+                        {
+                            VenueName = "",
+                            Description = "",
+                            Address = "",
+                            ContactName = "",
+                            ContactEmail = "",
+                            ContactPhone = "",
+                            LocationId = 1
+                        },
+                        new Venue
+                        {
+                            VenueName = "",
+                            Description = "",
+                            Address = "",
+                            ContactName = "",
+                            ContactEmail = "",
+                            ContactPhone = "",
+                            LocationId = 1
+                        },
+                        new Venue
+                        {
+                            VenueName = "",
+                            Description = "",
+                            Address = "",
+                            ContactName = "",
+                            ContactEmail = "",
+                            ContactPhone = "",
+                            LocationId = 1
+                        },
+                        new Venue
+                        {
+                            VenueName = "",
+                            Description = "",
+                            Address = "",
+                            ContactName = "",
+                            ContactEmail = "",
+                            ContactPhone = "",
+                            LocationId = 1
+                        }
+                            );
+                        
+                    }
                 }
                 catch
                 {
