@@ -70,7 +70,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "Email", attendanceSheet.DirectorId);
-            ViewData["LocationID"] = new SelectList(_context.Locations, "ID", "City", attendanceSheet.LocationID);
+            ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", attendanceSheet.LocationId);
             ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "Address", attendanceSheet.VenueId);
             return View(attendanceSheet);
         }
@@ -89,7 +89,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 return NotFound();
             }
             ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "Email", attendanceSheet.DirectorId);
-            ViewData["LocationID"] = new SelectList(_context.Locations, "ID", "City", attendanceSheet.LocationID);
+            ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", attendanceSheet.LocationId);
             ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "Address", attendanceSheet.VenueId);
             return View(attendanceSheet);
         }
@@ -127,7 +127,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "Email", attendanceSheet.DirectorId);
-            ViewData["LocationID"] = new SelectList(_context.Locations, "ID", "City", attendanceSheet.LocationID);
+            ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", attendanceSheet.LocationId);
             ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "Address", attendanceSheet.VenueId);
             return View(attendanceSheet);
         }
