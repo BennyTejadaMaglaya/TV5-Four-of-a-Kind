@@ -94,15 +94,18 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 return NotFound();
             }
 
-            var attendanceSheet = await _context.AttendeesSheets.FindAsync(id);
+            var attendanceSheet = await _context.AttendeesSheets
+                .Include(a => a.Attendees).ThenInclude(a => a.Singer)
+                .FirstOrDefaultAsync(a => a.Id == id);
             if (attendanceSheet == null)
             {
                 return NotFound();
             }
-            ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "Email", attendanceSheet.DirectorId);
+            ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName", attendanceSheet.DirectorId);
             ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", attendanceSheet.LocationId);
-            ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "Address", attendanceSheet.VenueId);
-            return View(attendanceSheet);
+            ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "VenueName", attendanceSheet.VenueId);
+			PopulateSingerListBoxes(attendanceSheet);
+			return View(attendanceSheet);
         }
 
         // POST: AttendanceSheet/Edit/5
@@ -110,23 +113,31 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,DirectorId,Notes,StartTime,EndTime,LocationID,VenueId")] AttendanceSheet attendanceSheet)
+        public async Task<IActionResult> Edit(int id, string[] selectedOptions)
         {
-            if (id != attendanceSheet.Id)
+			var attendanceSheetToUpdate = await _context.AttendeesSheets
+				.Include(a => a.Attendees).ThenInclude(a => a.Singer)
+				.FirstOrDefaultAsync(a => a.Id == id);
+
+			if (id != attendanceSheetToUpdate.Id)
             {
                 return NotFound();
-            }
+			}
 
-            if (ModelState.IsValid)
-            {
+			UpdateAttendees(selectedOptions, attendanceSheetToUpdate);
+
+			if (await TryUpdateModelAsync<AttendanceSheet>(attendanceSheetToUpdate, "",
+		        a => a.DirectorId, a => a.Notes, a => a.StartTime, 
+                a => a.EndTime, a => a.LocationId, a => a.VenueId))
+			{
                 try
                 {
-                    _context.Update(attendanceSheet);
                     await _context.SaveChangesAsync();
-                }
+					return RedirectToAction("Details", new { id = attendanceSheetToUpdate.Id });
+				}
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AttendanceSheetExists(attendanceSheet.Id))
+                    if (!AttendanceSheetExists(attendanceSheetToUpdate.Id))
                     {
                         return NotFound();
                     }
@@ -135,12 +146,13 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "Email", attendanceSheet.DirectorId);
-            ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", attendanceSheet.LocationId);
-            ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "Address", attendanceSheet.VenueId);
-            return View(attendanceSheet);
+
+            ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName", attendanceSheetToUpdate.DirectorId);
+            ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", attendanceSheetToUpdate.LocationId);
+            ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "VenueName", attendanceSheetToUpdate.VenueId);
+			PopulateSingerListBoxes(attendanceSheetToUpdate);
+			return View(attendanceSheetToUpdate);
         }
 
         // GET: AttendanceSheet/Delete/5
