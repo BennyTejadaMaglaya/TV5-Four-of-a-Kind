@@ -47,7 +47,7 @@
 
 					<div class="col-1">
 						<div>Kids</div>
-						<div>2</div>
+						<div>@item.Attendees.Count</div>
 					</div>
 
 					<div class="col-3 text-truncate">
@@ -68,10 +68,13 @@
 			<thead>
 				<tr>
 					<th>
-						@Html.DisplayNameFor(model => model.Director)
+						@Html.DisplayNameFor(model => model.Location)
 					</th>
 					<th>
-						@Html.DisplayNameFor(model => model.Notes)
+						@Html.DisplayNameFor(model => model.Venue)
+					</th>
+					<th>
+						@Html.DisplayNameFor(model => model.Director)
 					</th>
 					<th>
 						@Html.DisplayNameFor(model => model.StartTime)
@@ -80,10 +83,10 @@
 						@Html.DisplayNameFor(model => model.EndTime)
 					</th>
 					<th>
-						@Html.DisplayNameFor(model => model.Location)
+						@Html.DisplayNameFor(model => model.Attendees)
 					</th>
 					<th>
-						@Html.DisplayNameFor(model => model.Venue)
+						@Html.DisplayNameFor(model => model.Notes)
 					</th>
 					<th></th>
 				</tr>
@@ -93,10 +96,13 @@
 				{
 					<tr>
 						<td>
-							@Html.DisplayFor(modelItem => item.Director.FullName)
+							@Html.DisplayFor(modelItem => item.Location.City)
 						</td>
 						<td>
-							@Html.DisplayFor(modelItem => item.Notes)
+							@Html.DisplayFor(modelItem => item.Venue.VenueName)
+						</td>
+						<td>
+							@Html.DisplayFor(modelItem => item.Director.FullName)
 						</td>
 						<td>
 							@Html.DisplayFor(modelItem => item.StartTime)
@@ -105,10 +111,10 @@
 							@Html.DisplayFor(modelItem => item.EndTime)
 						</td>
 						<td>
-							@Html.DisplayFor(modelItem => item.Location.City)
+							@Html.DisplayFor(modelItem => item.Attendees.Count)
 						</td>
 						<td>
-							@Html.DisplayFor(modelItem => item.Venue.VenueName)
+							@Html.DisplayFor(modelItem => item.Notes)
 						</td>
 						<td>
 							<a asp-action="Edit" asp-route-id="@item.Id" class=" text-decoration-none">Edit</a> |
