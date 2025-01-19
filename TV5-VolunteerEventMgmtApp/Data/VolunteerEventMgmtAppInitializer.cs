@@ -368,14 +368,24 @@ namespace TV5_VolunteerEventMgmtApp.Data
                             {
                                 for(int j =0; j < context.Singers.Count()/context.Locations.Count() ; j++)
                                 {
-                                    SingerLocation singerLocatioon = new SingerLocation()
+                                    SingerLocation singerLocation = new SingerLocation()
                                     {
                                         SingerId = singerIDs[singerIndex],
                                         LocationId = location
                                     };
                                     singerIndex++;
+                                    try
+                                    {
+                                        context.SingerLocations.Add(singerLocation);
+                                        context.SaveChanges();
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        context.SingerLocations.Remove(singerLocation);
+                                    }
                                 }
                             }
+                            
                         }
 
 
@@ -395,7 +405,7 @@ namespace TV5_VolunteerEventMgmtApp.Data
                                         Attendee attendee = new Attendee()
                                         {
                                             AttendenceSheetId = sheet.Id,
-                                            SingerId = singers[random.Next(singers.Length)].SingerId
+                                            SingerId = singers[random.Next(1, singers.Length)].SingerId
                                         };
                                         try
                                         {
