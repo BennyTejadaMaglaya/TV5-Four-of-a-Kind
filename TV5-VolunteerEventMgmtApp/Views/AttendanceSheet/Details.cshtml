@@ -10,17 +10,23 @@
     <h4>AttendanceSheet</h4>
     <hr />
     <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Location)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Location.City)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Venue)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Venue.VenueName)
+        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Director)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Director.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Notes)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Notes)
+            @Html.DisplayFor(model => model.Director.FullName)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.StartTime)
@@ -34,17 +40,42 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.EndTime)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Location)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Attendees)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Location.City)
+        <dd class="col-sm-10">
+            @{
+                int kidsCount = Model.Attendees.Count;
+                if (kidsCount > 0)
+                {
+                    var kidsIdList = Model.Attendees.OrderBy(a => a.Singer.FirstName).ThenBy(a => a.Singer.LastName).ToList();
+                    <a class="btn btn-outline-dark py-0" role="button" data-bs-toggle="collapse"
+                       href="#collapseDocs@(Model.Id)" aria-expanded="false"
+                       aria-controls="collapseDocs@(Model.Id)">
+                        @kidsCount @(kidsCount == 1 ? "kid" : "kids")
+                    </a>
+                    <div class="collapse mt-1" id="collapseDocs@(Model.Id)">
+                        @{
+                            foreach (var s in kidsIdList)
+                            {
+                                <span class="">
+                                    @s.Singer.FirstName @s.Singer.LastName
+                                </span> <br />
+                            }
+                        }
+                    </div>
+                }
+                else
+                {
+                    <span>None</span>
+                }
+            }
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Venue)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Notes)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Venue.Address)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Notes)
         </dd>
     </dl>
 </div>

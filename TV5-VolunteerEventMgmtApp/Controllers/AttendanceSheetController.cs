@@ -42,7 +42,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 .Include(a => a.Director)
                 .Include(a => a.Location)
                 .Include(a => a.Venue)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(a => a.Attendees).ThenInclude(a => a.Singer)
+				.FirstOrDefaultAsync(m => m.Id == id);
             if (attendanceSheet == null)
             {
                 return NotFound();
