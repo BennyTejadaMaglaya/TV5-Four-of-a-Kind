@@ -23,7 +23,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         public async Task<IActionResult> Index()
         {
             var locations = _context.Locations
-                .Include(l => l.Directors)
+                .Include(l => l.DirectorLocations)
                 .Include(l => l.AttendanceSheets)
                 .Include(l => l.Venues);
 
