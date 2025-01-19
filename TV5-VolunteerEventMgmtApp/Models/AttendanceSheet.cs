@@ -11,7 +11,7 @@ namespace TV5_VolunteerEventMgmtApp.Models
 
         public Director? Director { get; set; }
 
-		[Display(Name = "Kids")]
+		[Display(Name = "Singers")]
 		public ICollection<Attendee> Attendees { get; set; } = new HashSet<Attendee>();
 
         [StringLength(250)]

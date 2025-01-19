@@ -1,55 +1,80 @@
 ﻿@model TV5_VolunteerEventMgmtApp.Models.AttendanceSheet
 
 @{
-    ViewData["Title"] = "Create";
+	ViewData["Title"] = "Create";
 }
 
 <h1>Create</h1>
 
-<h4>AttendanceSheet</h4>
+<h4>Attendance Sheet</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="DirectorId" class="control-label"></label>
-                <select asp-for="DirectorId" class ="form-control" asp-items="ViewBag.DirectorId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Notes" class="control-label"></label>
-                <input asp-for="Notes" class="form-control" />
-                <span asp-validation-for="Notes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StartTime" class="control-label"></label>
-                <input asp-for="StartTime" class="form-control" />
-                <span asp-validation-for="StartTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EndTime" class="control-label"></label>
-                <input asp-for="EndTime" class="form-control" />
-                <span asp-validation-for="EndTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LocationId" class="control-label"></label>
-                <select asp-for="LocationId" class ="form-control" asp-items="ViewBag.LocationID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="VenueId" class="control-label"></label>
-                <select asp-for="VenueId" class ="form-control" asp-items="ViewBag.VenueId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+<form asp-action="Create">
+	<div class="row">
+		<div class="col-md-4">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<div class="form-group">
+				<label asp-for="LocationId" class="control-label"></label>
+				<select asp-for="LocationId" class="form-control" asp-items="ViewBag.LocationID"></select>
+			</div>
+			<div class="form-group">
+				<label asp-for="VenueId" class="control-label"></label>
+				<select asp-for="VenueId" class="form-control" asp-items="ViewBag.VenueId"></select>
+			</div>
+			<div class="form-group">
+				<label asp-for="DirectorId" class="control-label"></label>
+				<select asp-for="DirectorId" class="form-control" asp-items="ViewBag.DirectorId"></select>
+			</div>
+			<div class="form-group">
+				<label asp-for="StartTime" class="control-label"></label>
+				<input asp-for="StartTime" class="form-control" />
+				<span asp-validation-for="StartTime" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="EndTime" class="control-label"></label>
+				<input asp-for="EndTime" class="form-control" />
+				<span asp-validation-for="EndTime" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="Notes" class="control-label"></label>
+				<input asp-for="Notes" class="form-control" />
+				<span asp-validation-for="Notes" class="text-danger"></span>
+			</div>
+
+		</div>
+		<div class="col-md-8">
+			<div class="row">
+				<div class="form-group col-md-6">
+					<label class="control-label d-block">Present singers (<span id="count"></span>)</label>
+					<button id="btnRemove" class="btn btn-outline-danger py-0 px-2 mt-3 mb-2">
+						<strong>Remove singer/s</strong>
+					</button>
+					@Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.SelectedSingers, new { @size = 10, @class = "form-control" })
+				</div>
+
+				<div class="form-group col-md-6">
+					<label class="control-label d-block">Add singers to the attendance sheet</label>
+					<button id="btnAdd" class="btn btn-outline-success py-0 px-3 mt-3 mb-2">
+						<strong>Add singer/s</strong>
+					</button>
+					@Html.ListBox("availableOptions", (MultiSelectList)ViewBag.AvailableSingers, new { @size = 10, @class = "form-control" })
+				</div>
+			</div>
+		</div>
+
+		<div class="form-group mt-2">
+			<input type="submit" value="Create" class="btn btn-primary" />
+		</div>
+
+	</div>
+</form>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+	<a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+	<script src="~/js/multiselect.js"></script>
 }
