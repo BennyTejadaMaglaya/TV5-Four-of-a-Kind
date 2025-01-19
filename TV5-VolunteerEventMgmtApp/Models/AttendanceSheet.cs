@@ -6,22 +6,31 @@ namespace TV5_VolunteerEventMgmtApp.Models
     {
 
         public int Id { get; set; }
+
         public int DirectorId { get; set; }
+
         public Director? Director { get; set; }
-        public ICollection<Attendee> Attendees { get; set; } = new HashSet<Attendee>();
+
+		[Display(Name = "Kids")]
+		public ICollection<Attendee> Attendees { get; set; } = new HashSet<Attendee>();
+
         [StringLength(250)]
         public string Notes { get; set; } = "";
+
         [Display(Name = "Start Time")]
         [Required(ErrorMessage = "Please enter a start time")]
         public DateTime StartTime { get; set; }
+
         [Display(Name = "End Time")]
         [Required(ErrorMessage ="Please enter a end time")]
         public DateTime EndTime { get; set; }
 
         public int LocationId { get; set; }
+
         public Location? Location { get; set; }
 
         public int VenueId { get; set; }
+
         public Venue? Venue { get; set; }
     }
 }
