@@ -22,7 +22,11 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // GET: AttendanceSheet
         public async Task<IActionResult> Index()
         {
-            var volunteerEventMgmtAppDbContext = _context.AttendeesSheets.Include(a => a.Director).Include(a => a.Location).Include(a => a.Venue);
+            var volunteerEventMgmtAppDbContext = _context.AttendeesSheets
+                .Include(a => a.Director)
+                .Include(a => a.Location)
+                .Include(a => a.Venue)
+                .Include(a => a.Attendees);
             return View(await volunteerEventMgmtAppDbContext.ToListAsync());
         }
 
