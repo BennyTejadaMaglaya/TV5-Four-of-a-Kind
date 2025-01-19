@@ -95,7 +95,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             }
             
 
-            var location = await _context.Locations.Include(l => l.DirectorLocations).FirstOrDefaultAsync(l => l.ID == id);
+            var location = await _context.Locations
+                .Include(l => l.DirectorLocations)
+                .FirstOrDefaultAsync(l => l.ID == id);
             if (location == null)
             {
                 return NotFound();
