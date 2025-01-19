@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TV5_VolunteerEventMgmtApp.Data;
 using TV5_VolunteerEventMgmtApp.Models;
+using TV5_VolunteerEventMgmtApp.ViewModels;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
@@ -55,10 +56,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // GET: AttendanceSheet/Create
         public IActionResult Create()
         {
-            ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "Email");
+			AttendanceSheet attendanceSheet = new AttendanceSheet();
+			ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName");
             ViewData["LocationID"] = new SelectList(_context.Locations, "ID", "City");
-            ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "Address");
-            return View();
+            ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "VenueName");
+            PopulateSingerListBoxes(attendanceSheet);
+			return View();
         }
 
         // POST: AttendanceSheet/Create
@@ -66,18 +69,21 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,DirectorId,Notes,StartTime,EndTime,LocationID,VenueId")] AttendanceSheet attendanceSheet)
+        public async Task<IActionResult> Create([Bind("Id,DirectorId,Notes,StartTime,EndTime,LocationID,VenueId")] AttendanceSheet attendanceSheet,
+			string[] selectedOptions)
         {
+            UpdateAttendees(selectedOptions, attendanceSheet);
             if (ModelState.IsValid)
             {
                 _context.Add(attendanceSheet);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "Email", attendanceSheet.DirectorId);
+            ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName", attendanceSheet.DirectorId);
             ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", attendanceSheet.LocationId);
-            ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "Address", attendanceSheet.VenueId);
-            return View(attendanceSheet);
+            ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "VenueName", attendanceSheet.VenueId);
+            PopulateSingerListBoxes(attendanceSheet);
+			return View(attendanceSheet);
         }
 
         // GET: AttendanceSheet/Edit/5
@@ -173,7 +179,79 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AttendanceSheetExists(int id)
+
+		// Populate Singer ListBoxes
+		public void PopulateSingerListBoxes(AttendanceSheet attendanceSheet)
+		{
+			var allSingers = _context.Singers;
+			var currentSingersHS = new HashSet<int>(attendanceSheet.Attendees.Select(e => e.SingerId));
+
+			var selected = new List<ListOptionVM>();
+			var available = new List<ListOptionVM>();
+			foreach (var c in allSingers)
+			{
+				if (currentSingersHS.Contains(c.Id))
+				{
+					selected.Add(new ListOptionVM
+					{
+						ID = c.Id,
+						DisplayText = c.FirstName + " " + c.LastName
+					});
+				}
+				else
+				{
+					available.Add(new ListOptionVM
+					{
+						ID = c.Id,
+						DisplayText = c.FirstName + " " + c.LastName
+					});
+				}
+			}
+			ViewData["SelectedSingers"] = new MultiSelectList(selected.OrderBy(c => c.DisplayText), "ID", "DisplayText");
+			ViewData["AvailableSingers"] = new MultiSelectList(available.OrderBy(c => c.DisplayText), "ID", "DisplayText");
+		}
+
+		// Update attendees for an attendance sheet
+		private void UpdateAttendees(string[] selectedOptions, AttendanceSheet attendanceSheetToUpdate)
+		{
+			if (selectedOptions == null)
+			{
+				attendanceSheetToUpdate.Attendees = new List<Attendee>();
+				return;
+			}
+
+			var selectedOptionsHS = new HashSet<string>(selectedOptions);
+			var currentOptionsHS = new HashSet<int>(attendanceSheetToUpdate.Attendees.Select(a => a.SingerId));
+			foreach (var s in _context.Singers)
+			{
+				if (selectedOptionsHS.Contains(s.Id.ToString())) // it is selected
+				{
+					if (!currentOptionsHS.Contains(s.Id)) // but not currently in the group class - Add it
+					{
+						attendanceSheetToUpdate.Attendees.Add(new Attendee
+						{
+							SingerId = s.Id,
+							AttendenceSheetId = attendanceSheetToUpdate.Id
+						});
+					}
+				}
+				else // not selected
+				{
+					if (currentOptionsHS.Contains(s.Id)) // but is currently in the group class - Remove it
+					{
+						Attendee singerToRemove = attendanceSheetToUpdate.Attendees
+							.FirstOrDefault(a => a.SingerId == s.Id);
+						if (singerToRemove != null)
+						{
+							_context.Remove(singerToRemove);
+						}
+					}
+				}
+			}
+		}
+
+
+		private bool AttendanceSheetExists(int id)
         {
             return _context.AttendeesSheets.Any(e => e.Id == id);
         }
