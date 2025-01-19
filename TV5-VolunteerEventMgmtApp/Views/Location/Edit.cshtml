@@ -23,6 +23,9 @@
                     <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
                 </label>
             </div>
+            <select name="director" asp-items="ViewBag.availableDirectors">
+                <option value="-1">Select a Director?</option>
+            </select>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

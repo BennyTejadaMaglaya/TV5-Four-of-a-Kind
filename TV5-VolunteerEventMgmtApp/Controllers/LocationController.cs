@@ -23,7 +23,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         public async Task<IActionResult> Index()
         {
             var locations = _context.Locations
-                .Include(l => l.Directors)
+                .Include(l => l.DirectorLocations)
                 .Include(l => l.AttendanceSheets)
                 .Include(l => l.Venues);
 
@@ -54,7 +54,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // GET: Location/Create
         public IActionResult Create()
         {
-            ViewData["availableDirectors"] = DirectorSelectList();
+            ViewBag.availableDirectors = DirectorSelectList();
             return View();
         }
 
@@ -63,12 +63,17 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("City,IsActive")] Location location)
+        public async Task<IActionResult> Create([Bind("City,IsActive")] Location location, int director =-1)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
+                    if(director > -1)
+                    {
+                        location.DirectorLocations.Add(new DirectorLocation { DirectorID=director });
+                    }
+
                     _context.Add(location);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -88,12 +93,16 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             {
                 return NotFound();
             }
+            
 
-            var location = await _context.Locations.FindAsync(id);
+            var location = await _context.Locations.Include(l => l.DirectorLocations).FirstOrDefaultAsync(l => l.ID == id);
             if (location == null)
             {
                 return NotFound();
             }
+        
+            ViewBag.availableDirectors = location.DirectorLocations.Count > 0 ? 
+                DirectorSelectList(location.DirectorLocations.First().DirectorID) : DirectorSelectList();
             return View(location);
         }
 
@@ -102,34 +111,50 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("City,IsActive")] Location location)
+        public async Task<IActionResult> Edit(int id, int director=-1)
         {
-            if (id != location.ID)
+            var location = await _context.Locations
+                .Include(l => l.DirectorLocations)
+                .Where(i => i.ID == id)
+                .FirstOrDefaultAsync();
+            if (location == null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+
+            try
             {
-                try
+               UpdateDirectorLocations(location, director);
+                await _context.SaveChangesAsync();
+
+                if (await TryUpdateModelAsync(location, "", d => d.City, d=> d.IsActive))
                 {
-                    _context.Update(location);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!LocationExists(location.ID))
+                    
+                    try
                     {
-                        return NotFound();
+                        
+                        await _context.SaveChangesAsync();
+                        
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!LocationExists(location.ID))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+                   
                 }
-                return RedirectToAction(nameof(Index));
+            } catch
+            {
+
             }
-            return View(location);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Location/Delete/5
@@ -170,9 +195,38 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             return _context.Locations.Any(e => e.ID == id);
         }
 
-        private SelectList DirectorSelectList()
+        private SelectList DirectorSelectList(int selected = -1)
+        { // Reminder that if theres a placeholder option in the select list
+          // (which there is for this one) you should pass the id + 1 for the
+          // selected index as 0 will always be the placeholder option
+            var d = _context.Directors.Select(d => new { d.ID, Name = d.NameSummary() });
+
+            return new SelectList( d, "ID", "Name", selected);
+        }
+
+        private void UpdateDirectorLocations(Location location, int director)
         {
-            return new SelectList( _context.Directors, "ID", "NameSummary");
+            if (director == -1)
+            { // if we have multiple directors in the future we just need to change this to filter out the id
+                // this is messy for now but if the issue arises its in place already.
+                location.DirectorLocations = new List<DirectorLocation>();
+            }
+            else
+            {
+                var l = location.DirectorLocations.FirstOrDefault();
+                if (l?.DirectorID != director)
+                {
+                    if (l != null)
+                    {
+                        _context.DirectorLocations.Remove(location.DirectorLocations.First());
+                    }
+
+                    location.DirectorLocations = 
+                        new List<DirectorLocation>() { new DirectorLocation { DirectorID = director, LocationID = location.ID } };
+                }
+
+            }
+
         }
 
 
