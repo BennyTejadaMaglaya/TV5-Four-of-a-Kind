@@ -50,9 +50,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // GET: AttendanceSheet/Create
         public IActionResult Create()
         {
-            ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "Email");
+            ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName");
             ViewData["LocationID"] = new SelectList(_context.Locations, "ID", "City");
-            ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "Address");
+            ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "VenueName");
             return View();
         }
 

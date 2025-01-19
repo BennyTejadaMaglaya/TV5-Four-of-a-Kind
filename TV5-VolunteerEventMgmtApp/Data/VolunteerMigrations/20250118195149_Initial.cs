@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace TV5_VolunteerEventMgmtApp.Data.EventMigrations
+namespace TV5_VolunteerEventMgmtApp.Data.VolunteerMigrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
@@ -65,7 +65,7 @@ namespace TV5_VolunteerEventMgmtApp.Data.EventMigrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Venue",
+                name: "Venues",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "INTEGER", nullable: false)
@@ -80,9 +80,9 @@ namespace TV5_VolunteerEventMgmtApp.Data.EventMigrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Venue", x => x.ID);
+                    table.PrimaryKey("PK_Venues", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Venue_Locations_LocationId",
+                        name: "FK_Venues_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
                         principalColumn: "ID",
@@ -142,9 +142,9 @@ namespace TV5_VolunteerEventMgmtApp.Data.EventMigrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AttendeesSheets_Venue_VenueId",
+                        name: "FK_AttendeesSheets_Venues_VenueId",
                         column: x => x.VenueId,
-                        principalTable: "Venue",
+                        principalTable: "Venues",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -205,8 +205,8 @@ namespace TV5_VolunteerEventMgmtApp.Data.EventMigrations
                 column: "LocationID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Venue_LocationId",
-                table: "Venue",
+                name: "IX_Venues_LocationId",
+                table: "Venues",
                 column: "LocationId");
         }
 
@@ -229,7 +229,7 @@ namespace TV5_VolunteerEventMgmtApp.Data.EventMigrations
                 name: "Directors");
 
             migrationBuilder.DropTable(
-                name: "Venue");
+                name: "Venues");
 
             migrationBuilder.DropTable(
                 name: "Locations");

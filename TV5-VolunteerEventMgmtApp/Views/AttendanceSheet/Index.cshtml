@@ -1,65 +1,135 @@
 ﻿@model IEnumerable<TV5_VolunteerEventMgmtApp.Models.AttendanceSheet>
 
 @{
-    ViewData["Title"] = "Index";
+	ViewData["Title"] = "Index";
 }
 
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+	<a asp-action="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Director)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Notes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Location)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Venue)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Director.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Notes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Location.City)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Venue.Address)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+
+<ul class="nav nav-tabs mb-3" id="attendanceSheetTabs" role="tablist">
+	<li class="nav-item">
+		<a class="nav-link active" id="cards-tab" data-toggle="tab" href="#cards" role="tab" 
+			aria-controls="cards" aria-selected="true">Cards</a>
+	</li>
+	<li class="nav-item">
+		<a class="nav-link" id="list-tab" data-toggle="tab" href="#list" role="tab" 
+			aria-controls="list" aria-selected="false">List</a>
+	</li>
+</ul>
+
+<div class="tab-content" id="attendanceSheetTabsContent">
+
+	<div class="tab-pane fade show active" id="cards" role="tabpanel" aria-labelledby="cards-tab">
+		@foreach (var item in Model)
+		{
+			<div class="card mb-3 shadow-sm bg-light p-3"
+				 onclick="location.href='@Url.Action("Details", new { id = item.Id })'" style="cursor: pointer;">
+
+				<div class="d-flex gap-4">
+
+					<div class="col-2 fw-bold">
+						@Html.DisplayFor(modelItem => item.Location.City)
+					</div>
+					<div class="col-3">
+						@{
+							var startDate = item.StartTime.ToString("ddd MMMM dd, yyyy");
+							var startTime = item.StartTime.ToString("hh:mm tt");
+							var endTime = item.EndTime.ToString("hh:mm tt");
+						}
+						<div class="fw-bold">@startDate</div>
+						<div>@startTime - @endTime</div>
+
+					</div>
+
+					<div class="col-1">
+						<div>Kids</div>
+						<div>2</div>
+					</div>
+
+					<div class="col-3 text-truncate">
+						@Html.DisplayFor(modelItem => item.Notes)
+					</div>
+
+					<div class="d-flex flex-column ms-auto">
+						<a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">Edit</a>
+						<a asp-action="Delete" asp-route-id="@item.Id" class=" text-decoration-none">Delete</a>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+
+	<div class="tab-pane fade" id="list" role="tabpanel" aria-labelledby="list-tab">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>
+						@Html.DisplayNameFor(model => model.Director)
+					</th>
+					<th>
+						@Html.DisplayNameFor(model => model.Notes)
+					</th>
+					<th>
+						@Html.DisplayNameFor(model => model.StartTime)
+					</th>
+					<th>
+						@Html.DisplayNameFor(model => model.EndTime)
+					</th>
+					<th>
+						@Html.DisplayNameFor(model => model.Location)
+					</th>
+					<th>
+						@Html.DisplayNameFor(model => model.Venue)
+					</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model)
+				{
+					<tr>
+						<td>
+							@Html.DisplayFor(modelItem => item.Director.FullName)
+						</td>
+						<td>
+							@Html.DisplayFor(modelItem => item.Notes)
+						</td>
+						<td>
+							@Html.DisplayFor(modelItem => item.StartTime)
+						</td>
+						<td>
+							@Html.DisplayFor(modelItem => item.EndTime)
+						</td>
+						<td>
+							@Html.DisplayFor(modelItem => item.Location.City)
+						</td>
+						<td>
+							@Html.DisplayFor(modelItem => item.Venue.VenueName)
+						</td>
+						<td>
+							<a asp-action="Edit" asp-route-id="@item.Id" class=" text-decoration-none">Edit</a> |
+							<a asp-action="Details" asp-route-id="@item.Id" class=" text-decoration-none">Details</a> |
+							<a asp-action="Delete" asp-route-id="@item.Id" class=" text-decoration-none">Delete</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+@section Scripts {
+	<script>
+		$(document).ready(function () {
+			$('#attendanceSheetTabs a').on('click', function (e) {
+				e.preventDefault();
+				$(this).tab('show');
+			});
+		});
+	</script>
 }
-    </tbody>
-</table>
+

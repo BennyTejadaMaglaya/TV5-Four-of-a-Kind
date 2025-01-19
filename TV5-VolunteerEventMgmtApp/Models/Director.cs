@@ -6,7 +6,17 @@ namespace TV5_VolunteerEventMgmtApp.Models
     {
         public int ID { get; set; }
 
-        [Display(Name = "First Name")]
+		[Display(Name = "Director")]
+		[DisplayFormat(NullDisplayText = "None")]
+		public string FullName
+		{
+			get
+			{
+				return FirstName + " " + LastName;
+			}
+		}
+
+		[Display(Name = "First Name")]
         [Required(ErrorMessage = "A first name is required when adding a new choir director.")]
         [StringLength(64, ErrorMessage = "A first name must be less than 64 characters long.")]
         public string FirstName { get; set; }
