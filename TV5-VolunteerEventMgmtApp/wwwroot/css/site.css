@@ -1,5 +1,12 @@
+:root {
+    --purple: #9d2b9d;
+    --text-gray: #656565;
+}
+
 html {
   font-size: 14px;
+  position: relative;
+  min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -12,11 +19,16 @@ html {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+body {
+    margin-bottom: 60px;
+    font-family: "Montserrat", sans-serif;
+    font-style: normal;
 }
 
-body {
-  margin-bottom: 60px;
+.text-purple {
+    color: var(--purple)
+}
+
+.text-gray {
+    color: var(--text-gray)
 }
