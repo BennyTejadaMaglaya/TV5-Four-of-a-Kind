@@ -76,12 +76,7 @@ namespace TV5_VolunteerEventMgmtApp.Data
                 .HasForeignKey(d => d.AttendenceSheetId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Venue>()
-                .HasMany<AttendanceSheet>(d => d.AttendanceSheets)
-                .WithOne(d => d.Venue)
-                .HasForeignKey(d => d.VenueId)
-                .OnDelete(DeleteBehavior.Restrict);
-
+          
             modelBuilder.Entity<Singer>()
                 .HasMany<SingerLocation>(d => d.SingerLocation)
                 .WithOne(d => d.Singer)

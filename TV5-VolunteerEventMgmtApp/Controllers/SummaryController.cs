@@ -42,7 +42,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                         .Include(a => a.Location)
                         .ThenInclude(l => l.SingerLocations)
                         .ThenInclude(l => l.Singer)
-                        .Include(b => b.Venue)
+                        
                         .AsNoTracking();
 
             FilterDateRange(startWeek, endWeek, ref summary);

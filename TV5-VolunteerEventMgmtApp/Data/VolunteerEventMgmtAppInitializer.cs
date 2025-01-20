@@ -338,9 +338,9 @@ namespace TV5_VolunteerEventMgmtApp.Data
                                         DirectorId = directorID,
                                         Notes = "example notes.",
                                         LocationId = location,
-                                        VenueId = VenueIDs[random.Next(0,VenueIDs.Length)],
-                                        StartTime = randDay.AddHours(random.Next(1, 12)),
-                                        EndTime = randDay.AddHours(random.Next(13, 24))
+                                        
+                                        StartTime = randDay.AddHours(random.Next(10, 12)),
+                                        EndTime = randDay.AddHours(random.Next(13, 16))
                                     };
                                     try
                                     {

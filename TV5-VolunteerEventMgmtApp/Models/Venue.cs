@@ -29,6 +29,6 @@ namespace TV5_VolunteerEventMgmtApp.Models
         public int LocationId { get; set; }
         public Location? Location { get; set; }
 
-        public ICollection<AttendanceSheet> AttendanceSheets { get; set; } = new HashSet<AttendanceSheet>();
+      
     }
 }

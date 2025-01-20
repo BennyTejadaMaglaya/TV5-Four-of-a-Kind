@@ -26,7 +26,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             var volunteerEventMgmtAppDbContext = _context.AttendeesSheets
                 .Include(a => a.Director)
                 .Include(a => a.Location)
-                .Include(a => a.Venue)
+                
                 .Include(a => a.Attendees);
             return View(await volunteerEventMgmtAppDbContext.ToListAsync());
         }
@@ -42,7 +42,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             var attendanceSheet = await _context.AttendeesSheets
                 .Include(a => a.Director)
                 .Include(a => a.Location)
-                .Include(a => a.Venue)
+                
                 .Include(a => a.Attendees).ThenInclude(a => a.Singer)
 				.FirstOrDefaultAsync(m => m.Id == id);
             if (attendanceSheet == null)
@@ -59,7 +59,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			AttendanceSheet attendanceSheet = new AttendanceSheet();
 			ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName");
             ViewData["LocationID"] = new SelectList(_context.Locations, "ID", "City");
-            ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "VenueName");
+           
 			//PopulateSingerListBoxes(attendanceSheet);
 			// Empty lists at first, then AvailableSingers will be populated when the location is selected
 			ViewData["SelectedSingers"] = new MultiSelectList(Enumerable.Empty<ListOptionVM>(), "ID", "DisplayText");
@@ -85,7 +85,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             }
             ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName", attendanceSheet.DirectorId);
             ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", attendanceSheet.LocationId);
-            ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "VenueName", attendanceSheet.VenueId);
+            
             PopulateSingerListBoxes(attendanceSheet);
 			return View(attendanceSheet);
         }
@@ -107,7 +107,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             }
             ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName", attendanceSheet.DirectorId);
             ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", attendanceSheet.LocationId);
-            ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "VenueName", attendanceSheet.VenueId);
+           
 			PopulateSingerListBoxes(attendanceSheet);
 			return View(attendanceSheet);
         }
@@ -132,7 +132,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
 			if (await TryUpdateModelAsync<AttendanceSheet>(attendanceSheetToUpdate, "",
 		        a => a.DirectorId, a => a.Notes, a => a.StartTime, 
-                a => a.EndTime, a => a.LocationId, a => a.VenueId))
+                a => a.EndTime, a => a.LocationId))
 			{
                 try
                 {
@@ -154,7 +154,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
             ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName", attendanceSheetToUpdate.DirectorId);
             ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", attendanceSheetToUpdate.LocationId);
-            ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "VenueName", attendanceSheetToUpdate.VenueId);
+           
 			PopulateSingerListBoxes(attendanceSheetToUpdate);
 			return View(attendanceSheetToUpdate);
         }
@@ -170,7 +170,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             var attendanceSheet = await _context.AttendeesSheets
                 .Include(a => a.Director)
                 .Include(a => a.Location)
-                .Include(a => a.Venue)
+                
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (attendanceSheet == null)
             {
@@ -285,7 +285,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             var attendanceHistory = await _context.AttendeesSheets
                 .Include(a => a.Director)
                 .Include(a => a.Location)
-                .Include(a => a.Venue)
+                
                 .Include(a => a.Attendees)
                 .Where(a => a.LocationId == locationId)
                 .Select(a => new
@@ -312,7 +312,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             var attendanceHistory = await _context.AttendeesSheets
                 .Include(a => a.Director)
                 .Include(a => a.Location)
-                .Include(a => a.Venue)
+              
                 .Include(a => a.Attendees)
                 .Select(a => new
                 {
