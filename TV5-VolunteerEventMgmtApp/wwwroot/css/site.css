@@ -32,3 +32,19 @@ body {
 .text-gray {
     color: var(--text-gray)
 }
+
+.text-summary-poor{
+    color:#f2a134
+}
+
+.text-summary-bad{
+    color:#e51f1f
+}
+
+.text-summary-good{
+color:#bbdb44
+}
+
+.text-summary-great{
+    color:#44ce1b
+}
