@@ -1,0 +1,119 @@
+﻿@model TV5_VolunteerEventMgmtApp.ViewModels.DashboardVM
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div>
+    <label for="locationDropdown">Select Location:</label>
+    <select id="locationDropdown" class="form-control">
+        <option value="all" selected>All</option>
+        @foreach (var location in Model.Locations)
+        {
+            <option value="@location.ID">@location.City</option>
+        }
+    </select>
+</div>
+
+<div>
+    <h3>Singer Count: <span id="singerCount">0</span></h3>
+</div>
+
+<div id="calendar"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth'
+        });
+        calendar.render();
+
+        var locationDropdown = document.getElementById('locationDropdown');
+        var singerCountEl = document.getElementById('singerCount');
+
+        function fetchAllAttendanceData() {
+            fetch(`/AttendanceSheet/GetAllAttendance`)
+                .then(response => response.json())
+                .then(events => {
+                    calendar.removeAllEvents();
+                    calendar.addEventSource(events);
+                })
+                .catch(error => console.error('Error fetching all attendance data:', error));
+        }
+
+        function fetchAttendanceData(locationId) {
+            fetch(`/AttendanceSheet/GetAttendanceByLocation?locationId=${locationId}`)
+                .then(response => response.json())
+                .then(events => {
+                    calendar.removeAllEvents();
+                    calendar.addEventSource(events);
+                })
+                .catch(error => console.error('Error fetching attendance data:', error));
+        }
+
+        function fetchTotalSingerCount() {
+            fetch(`/AttendanceSheet/GetTotalSingerCount`)
+                .then(response => response.json())
+                .then(count => {
+                    singerCountEl.textContent = count;
+                })
+                .catch(error => console.error('Error fetching total singer count:', error));
+        }
+
+        function fetchSingerCount(locationId) {
+            fetch(`/AttendanceSheet/GetSingerCountByLocation?locationId=${locationId}`)
+                .then(response => response.json())
+                .then(count => {
+                    singerCountEl.textContent = count;
+                })
+                .catch(error => console.error('Error fetching singer count:', error));
+        }
+
+        locationDropdown.addEventListener('change', function() {
+            var locationId = this.value;
+            if (locationId === "all") {
+                fetchAllAttendanceData();
+                fetchTotalSingerCount();
+            } else if (locationId) {
+                fetchAttendanceData(locationId);
+                fetchSingerCount(locationId);
+            } else {
+                calendar.removeAllEvents();
+                singerCountEl.textContent = '0';
+            }
+        });
+
+        fetchAllAttendanceData();
+        fetchTotalSingerCount();
+    });
+</script>
+
+<style>
+    #calendar {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .fc-event-title {
+        white-space: normal !important;
+    }
+
+    .fc-event-white {
+        background-color: white !important;
+    }
+
+    .fc-event-light-purple {
+        background-color: #dcd6f7 !important;
+    }
+
+    .fc-event-purple {
+        background-color: #a29bfe !important;
+    }
+
+    .fc-event-dark-purple {
+        background-color: #6c5ce7 !important;
+    }
+</style>
