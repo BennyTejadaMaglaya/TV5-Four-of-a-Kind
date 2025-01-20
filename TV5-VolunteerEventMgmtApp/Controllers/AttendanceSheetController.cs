@@ -73,7 +73,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,DirectorId,Notes,StartTime,EndTime,LocationID,VenueId")] AttendanceSheet attendanceSheet,
+        public async Task<IActionResult> Create([Bind("Id,DirectorId,Notes,StartTime,EndTime,LocationId,VenueId")] AttendanceSheet attendanceSheet,
 			string[] selectedOptions)
         {
             UpdateAttendees(selectedOptions, attendanceSheet);
