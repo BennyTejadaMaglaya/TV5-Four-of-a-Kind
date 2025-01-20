@@ -30,6 +30,8 @@ namespace TV5_VolunteerEventMgmtApp.Models
 
         public ICollection<DirectorLocation> DirectorLocations { get; set; } = new HashSet<DirectorLocation>();
 
+        public ICollection<AttendanceSheet> AttendanceSheets { get; set; } = new HashSet<AttendanceSheet>();
+
 
         public string NameSummary()
         {
