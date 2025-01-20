@@ -280,6 +280,65 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             return Json(singers);
         }
 
+        public async Task<JsonResult> GetAttendanceByLocation(int locationId)
+        {
+            var attendanceHistory = await _context.AttendeesSheets
+                .Include(a => a.Director)
+                .Include(a => a.Location)
+                .Include(a => a.Venue)
+                .Include(a => a.Attendees)
+                .Where(a => a.LocationId == locationId)
+                .Select(a => new
+                {
+                    Title = "Choir Practice in " + (a.Location != null ? a.Location.City : "N/A") + $" (Attendance: {a.Attendees.Count} / {_context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == locationId))})",
+                    Start = a.StartTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+                    End = a.EndTime.ToString("yyyy-MM-ddTHH:mm:ss")
+                }).ToListAsync();
+
+            return Json(attendanceHistory);
+        }
+
+        public JsonResult GetSingerCountByLocation(int locationId)
+        {
+            var singerCount = _context.Singers
+                .Where(s => s.SingerLocation.Any(sl => sl.LocationId == locationId))
+                .Count();
+
+            return Json(singerCount);
+        }
+
+        public async Task<JsonResult> GetAllAttendance()
+        {
+            var attendanceHistory = await _context.AttendeesSheets
+                .Include(a => a.Director)
+                .Include(a => a.Location)
+                .Include(a => a.Venue)
+                .Include(a => a.Attendees)
+                .Select(a => new
+                {
+                    Title = "Choir Practice in " + (a.Location != null ? a.Location.City : "N/A") + $" (Attendance: {a.Attendees.Count} / {_context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == a.LocationId))})",
+                    Start = a.StartTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+                    End = a.EndTime.ToString("yyyy-MM-ddTHH:mm:ss")
+                }).ToListAsync();
+
+            return Json(attendanceHistory);
+        }
+
+        public JsonResult GetTotalSingerCount()
+        {
+            var totalSingerCount = _context.Singers.Count();
+            return Json(totalSingerCount);
+        }
+
+        public IActionResult Dashboard()
+        {
+            var viewModel = new DashboardVM
+            {
+                Locations = _context.Locations.ToList()
+            };
+
+            return View(viewModel);
+        }
 
         private bool AttendanceSheetExists(int id)
         {
