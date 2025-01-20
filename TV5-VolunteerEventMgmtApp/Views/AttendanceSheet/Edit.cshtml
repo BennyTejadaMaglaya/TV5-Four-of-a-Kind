@@ -52,7 +52,8 @@
 					<button id="btnRemove" class="btn btn-outline-danger py-0 px-2 mt-3 mb-2">
 						<strong>Remove singer/s</strong>
 					</button>
-					@Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.SelectedSingers, new { @size = 10, @class = "form-control" })
+					@Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.SelectedSingers, 
+						new { @size = 14, @class = "form-control" })
 				</div>
 
 				<div class="form-group col-md-6">
@@ -60,7 +61,8 @@
 					<button id="btnAdd" class="btn btn-outline-success py-0 px-3 mt-3 mb-2">
 						<strong>Add singer/s</strong>
 					</button>
-					@Html.ListBox("availableOptions", (MultiSelectList)ViewBag.AvailableSingers, new { @size = 10, @class = "form-control" })
+					@Html.ListBox("availableOptions", (MultiSelectList)ViewBag.AvailableSingers, 
+						new { @size = 14, @class = "form-control" })
 				</div>
 			</div>
 		</div>
@@ -80,4 +82,33 @@
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
 	<script src="~/js/multiselect.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+			$(document).ready(function () {
+			$('#LocationId').change(function () {
+				var locationId = $(this).val();
+				$.ajax({
+					url: '@Url.Action("GetSingersByLocation")',
+					type: 'GET',
+					data: { locationId: locationId },
+					success: function (data) {
+						console.log("Received Data: ", data); //
+						var selectedOptions = $('#selectedOptions');
+						var availableOptions = $('#availableOptions');
+						selectedOptions.empty();
+						availableOptions.empty();
+						$.each(data, function (index, singer) {
+							availableOptions.append($('<option>', {
+								value: singer.id,
+								text: singer.firstName + ' ' + singer.lastName
+							}));
+						});
+					},
+					error: function (xhr, status, error) {
+						console.error("AJAX Error: ", status, error); //
+					}
+				});
+			});
+		});
+	</script>
 }

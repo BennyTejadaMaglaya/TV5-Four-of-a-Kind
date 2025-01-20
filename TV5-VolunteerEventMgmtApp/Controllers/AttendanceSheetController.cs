@@ -60,7 +60,11 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName");
             ViewData["LocationID"] = new SelectList(_context.Locations, "ID", "City");
             ViewData["VenueId"] = new SelectList(_context.Set<Venue>(), "ID", "VenueName");
-            PopulateSingerListBoxes(attendanceSheet);
+			//PopulateSingerListBoxes(attendanceSheet);
+			// Empty lists at first, then AvailableSingers will be populated when the location is selected
+			ViewData["SelectedSingers"] = new MultiSelectList(Enumerable.Empty<ListOptionVM>(), "ID", "DisplayText");
+			ViewData["AvailableSingers"] = new MultiSelectList(Enumerable.Empty<ListOptionVM>(), "ID", "DisplayText");
+
 			return View();
         }
 
@@ -195,12 +199,14 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		// Populate Singer ListBoxes
 		public void PopulateSingerListBoxes(AttendanceSheet attendanceSheet)
 		{
-			var allSingers = _context.Singers;
+			var locationId = attendanceSheet.LocationId;
+			//var allSingers = _context.Singers;
+			var allSingersInLocation = _context.Singers.Where(s => s.SingerLocation.Any(sl => sl.LocationId == locationId));
 			var currentSingersHS = new HashSet<int>(attendanceSheet.Attendees.Select(e => e.SingerId));
 
 			var selected = new List<ListOptionVM>();
 			var available = new List<ListOptionVM>();
-			foreach (var c in allSingers)
+			foreach (var c in allSingersInLocation)
 			{
 				if (currentSingersHS.Contains(c.Id))
 				{
@@ -263,7 +269,19 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		}
 
 
-		private bool AttendanceSheetExists(int id)
+        public async Task<IActionResult> GetSingersByLocation(int locationId)
+        {
+            var singers = await _context.Singers
+                .Where(s => s.SingerLocation.Any(sl => sl.LocationId == locationId))
+                .Select(s => new { s.Id, s.FirstName, s.LastName })
+                .OrderBy(s => s.FirstName).ThenBy(s => s.LastName)
+				.ToListAsync();
+
+            return Json(singers);
+        }
+
+
+        private bool AttendanceSheetExists(int id)
         {
             return _context.AttendeesSheets.Any(e => e.Id == id);
         }
