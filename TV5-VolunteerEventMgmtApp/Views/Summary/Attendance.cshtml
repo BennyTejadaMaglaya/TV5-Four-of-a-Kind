@@ -17,9 +17,7 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Sheet.Location.City)
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Sheet.Venue.VenueName)
-                </th>
+                
                 <th>Total Signups</th>
                 <th>Total Attended</th>
                 <th>Percent Attended</th>
@@ -32,9 +30,7 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Sheet.Location.City)
                     </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Sheet.Venue.VenueName)
-                    </td>
+                    
                     <td>
                         @item.TotalAttendees
                     </td>

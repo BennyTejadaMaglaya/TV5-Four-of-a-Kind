@@ -29,8 +29,6 @@ namespace TV5_VolunteerEventMgmtApp.Models
 
         public Location? Location { get; set; }
 
-        public int VenueId { get; set; }
 
-        public Venue? Venue { get; set; }
     }
 }
