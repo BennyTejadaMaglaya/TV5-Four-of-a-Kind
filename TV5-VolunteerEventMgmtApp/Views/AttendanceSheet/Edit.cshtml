@@ -12,7 +12,7 @@
 	<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 	<input type="hidden" asp-for="Id" />
 	<div class="row">
-		<div class="col-md-4">
+		<div class="col-md-4 mb-3">
 			<div class="form-group">
 				<label asp-for="LocationId" class="control-label"></label>
 				<select asp-for="LocationId" class="form-control" asp-items="ViewBag.LocationID"></select>
@@ -35,29 +35,29 @@
 			</div>
 			<div class="form-group">
 				<label asp-for="Notes" class="control-label"></label>
-				<input asp-for="Notes" class="form-control" />
+				<textarea asp-for="Notes" class="form-control"></textarea>
 				<span asp-validation-for="Notes" class="text-danger"></span>
 			</div>
 		</div>
 
 		<div class="col-md-8">
 			<div class="row">
-				<div class="form-group col-md-6">
+				<div class="form-group col-md-6 mb-3">
 					<label class="control-label d-block">Present singers (<span id="count"></span>)</label>
-					<button id="btnRemove" class="btn btn-outline-danger py-0 px-2 mt-3 mb-2">
+					@Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.SelectedSingers, 
+						new { @size = 12, @class = "form-control" })
+					<button id="btnRemove" class="btn btn-outline-danger py-0 px-2 my-2">
 						<strong>Remove singer/s</strong>
 					</button>
-					@Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.SelectedSingers, 
-						new { @size = 14, @class = "form-control" })
 				</div>
 
-				<div class="form-group col-md-6">
+				<div class="form-group col-md-6 mb-3">
 					<label class="control-label d-block">Add singers to the attendance sheet</label>
-					<button id="btnAdd" class="btn btn-outline-success py-0 px-3 mt-3 mb-2">
+					@Html.ListBox("availableOptions", (MultiSelectList)ViewBag.AvailableSingers, 
+						new { @size = 12, @class = "form-control" })
+					<button id="btnAdd" class="btn btn-outline-success py-0 px-3 my-2">
 						<strong>Add singer/s</strong>
 					</button>
-					@Html.ListBox("availableOptions", (MultiSelectList)ViewBag.AvailableSingers, 
-						new { @size = 14, @class = "form-control" })
 				</div>
 			</div>
 		</div>
@@ -69,7 +69,8 @@
 </form>
 
 <div>
-	<a asp-action="Index">Back to List</a>
+	<a asp-action="Index" class="btn btn-outline-primary py-0">Back to List</a>
+	<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger py-0">Delete</a>
 </div>
 
 @section Scripts {
@@ -77,32 +78,33 @@
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
 	<script src="~/js/multiselect.js"></script>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
-			$(document).ready(function () {
-			$('#LocationId').change(function () {
-				var locationId = $(this).val();
-				$.ajax({
-					url: '@Url.Action("GetSingersByLocation")',
-					type: 'GET',
-					data: { locationId: locationId },
-					success: function (data) {
-						console.log("Received Data: ", data); //
-						var selectedOptions = $('#selectedOptions');
-						var availableOptions = $('#availableOptions');
-						selectedOptions.empty();
-						availableOptions.empty();
-						$.each(data, function (index, singer) {
-							availableOptions.append($('<option>', {
-								value: singer.id,
-								text: singer.firstName + ' ' + singer.lastName
-							}));
+			document.addEventListener('DOMContentLoaded', function () {
+			document.getElementById('LocationId').addEventListener('change', function () {
+				var locationId = this.value;
+				fetch('@Url.Action("GetSingersByLocation")?locationId=' + locationId)
+					.then(response => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok ' + response.statusText);
+						}
+						return response.json();
+					})
+					.then(data => {
+						console.log("Received Data: ", data); // Debugging line
+						var selectedOptions = document.getElementById('selectedOptions');
+						var availableOptions = document.getElementById('availableOptions');
+						selectedOptions.innerHTML = '';
+						availableOptions.innerHTML = '';
+						data.forEach(singer => {
+							var option = document.createElement('option');
+							option.value = singer.id;
+							option.text = singer.firstName + ' ' + singer.lastName;
+							availableOptions.appendChild(option);
 						});
-					},
-					error: function (xhr, status, error) {
-						console.error("AJAX Error: ", status, error); //
-					}
-				});
+					})
+					.catch(error => {
+						console.error("Fetch Error: ", error); // Debugging line
+					});
 			});
 		});
 	</script>

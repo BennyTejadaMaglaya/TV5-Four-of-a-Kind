@@ -25,6 +25,10 @@ body {
     font-style: normal;
 }
 
+.form-group {
+    margin-bottom: 1rem;
+}
+
 .text-purple {
     color: var(--purple)
 }
@@ -47,4 +51,73 @@ color:#bbdb44
 
 .text-summary-great{
     color:#44ce1b
+}
+
+.attendance-cards-grid {
+    display: grid;
+    grid-column-gap: 20px;
+    grid-row-gap: 25px;
+}
+
+.attendance-card {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr;
+    grid-column-gap: 10px;
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 4px 12px #00000020;
+    cursor: pointer;
+    transition: all .1s linear;
+}
+
+.card-inner-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-row-gap: 4px;
+    grid-column-gap: 15px;
+}
+
+.card-inner-grid:nth-child(1) {
+    grid-template-columns: 1fr;
+}
+
+.sub-inner-grid {
+    display: grid;
+    background: #f7f7f7;
+}
+
+.card-inner-grid > * {
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.attendance-card:hover {
+    box-shadow: 0 4px 16px #00000060;
+    transform: translateY(-2px);
+}
+
+/* From 768px */
+@media(width > 768px) {
+    .attendance-card {
+        grid-template-columns: 3fr 2fr 1fr;
+    }
+    .card-inner-grid:nth-child(1) {
+        grid-template-columns: 1fr 2fr;
+    }
+}
+
+/* From 1200px */
+@media(width > 1200px) {
+    .attendance-cards-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .card-inner-grid, .card-inner-grid:nth-child(1) {
+        grid-template-columns: 1fr;
+    }
+
+    .sub-inner-grid {
+        grid-template-columns: 3fr 1fr;
+        align-content: center;
+    }
 }

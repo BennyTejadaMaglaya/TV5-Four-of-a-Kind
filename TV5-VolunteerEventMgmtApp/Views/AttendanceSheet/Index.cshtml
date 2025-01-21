@@ -4,65 +4,69 @@
 	ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Attendance Sheets</h1>
 
 <p>
-	<a asp-action="Create">Create New</a>
+	<a asp-action="Create" class="btn btn-outline-success py-1 fw-bold">Create New</a>
 </p>
 
 <ul class="nav nav-tabs mb-3" id="attendanceSheetTabs" role="tablist">
 	<li class="nav-item">
-		<a class="nav-link active" id="cards-tab" data-toggle="tab" href="#cards" role="tab"
-		   aria-controls="cards" aria-selected="true">Cards</a>
+		<a class="nav-link active fw-bold" id="cards-tab" data-toggle="tab" href="#cards" role="tab"
+		   aria-controls="cards" aria-selected="true">&#x25AD;</a>
 	</li>
 	<li class="nav-item">
-		<a class="nav-link" id="list-tab" data-toggle="tab" href="#list" role="tab"
-		   aria-controls="list" aria-selected="false">List</a>
+		<a class="nav-link fw-bold" id="list-tab" data-toggle="tab" href="#list" role="tab"
+		   aria-controls="list" aria-selected="false">&#x2630;</a>
 	</li>
 </ul>
 
 <div class="tab-content" id="attendanceSheetTabsContent">
 
+	@* CARDS *@
 	<div class="tab-pane fade show active" id="cards" role="tabpanel" aria-labelledby="cards-tab">
-		@foreach (var item in Model)
-		{
-			<div class="card mb-3 shadow-sm bg-light p-3"
-				 onclick="location.href='@Url.Action("Details", new { id = item.Id })'" style="cursor: pointer;">
+		<div class="attendance-cards-grid">
+			@foreach (var item in Model)
+			{
+				<div class="attendance-card"
+					 onclick="location.href='@Url.Action("Details", new { id = item.Id })'">
 
-				<div class="d-flex gap-4">
+					<div class="card-inner-grid">
 
-					<div class="col-2 fw-bold text-purple">
-						@Html.DisplayFor(modelItem => item.Location.City)
-					</div>
-					<div class="col-3">
-						@{
-							var startDate = item.StartTime.ToString("ddd MMMM dd, yyyy");
-							var startTime = item.StartTime.ToString("hh:mm tt");
-							var endTime = item.EndTime.ToString("hh:mm tt");
-						}
-						<div class="fw-bold">@startDate</div>
-						<div>@startTime - @endTime</div>
-
-					</div>
-
-					<div class="col-1">
-						<div class="fw-bold text-gray">Singers</div>
-						<div>@item.Attendees.Count</div>
+						<div class="fw-bold text-purple">
+							@Html.DisplayFor(modelItem => item.Location.City)
+						</div>
+						<div class="">
+							@{
+								var startDate = item.StartTime.ToString("ddd, MMMM dd, yyyy");
+								var startTime = item.StartTime.ToString("hh:mm tt");
+								var endTime = item.EndTime.ToString("hh:mm tt");
+							}
+							<div class="fw-bold">@startDate</div>
+							<div>@startTime - @endTime</div>
+						</div>
 					</div>
 
-					<div class="col-3 text-truncate">
-						@Html.DisplayFor(modelItem => item.Notes)
+					<div class="card-inner-grid">
+						<div class="sub-inner-grid">
+							<div class="fw-bold">Singers</div>
+							<div class="fw-bold text-purple">@item.Attendees.Count</div>
+						</div>
+
+						<div class="text-truncate d-none d-lg-block">
+							@Html.DisplayFor(modelItem => item.Notes)
+						</div>
 					</div>
 
-					<div class="d-flex flex-column ms-auto">
-						<a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">Edit</a>
-						<a asp-action="Delete" asp-route-id="@item.Id" class=" text-decoration-none">Delete</a>
-					</div>
+						<div class="d-flex flex-column gap-1 justify-content-end align-content-end ms-3">
+							<a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-dark py-0">Edit</a>
+						</div>
 				</div>
-			</div>
-		}
+			}
+		</div>
 	</div>
 
+	@* LIST *@
 	<div class="tab-pane fade" id="list" role="tabpanel" aria-labelledby="list-tab">
 		<table class="table">
 			<thead>
@@ -70,9 +74,11 @@
 					<th>
 						@Html.DisplayNameFor(model => model.Location)
 					</th>
-					
-					<th>
+					<th class="d-none d-md-table-cell">
 						@Html.DisplayNameFor(model => model.Director)
+					</th>
+					<th>
+						Date
 					</th>
 					<th>
 						@Html.DisplayNameFor(model => model.StartTime)
@@ -80,7 +86,7 @@
 					<th>
 						@Html.DisplayNameFor(model => model.Attendees)
 					</th>
-					<th>
+					<th class="d-none d-lg-table-cell">
 						@Html.DisplayNameFor(model => model.Notes)
 					</th>
 					<th></th>
@@ -90,26 +96,38 @@
 				@foreach (var item in Model)
 				{
 					<tr>
-						<td>
+						<td class="fw-bold text-purple">
 							@Html.DisplayFor(modelItem => item.Location.City)
 						</td>
-						
-						<td>
+
+						<td class="d-none d-md-table-cell">
 							@Html.DisplayFor(modelItem => item.Director.FullName)
 						</td>
 						<td>
-							@Html.DisplayFor(modelItem => item.StartTime)
+							@{
+								var date = item.StartTime.ToString("MMM dd, yyyy");
+							}
+							@date
+						</td>
+						<td>
+							@{
+								var startTime = item.StartTime.ToString("hh:mm tt");
+							}
+							@startTime
 						</td>
 						<td>
 							@Html.DisplayFor(modelItem => item.Attendees.Count)
 						</td>
-						<td>
-							@Html.DisplayFor(modelItem => item.Notes)
+						<td class="d-none d-lg-table-cell col-3">
+							@{
+								var notes = item.Notes;
+								var truncatedNotes = notes.Length > 20 ? notes.Substring(0, 20) + "..." : notes;
+							}
+							@truncatedNotes
 						</td>
 						<td>
 							<a asp-action="Edit" asp-route-id="@item.Id" class=" text-decoration-none">Edit</a> |
-							<a asp-action="Details" asp-route-id="@item.Id" class=" text-decoration-none">Details</a> |
-							<a asp-action="Delete" asp-route-id="@item.Id" class=" text-decoration-none">Delete</a>
+							<a asp-action="Details" asp-route-id="@item.Id" class=" text-decoration-none">Details</a>
 						</td>
 					</tr>
 				}

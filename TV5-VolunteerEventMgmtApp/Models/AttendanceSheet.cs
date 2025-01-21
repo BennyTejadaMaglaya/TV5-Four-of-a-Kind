@@ -7,9 +7,10 @@ namespace TV5_VolunteerEventMgmtApp.Models
 
         public int Id { get; set; }
 
-        public int DirectorId { get; set; }
+		[Display(Name = "Director")]
+		public int DirectorId { get; set; }
 
-        public Director? Director { get; set; }
+		public Director? Director { get; set; }
 
 		[Display(Name = "Singers")]
 		public ICollection<Attendee> Attendees { get; set; } = new HashSet<Attendee>();
@@ -21,14 +22,13 @@ namespace TV5_VolunteerEventMgmtApp.Models
         [Required(ErrorMessage = "Please enter a start time")]
         public DateTime StartTime { get; set; }
 
-        [Display(Name = "End Time")]
+		[Display(Name = "End Time")]
         [Required(ErrorMessage ="Please enter a end time")]
         public DateTime EndTime { get; set; }
 
-        public int LocationId { get; set; }
+		[Display(Name = "Location")]
+		public int LocationId { get; set; }
 
         public Location? Location { get; set; }
-
-
-    }
+	}
 }
