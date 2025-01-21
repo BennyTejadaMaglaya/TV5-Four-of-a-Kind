@@ -43,7 +43,7 @@
                 if (kidsCount > 0)
                 {
                     var kidsIdList = Model.Attendees.OrderBy(a => a.Singer.FirstName).ThenBy(a => a.Singer.LastName).ToList();
-                    <a class="btn btn-outline-dark py-0" role="button" data-bs-toggle="collapse"
+                    <a class="btn btn-dark py-0" role="button" data-bs-toggle="collapse"
                        href="#collapseDocs@(Model.Id)" aria-expanded="false"
                        aria-controls="collapseDocs@(Model.Id)">
                         @kidsCount @(kidsCount == 1 ? "singer" : "singers")
@@ -74,6 +74,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-primary py-0">Edit</a>
+    <a asp-action="Index" class="btn btn-outline-primary py-0">Back to List</a>
 </div>
