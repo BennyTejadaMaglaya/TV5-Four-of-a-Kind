@@ -1,13 +1,13 @@
-﻿using TV5_VolunteerEventMgmtApp.Models;
-using TV5_VolunteerEventMgmtApp.Utilities;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TV5_VolunteerEventMgmtApp.ViewModels
 {
-    public class AttendanceSheetSummaryVM
+    public class AttendanceSheetSummaryVm
     {
-        public int TotalAttendees { get; set; }
-        public AttendanceSheet Sheet { get; set; }
-        
-        public PercentageColor Percentage { get; set; }
+        [Display(Name ="Start Range")]
+        public DateTime? StartDate { get; set; }
+        [Display(Name = "End Range")]
+        public DateTime? EndDate { get; set; }
+        public ICollection<SheetSummaryItemVM> Items { get; set; } = new List<SheetSummaryItemVM>();
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace TV5_VolunteerEventMgmtApp.Utilities
 {
-    public class PercentageColor
+    public class PercentageColorVM
     {
         public const string GreatColor = "#44ce1b";
         public const string GoodColor = "#bbdb44";
@@ -14,9 +14,9 @@
 
         public string ClassName { get; set; }
         public double Value { get; set; }
-        public PercentageColor(double summaryPercent) 
+        public PercentageColorVM(double summaryPercent) 
         {
-            Console.WriteLine(summaryPercent);
+            //Console.WriteLine(summaryPercent);
             if (summaryPercent >= 0.75)
             {
                 Console.WriteLine("GT");

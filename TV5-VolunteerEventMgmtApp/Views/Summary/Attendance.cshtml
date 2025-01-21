@@ -1,51 +1,58 @@
-﻿@model IEnumerable<TV5_VolunteerEventMgmtApp.ViewModels.AttendanceSheetSummaryVM>
+﻿@model TV5_VolunteerEventMgmtApp.ViewModels.AttendanceSheetSummaryVm
 
     <h1>@ViewData["summaryTitle"]</h1>
 
  <form>
      <div>
+        <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+        <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
         <label>Start Week</label>
-        <input type="datetime-local" name="startWeek" value="@(ViewData["startWeek"])" asp-format="yyyy-MM-dd" />
+        <input type="datetime-local" asp-for="StartDate" name="startWeek" asp-format="yyyy-MM-dd" value="@((ViewData["startWeek"]))" />
         <label>End Week</label>
-        <input type="datetime-local" name="endWeek" value="@(ViewData["endWeek"])" asp-format="yyyy-MM-dd" />
-        <input type="submit" value="Get Attendance Sheets In Range"/>
+        <input type="datetime-local" asp-for="EndDate" name="endWeek" asp-format="yyyy-MM-dd" value="@((ViewData["endWeek"]))" />
+        <label for="searchCity">City</label>
+        <input id="searchCity" type="text" name="searchCity" value="@ViewData["searchCity"]"/>
+        <label for="searchDirector">Director Name</label>
+        <input id="searchDirector" type="text" name="searchDirector" value="@ViewData["searchDirector"]" />
+        <input type="submit" value="Filter"/>
 
     </div>
     <table class="table">
         <thead>
             <tr>
+                <th>Start Time</th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Sheet.Location.City)
+                    <input type="submit" value="City" name="actionButton"/>
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Sheet.Venue.VenueName)
+                    <input type="submit" value="Director" name="actionButton" />
                 </th>
+                
                 <th>Total Signups</th>
                 <th>Total Attended</th>
-                <th>Percent Attended</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.Items)
             {
                 <tr>
+                    <td>
+                        @Html.DisplayFor(m => item.Sheet.StartTime)
+                    </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Sheet.Location.City)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Sheet.Venue.VenueName)
+                        @item.Sheet.Director.NameSummary()
                     </td>
                     <td>
                         @item.TotalAttendees
                     </td>
                     <td>
                         @item.Sheet.Attendees.Count()
+                        (<span class="@item.Percentage.ClassName">@item.Percentage.Value.ToString("#0.##%")</span>)
                     </td>
-                    <td class="@item.Percentage.ClassName">
-                        @item.Percentage.Value.ToString("#0.##%");
-                        @item.Percentage.Value
-                        @item.Sheet.StartTime;
-                    </td>
+                   
                 </tr>
             }
         </tbody>
