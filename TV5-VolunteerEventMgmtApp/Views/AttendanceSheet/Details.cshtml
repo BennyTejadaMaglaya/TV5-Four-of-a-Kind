@@ -43,10 +43,10 @@
                 if (kidsCount > 0)
                 {
                     var kidsIdList = Model.Attendees.OrderBy(a => a.Singer.FirstName).ThenBy(a => a.Singer.LastName).ToList();
-                    <a class="btn btn-dark py-0" role="button" data-bs-toggle="collapse"
+                    <a class="btn btn-purple py-0" role="button" data-bs-toggle="collapse"
                        href="#collapseDocs@(Model.Id)" aria-expanded="false"
                        aria-controls="collapseDocs@(Model.Id)">
-                        @kidsCount @(kidsCount == 1 ? "singer" : "singers")
+                        @kidsCount @(kidsCount == 1 ? "attendee" : "attendes")
                     </a>
                     <div class="collapse mt-1" id="collapseDocs@(Model.Id)">
                         @{

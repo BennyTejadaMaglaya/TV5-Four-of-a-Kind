@@ -2,100 +2,99 @@
 
 
 <style>
-    
-    .table-fixed {
-        table-layout: fixed;
-        width: auto; 
-    }
+	.table-fixed {
+		width: auto;
+	}
 
+	.rotate-text {
+		transform: rotate(-90deg);
+		font-size: 0.65rem;
+		position: absolute;
+	}
 
-    .rotate-text {
-     
-        white-space: nowrap;
-        transform: rotate(-90deg);
-        transform-origin: top left;
-        display: inline-block;
-        white-space: nowrap;
-        font-size: 0.65rem; 
-        line-height: 0.65rem;
-        margin-top: 30px;
-    }
-    .heatmap-container{
-        width: 18px;
-        height: 18px;
-    }
+	.heatmap-container {
+		width: 18px !important;
+		height: 18px;
+	}
 
-    
-    .heatmap-cell {
-        width: 15px;
-        height: 15px;
-        border-radius: 3px;
-        border: 1px solid #e1e4e8;
-    }
+	.heatmap-cell {
+		width: 15px;
+		height: 15px;
+		border-radius: 3px;
+		border: 1px solid #e1e4e8;
+		margin: auto;
+	}
 
-   
-    .heatmap-empty {
-        background-color: #ebedf0;
-        border-color: #ebedf0;
-    }
+	.heatmap-empty {
+		background-color: #ebedf0;
+		border-color: #ebedf0;
+	}
 
-    
-    .heatmap-cell:hover {
-        opacity: 0.85;
-    }
+	.heatmap-cell:hover {
+		opacity: 0.85;
+	}
 
-    .footer-month {
-        
-        height: 40px;
-        vertical-align: bottom; 
-    }
+	.footer-month {
+		width: 18px !important;
+		height: 40px;
+		position: relative;
+	}
 </style>
 
 <table class="table table-sm align-middle mb-0 table-bordered text-center table-fixed">
-    
-    <tbody>
-        @for (int w = 1; w <= 5; w++)
-        {
-            <tr>
-               
-                @for (int m = 1; m <= 12; m++)
-                {
-                    var cell = Model.heatMapCells
-                    .FirstOrDefault(c => c.Month == m && c.WeekOfMonth == w);
 
-                    if (cell == null)
-                    {
-                        <td class="p-0 heatmap-container">
-                            <div class="heatmap-cell heatmap-empty" style="width:15px; height:15px;" title="No Attendance" data-bs-toggle="tooltip" data-bs-placement="top"></div>
-                        </td>
-                    }
-                    else
-                    {
-                        <td class="p-0 heatmap-container">
-                            <div class="heatmap-cell" 
-                                 style="background-color:@cell.ColorHex;" 
-                                 data-bs-toggle="tooltip" 
-                                 data-bs-placement="top" 
-                                 title="Attendance: @cell.AttendanceCount">
-                            </div>
-                        </td>
-                    }
-                }
-            </tr>
-        }
-    </tbody>
-    <tfoot class="table-light">
-        <tr>
+	<tbody>
+		@for (int w = 1; w <= 5; w++)
+		{
+			<tr>
 
-            @for (int month = 1; month <= 12; month++)
-            {
-                string shortMonthName = System.Globalization.CultureInfo.CurrentCulture
-                .DateTimeFormat
-                .GetAbbreviatedMonthName(month);
+				@for (int m = 1; m <= 12; m++)
+				{
+					var cell = Model.heatMapCells
+					.FirstOrDefault(c => c.Month == m && c.WeekOfMonth == w);
 
-                <th class="footer-month p-0"><span class="rotate-text">@shortMonthName</span></th>
-            }
-        </tr>
+					if (cell == null)
+					{
+						<td class="p-0 heatmap-container">
+							<div class="heatmap-cell heatmap-empty"
+								 style="width:15px; height:15px;" title="No Attendance"
+								 data-bs-toggle="tooltip" data-bs-placement="top">
+							</div>
+						</td>
+					}
+					else
+					{
+						<td class="p-0 heatmap-container">
+							<div class="heatmap-cell"
+								 style="background-color:@cell.ColorHex;"
+								 data-bs-toggle="tooltip"
+								 data-bs-placement="top"
+								 title="Attendance: @cell.AttendanceCount">
+							</div>
+						</td>
+					}
+				}
+			</tr>
+		}
+	</tbody>
+	<tfoot class="table-light">
+		<tr>
 
-    </tfoot>
+			@for (int month = 1; month <= 12; month++)
+			{
+				string shortMonthName = System.Globalization.CultureInfo.CurrentCulture
+				.DateTimeFormat
+				.GetAbbreviatedMonthName(month);
+
+				<th class="footer-month p-0">
+					<div class="d-flex align-items-center justify-content-center">
+						<div class="rotate-text">
+							<span class="">@shortMonthName</span>
+						</div>
+					</div>
+				</th>
+			}
+		</tr>
+
+	</tfoot>
 </table>
