@@ -4,44 +4,54 @@
 
  <form>
      <div>
+        <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+        <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
         <label>Start Week</label>
         <input type="datetime-local" name="startWeek" value="@(ViewData["startWeek"])" asp-format="yyyy-MM-dd" />
         <label>End Week</label>
         <input type="datetime-local" name="endWeek" value="@(ViewData["endWeek"])" asp-format="yyyy-MM-dd" />
         <input type="submit" value="Get Attendance Sheets In Range"/>
+        <label for="searchCity">City</label>
+        <input id="searchCity" type="text" name="searchCity" value="@ViewData["searchCity"]" />
+        <label for="searchDirector">Director Name</label>
+        <input id="searchDirector" type="text" name="searchDirector" value="@ViewData["searchDirector"]" />
+        <input type="submit" value="Filter" />
 
     </div>
     <table class="table">
         <thead>
             <tr>
+                <th>Start Time</th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Sheet.Location.City)
+                    <input type="submit" value="City" name="actionButton" />
                 </th>
-                
+                <th><input type="submit" value="Director" name="actionButton" /></th>
                 <th>Total Signups</th>
                 <th>Total Attended</th>
-                <th>Percent Attended</th>
+
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
                 <tr>
+                    <td>@Html.DisplayFor(m=> item.Sheet.StartTime)</td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Sheet.Location.City)
+                    </td>
+                    <td>
+                        @item.Sheet.Director.NameSummary()
                     </td>
                     
                     <td>
                         @item.TotalAttendees
                     </td>
+               
                     <td>
                         @item.Sheet.Attendees.Count()
+                        (<span class="@item.Percentage.ClassName">@item.Percentage.Value.ToString("#0.##%")</span>)
                     </td>
-                    <td class="@item.Percentage.ClassName">
-                        @item.Percentage.Value.ToString("#0.##%");
-                        @item.Percentage.Value
-                        @item.Sheet.StartTime;
-                    </td>
+
                 </tr>
             }
         </tbody>
