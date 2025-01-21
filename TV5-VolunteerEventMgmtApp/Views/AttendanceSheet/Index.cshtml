@@ -7,7 +7,8 @@
 <h1>Attendance Sheets</h1>
 
 <p>
-	<a asp-action="Create" class="btn btn-outline-success py-1 fw-bold">Create New</a>
+	<a asp-action="Create" class="btn btn-purple py-1 fw-bold">Create New</a>
+	<a asp-action="" class="btn btn-outline-dark py-1">Filters</a>
 </p>
 
 <ul class="nav nav-tabs mb-3" id="attendanceSheetTabs" role="tablist">
@@ -49,17 +50,18 @@
 
 					<div class="card-inner-grid">
 						<div class="sub-inner-grid">
-							<div class="fw-bold">Singers</div>
+							<div class="fw-bold">Attendance</div>
 							<div class="fw-bold text-purple">@item.Attendees.Count</div>
 						</div>
 
 						<div class="text-truncate d-none d-lg-block">
+							<div class="fw-bold text-gray">Notes</div>
 							@Html.DisplayFor(modelItem => item.Notes)
 						</div>
 					</div>
 
 						<div class="d-flex flex-column gap-1 justify-content-end align-content-end ms-3">
-							<a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-dark py-0">Edit</a>
+							<a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-purple py-0">Edit</a>
 						</div>
 				</div>
 			}

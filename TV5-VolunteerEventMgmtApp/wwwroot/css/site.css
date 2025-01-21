@@ -1,5 +1,6 @@
 :root {
     --purple: #9d2b9d;
+    --purple-hover: #871687;
     --text-gray: #656565;
 }
 
@@ -27,6 +28,26 @@ body {
 
 .form-group {
     margin-bottom: 1rem;
+}
+
+/*btn-purple*/
+.btn-purple {
+    background: var(--purple);
+    color: #fff;
+}
+.btn-purple:hover {
+    background: var(--purple-hover);
+    color: #fff;
+}
+
+/*btn-outline-purple*/
+.btn-outline-purple {
+    border: 1px solid var(--purple);
+    color: var(--purple);
+}
+.btn-outline-purple:hover {
+    background: var(--purple);
+    color: #fff;
 }
 
 .text-purple {
