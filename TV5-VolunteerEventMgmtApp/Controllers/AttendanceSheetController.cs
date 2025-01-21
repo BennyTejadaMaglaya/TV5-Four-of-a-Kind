@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using TV5_VolunteerEventMgmtApp.Data;
 using TV5_VolunteerEventMgmtApp.Models;
+using TV5_VolunteerEventMgmtApp.Utilities;
 using TV5_VolunteerEventMgmtApp.ViewModels;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
@@ -348,6 +351,59 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
 			return View(viewModel);
 		}
+
+		public async Task<IActionResult> ShowData(int? year, int locationId = 1)
+		{
+			if(year == null)
+			{
+				year = DateTime.Now.Year;
+
+            }
+			
+			var sheets = await _context.AttendeesSheets
+				.Include(a => a.Attendees)
+				.Where(a => a.LocationId == locationId && a.StartTime.Year == year)
+				.AsNoTracking()
+				.ToListAsync();
+
+			var AttendanceByDate = sheets
+				.GroupBy(a => new
+				{
+					Month = a.StartTime.Month,
+					WeekOfMonth = ((a.StartTime.Day - 1) / 7 + 1)
+				})
+				.Select(a => new MonthWeekCellVM
+				{
+					Month = a.Key.Month,
+					WeekOfMonth = a.Key.WeekOfMonth,
+					AttendanceCount = a.Sum(sheet => sheet.Attendees.Count())
+				})
+				.ToList();
+
+			int TotalAttendees = _context.SingerLocations.Where(a => a.LocationId == locationId).Count();
+
+			// to avoid possible division by 0
+			if (TotalAttendees == 0) TotalAttendees = 1;
+
+			foreach(var week in AttendanceByDate)
+			{
+				float opacity = (float)week.AttendanceCount / TotalAttendees;
+				OpacityUtility color = new OpacityUtility("#B500BE", opacity);
+				week.ColorHex = color.HexWithOpacity;
+			}
+
+			AttendanceGraphVM vm = new AttendanceGraphVM
+			{
+				LocationId = locationId,
+				Year = year,
+				TotalRegistered = TotalAttendees,
+				heatMapCells = AttendanceByDate
+			};
+
+			return View(vm);
+		}
+
+		
 
 		private bool AttendanceSheetExists(int id)
 		{
