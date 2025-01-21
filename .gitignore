@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/TV5-VolunteerEventMgmtApp/TVDatabase.db-wal
+/TV5-VolunteerEventMgmtApp/TVDatabase.db-shm
