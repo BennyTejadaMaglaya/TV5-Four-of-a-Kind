@@ -1,6 +1,6 @@
-﻿namespace TV5_VolunteerEventMgmtApp.Utilities
+﻿namespace TV5_VolunteerEventMgmtApp.ViewModels
 {
-    public class PercentageColor
+    public class PercentageColorVM
     {
         public const string GreatColor = "#44ce1b";
         public const string GoodColor = "#bbdb44";
@@ -14,25 +14,23 @@
 
         public string ClassName { get; set; }
         public double Value { get; set; }
-        public PercentageColor(double summaryPercent) 
+        public PercentageColorVM(double summaryPercent)
         {
-            Console.WriteLine(summaryPercent);
             if (summaryPercent >= 0.75)
             {
-                Console.WriteLine("GT");
                 ClassName = GreatClassName;
             }
-            if(summaryPercent <0.75 && summaryPercent > 0.60)
+            if (summaryPercent < 0.75 && summaryPercent > 0.60)
             {
                 ClassName = GoodClassName;
             }
-             if(summaryPercent <= 0.60 && summaryPercent >= 0.50)
+            if (summaryPercent <= 0.60 && summaryPercent >= 0.50)
             {
                 ClassName = PoorClassName;
             }
 
-            if(summaryPercent <0.50) { ClassName = BadClassName; }
-            Value= summaryPercent;
+            if (summaryPercent < 0.50) { ClassName = BadClassName; }
+            Value = summaryPercent;
         }
 
 

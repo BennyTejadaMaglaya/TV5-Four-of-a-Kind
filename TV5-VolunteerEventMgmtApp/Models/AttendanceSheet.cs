@@ -19,9 +19,11 @@ namespace TV5_VolunteerEventMgmtApp.Models
 
         [Display(Name = "Start Time")]
         [Required(ErrorMessage = "Please enter a start time")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:MM/dd/yyyy}")]
         public DateTime StartTime { get; set; }
 
         [Display(Name = "End Time")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:MM/dd/yyyy}")]
         [Required(ErrorMessage ="Please enter a end time")]
         public DateTime EndTime { get; set; }
 
