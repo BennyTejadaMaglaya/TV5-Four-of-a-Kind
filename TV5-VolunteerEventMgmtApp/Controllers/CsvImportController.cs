@@ -44,7 +44,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 using (var stream = csvFile.OpenReadStream())
                 {
                     try
-                    {
+                    {//
                         var users = _csvService.ReadSingerCsvFile(stream).ToList();
 
                         UploadSingers(users, location);
