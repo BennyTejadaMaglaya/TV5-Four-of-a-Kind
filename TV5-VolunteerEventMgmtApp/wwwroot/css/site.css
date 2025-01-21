@@ -53,6 +53,19 @@ color:#bbdb44
     color:#44ce1b
 }
 
+.home-links-container {
+    height: 55vw;
+}
+
+.home-links-container a {
+    background: #00000090;
+    padding: 10px 25px;
+}
+
+.home-links-container a:hover {
+    background: #000000;
+}
+
 .attendance-cards-grid {
     display: grid;
     grid-column-gap: 20px;
@@ -84,6 +97,7 @@ color:#bbdb44
 .sub-inner-grid {
     display: grid;
     background: #f7f7f7;
+    box-shadow: inset 0 0 10px #00000010;
 }
 
 .card-inner-grid > * {
@@ -98,6 +112,9 @@ color:#bbdb44
 
 /* From 768px */
 @media(width > 768px) {
+    .home-links-container {
+        height: 45vw;
+    }
     .attendance-card {
         grid-template-columns: 3fr 2fr 1fr;
     }
@@ -108,6 +125,9 @@ color:#bbdb44
 
 /* From 1200px */
 @media(width > 1200px) {
+    .home-links-container {
+        height: 40vw;
+    }
     .attendance-cards-grid {
         grid-template-columns: 1fr 1fr;
     }
