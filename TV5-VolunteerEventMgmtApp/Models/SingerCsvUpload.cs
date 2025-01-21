@@ -7,7 +7,7 @@
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
         public string DOB { get; set; }
-
+      
         public DateOnly DateOfBirth()
         {
             var res = DateOnly.TryParse(DOB, out var d);
