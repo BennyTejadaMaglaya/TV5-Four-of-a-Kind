@@ -36,18 +36,21 @@
                 </div>
             </div>
         </div>
-        <div class="counter-widget">
-            <h3>Widget/Button</h3>
-        </div>
-        <div class="counter-widget">
-            <h3>Widget/Button</h3>
-        </div>
-        <div class="counter-widget">
-            <h3>Widget/Button</h3>
-        </div>
     </div>
     <div class="calendar-container">
         <div id="calendar" class="fc-calendar"></div>
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                @* buttons for now. but maybe change to images? *@
+                <div class="action-buttons mt-4 d-flex justify-content-center gap-3">
+                    <a class="btn btn-primary" asp-area="" asp-controller="Director" asp-action="Create">Create Director</a>
+                    <a class="btn btn-primary" asp-area="" asp-controller="Location" asp-action="Create">Create Location</a>
+                    <a class="btn btn-primary" asp-area="" asp-controller="CsvImport" asp-action="Index">Import Singers</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
