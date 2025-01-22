@@ -389,10 +389,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				.Where(a => a.LocationId == locationId)
 				.Select(a => new
 				{
-					Title = "Choir Practice in " + (a.Location != null ? a.Location.City : "N/A") + $" (Attendance: {a.Attendees.Count} / {_context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == locationId))})",
-					Start = a.StartTime.ToString("yyyy-MM-ddTHH:mm:ss"),
-					End = a.EndTime.ToString("yyyy-MM-ddTHH:mm:ss")
-				}).ToListAsync();
+                    id = a.Id,
+                    Title = (a.Location != null ? a.Location.City : "N/A") + $" Attendance ({a.Attendees.Count} / {_context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == locationId))})",
+                    Start = a.StartTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+					End = a.EndTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+                    ExtendedProps = new { AttendancePercentage = (a.Attendees.Count * 100) / _context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == a.LocationId)) }
+                }).ToListAsync();
 
 			return Json(attendanceHistory);
 		}
@@ -415,10 +417,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				.Include(a => a.Attendees)
 				.Select(a => new
 				{
-					Title = "Choir Practice in " + (a.Location != null ? a.Location.City : "N/A") + $" (Attendance: {a.Attendees.Count} / {_context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == a.LocationId))})",
-					Start = a.StartTime.ToString("yyyy-MM-ddTHH:mm:ss"),
-					End = a.EndTime.ToString("yyyy-MM-ddTHH:mm:ss")
-				}).ToListAsync();
+                    id = a.Id,
+                    Title = (a.Location != null ? a.Location.City : "N/A") + $" Attendance ({a.Attendees.Count} / {_context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == a.LocationId))})",
+                    Start = a.StartTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+					End = a.EndTime.ToString("yyyy-MM-ddTHH:mm:ss"),
+                    ExtendedProps = new { AttendancePercentage = (a.Attendees.Count * 100) / _context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == a.LocationId)) }
+                }).ToListAsync();
 
 			return Json(attendanceHistory);
 		}
@@ -429,7 +433,96 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			return Json(totalSingerCount);
 		}
 
-		public IActionResult Dashboard()
+        public JsonResult GetStatistics(int? locationId)
+        {
+            if (locationId.HasValue)
+            {
+                var attendanceCounts = _context.AttendeesSheets
+                    .Where(a => a.LocationId == locationId.Value)
+                    .Select(a => a.Attendees.Count)
+                    .ToList();
+
+                var mean = attendanceCounts.Any() ? attendanceCounts.Average() : 0;
+                var median = CalculateMedian(attendanceCounts);
+                var mode = CalculateMode(attendanceCounts);
+
+                return Json(new { mean, median, mode });
+            }
+            else
+            {
+                var locationStats = _context.Locations.Select(location => new
+                {
+                    LocationName = location.City,
+                    AttendanceCounts = _context.AttendeesSheets
+                        .Where(a => a.LocationId == location.ID)
+                        .Select(a => a.Attendees.Count)
+                        .ToList()
+                })
+                .ToList();
+
+                var stats = locationStats.Select(ls => new
+                {
+                    ls.LocationName,
+                    Mean = ls.AttendanceCounts.Any() ? ls.AttendanceCounts.Average() : 0,
+                    Median = CalculateMedian(ls.AttendanceCounts),
+                    Mode = CalculateMode(ls.AttendanceCounts)
+                })
+                .ToList();
+
+                var highestMean = stats.OrderByDescending(s => s.Mean).FirstOrDefault();
+                var highestMedian = stats.OrderByDescending(s => s.Median).FirstOrDefault();
+                var highestMode = stats.OrderByDescending(s => s.Mode).FirstOrDefault();
+
+                var lowestMean = stats.OrderBy(s => s.Mean).FirstOrDefault();
+                var lowestMedian = stats.OrderBy(s => s.Median).FirstOrDefault();
+                var lowestMode = stats.OrderBy(s => s.Mode).FirstOrDefault();
+
+                return Json(new
+                {
+                    highestMeanLocation = highestMean?.LocationName,
+                    highestMean = highestMean?.Mean ?? 0,
+                    highestMedianLocation = highestMedian?.LocationName,
+                    highestMedian = highestMedian?.Median ?? 0,
+                    highestModeLocation = highestMode?.LocationName,
+                    highestMode = highestMode?.Mode ?? 0,
+                    lowestMeanLocation = lowestMean?.LocationName,
+                    lowestMean = lowestMean?.Mean ?? 0,
+                    lowestMedianLocation = lowestMedian?.LocationName,
+                    lowestMedian = lowestMedian?.Median ?? 0,
+                    lowestModeLocation = lowestMode?.LocationName,
+                    lowestMode = lowestMode?.Mode ?? 0
+                });
+            }
+        }
+
+        private double CalculateMedian(List<int> numbers)
+        {
+            if (!numbers.Any()) return 0;
+
+            var sortedNumbers = numbers.OrderBy(n => n).ToList();
+            int count = sortedNumbers.Count;
+            if (count % 2 == 0)
+            {
+                return (sortedNumbers[count / 2 - 1] + sortedNumbers[count / 2]) / 2.0;
+            }
+            else
+            {
+                return sortedNumbers[count / 2];
+            }
+        }
+
+        private int CalculateMode(List<int> numbers)
+        {
+            if (!numbers.Any()) return 0;
+
+            return numbers.GroupBy(n => n)
+                .OrderByDescending(g => g.Count())
+                .ThenByDescending(g => g.Key)
+                .Select(g => g.Key)
+                .FirstOrDefault();
+        }
+
+        public IActionResult Dashboard()
 		{
 			var viewModel = new DashboardVM
 			{
