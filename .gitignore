@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /TV5-VolunteerEventMgmtApp/TVDatabase.db-wal
 /TV5-VolunteerEventMgmtApp/TVDatabase.db-shm
+/TV5-VolunteerEventMgmtApp/TVDatabase.db-shm
+/TV5-VolunteerEventMgmtApp/TVDatabase.db-wal
