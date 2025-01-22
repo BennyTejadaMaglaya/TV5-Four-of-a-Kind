@@ -20,12 +20,18 @@
 
 .calendar-container {
     flex-grow: 1;
+    max-height: 350px;
+    overflow-y: auto;
     padding: 20px;
 }
 
 #calendar {
     max-width: 100%;
     margin: 0 auto;
+}
+
+.fc {
+    max-height: 100%;
 }
 
 .fc-event-title, .fc-event-time {

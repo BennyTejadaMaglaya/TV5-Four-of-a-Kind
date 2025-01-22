@@ -437,22 +437,23 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         {
             if (locationId.HasValue)
             {
+                var totalSingers = _context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == locationId.Value));
                 var attendanceCounts = _context.AttendeesSheets
                     .Where(a => a.LocationId == locationId.Value)
                     .Select(a => a.Attendees.Count)
                     .ToList();
 
                 var mean = attendanceCounts.Any() ? attendanceCounts.Average() : 0;
-                var median = CalculateMedian(attendanceCounts);
-                var mode = CalculateMode(attendanceCounts);
+                var percentageAttendance = totalSingers > 0 ? (mean / totalSingers) * 100 : 0;
 
-                return Json(new { mean, median, mode });
+                return Json(new { mean, percentageAttendance });
             }
             else
             {
                 var locationStats = _context.Locations.Select(location => new
                 {
                     LocationName = location.City,
+                    TotalSingers = _context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == location.ID)),
                     AttendanceCounts = _context.AttendeesSheets
                         .Where(a => a.LocationId == location.ID)
                         .Select(a => a.Attendees.Count)
@@ -463,63 +464,24 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 var stats = locationStats.Select(ls => new
                 {
                     ls.LocationName,
-                    Mean = ls.AttendanceCounts.Any() ? ls.AttendanceCounts.Average() : 0,
-                    Median = CalculateMedian(ls.AttendanceCounts),
-                    Mode = CalculateMode(ls.AttendanceCounts)
+                    mean = ls.AttendanceCounts.Any() ? ls.AttendanceCounts.Average() : 0,
+                    PercentageAttendance = ls.TotalSingers > 0 ? (ls.AttendanceCounts.Any() ? (ls.AttendanceCounts.Average() / ls.TotalSingers) * 100 : 0) : 0
                 })
                 .ToList();
 
-                var highestMean = stats.OrderByDescending(s => s.Mean).FirstOrDefault();
-                var highestMedian = stats.OrderByDescending(s => s.Median).FirstOrDefault();
-                var highestMode = stats.OrderByDescending(s => s.Mode).FirstOrDefault();
-
-                var lowestMean = stats.OrderBy(s => s.Mean).FirstOrDefault();
-                var lowestMedian = stats.OrderBy(s => s.Median).FirstOrDefault();
-                var lowestMode = stats.OrderBy(s => s.Mode).FirstOrDefault();
+                var highestMean = stats.OrderByDescending(s => s.PercentageAttendance).FirstOrDefault();
+                var lowestMean = stats.OrderBy(s => s.PercentageAttendance).FirstOrDefault();
 
                 return Json(new
                 {
                     highestMeanLocation = highestMean?.LocationName,
-                    highestMean = highestMean?.Mean ?? 0,
-                    highestMedianLocation = highestMedian?.LocationName,
-                    highestMedian = highestMedian?.Median ?? 0,
-                    highestModeLocation = highestMode?.LocationName,
-                    highestMode = highestMode?.Mode ?? 0,
+                    highestmean = highestMean?.mean ?? 0,
+                    highestPercentageAttendance = highestMean?.PercentageAttendance ?? 0,
                     lowestMeanLocation = lowestMean?.LocationName,
-                    lowestMean = lowestMean?.Mean ?? 0,
-                    lowestMedianLocation = lowestMedian?.LocationName,
-                    lowestMedian = lowestMedian?.Median ?? 0,
-                    lowestModeLocation = lowestMode?.LocationName,
-                    lowestMode = lowestMode?.Mode ?? 0
+                    lowestmean = lowestMean?.mean ?? 0,
+                    lowestPercentageAttendance = lowestMean?.PercentageAttendance ?? 0
                 });
             }
-        }
-
-        private double CalculateMedian(List<int> numbers)
-        {
-            if (!numbers.Any()) return 0;
-
-            var sortedNumbers = numbers.OrderBy(n => n).ToList();
-            int count = sortedNumbers.Count;
-            if (count % 2 == 0)
-            {
-                return (sortedNumbers[count / 2 - 1] + sortedNumbers[count / 2]) / 2.0;
-            }
-            else
-            {
-                return sortedNumbers[count / 2];
-            }
-        }
-
-        private int CalculateMode(List<int> numbers)
-        {
-            if (!numbers.Any()) return 0;
-
-            return numbers.GroupBy(n => n)
-                .OrderByDescending(g => g.Count())
-                .ThenByDescending(g => g.Key)
-                .Select(g => g.Key)
-                .FirstOrDefault();
         }
 
         public IActionResult Dashboard()
