@@ -24,14 +24,101 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		}
 
 		// GET: AttendanceSheet
-		public async Task<IActionResult> Index()
+		public async Task<IActionResult> Index(int? LocationId,
+			string? actionButton, string sortDirection = "desc", string sortField = "Date")
 		{
-			var volunteerEventMgmtAppDbContext = _context.AttendeesSheets
+			// List of sort options
+			string[] sortOptions = new[] { "Date", "Location" };
+
+			// Filtering data
+			ViewData["BtnBg"] = "btn-outline-dark";
+			ViewData["BtnText"] = "Filters";
+			int numberFilters = 0;
+
+			ViewData["LocationID"] = new SelectList(_context.Locations, "ID", "City");
+
+			var attendanceSheet = _context.AttendeesSheets
 				.Include(a => a.Director)
 				.Include(a => a.Location)
 				.Include(a => a.Attendees)
-				.OrderByDescending(a => a.StartTime);
-			return View(await volunteerEventMgmtAppDbContext.ToListAsync());
+				.OrderByDescending(a => a.StartTime)
+				.AsNoTracking();
+
+			// Filters
+			if (LocationId.HasValue)
+			{
+				attendanceSheet = attendanceSheet.Where(a => a.LocationId == LocationId);
+				numberFilters++;
+			}
+			if (numberFilters != 0)
+			{
+				ViewData["BtnBg"] = "btn-dark";
+				ViewData["BtnText"] = $"{numberFilters} Filter{(numberFilters > 1 ? "s" : "")} Applied";
+				ViewData["ShowFilter"] = " show";
+			}
+
+			// Check if there is a called for a change of filtering or sorting
+			if (!String.IsNullOrEmpty(actionButton)) // Form Submitted
+			{
+
+				if (sortOptions.Contains(actionButton)) // Change of sort is requested
+				{
+					if (actionButton == sortField) // Reverse order on same field
+					{
+						sortDirection = sortDirection == "asc" ? "desc" : "asc";
+					}
+					else
+					{
+						if (actionButton == "Date")
+						{
+							sortDirection = "desc";
+						}
+						else if (actionButton == "Location")
+						{
+							sortDirection = "asc";
+						}
+					}
+					sortField = actionButton; // Sort by the button clicked
+				}
+			}
+
+			// Sort by
+			if (sortField == "Location")
+			{
+				if (sortDirection == "desc")
+				{
+					attendanceSheet = attendanceSheet
+						.OrderByDescending(a => a.Location.City)
+						.ThenBy(a => a.StartTime);
+				}
+				else
+				{
+					attendanceSheet = attendanceSheet
+						.OrderBy(a => a.Location.City)
+						.ThenByDescending(a => a.StartTime);
+				}
+			}
+			if (sortField == "Date")
+			{
+				if (sortDirection == "desc")
+				{
+					attendanceSheet = attendanceSheet
+						.OrderByDescending(a => a.StartTime)
+						.ThenBy(a => a.Location.City);
+				}
+				else
+				{
+					attendanceSheet = attendanceSheet
+						.OrderBy(a => a.StartTime)
+						.ThenByDescending(a => a.Location.City);
+				}
+			}
+
+			// Set sort for next time
+			ViewData["sortField"] = sortField;
+			ViewData["sortDirection"] = sortDirection;
+
+			return View(await attendanceSheet.ToListAsync());
 		}
 
 		// GET: AttendanceSheet/Details/5
@@ -69,7 +156,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			};
 
 			ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName");
-			ViewData["LocationID"] = new SelectList(_context.Locations, "ID", "City");
+			ViewData["LocationID"] = new SelectList(_context.Locations.OrderBy(l => l.City), "ID", "City");
 
 			//PopulateSingerListBoxes(attendanceSheet);
 			// Empty lists at first, then AvailableSingers will be populated when the location is selected
@@ -118,7 +205,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				return NotFound();
 			}
 			ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName", attendanceSheet.DirectorId);
-			ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", attendanceSheet.LocationId);
+			ViewData["LocationId"] = new SelectList(_context.Locations.OrderBy(l => l.City), "ID", "City", attendanceSheet.LocationId);
 
 			PopulateSingerListBoxes(attendanceSheet);
 			return View(attendanceSheet);
