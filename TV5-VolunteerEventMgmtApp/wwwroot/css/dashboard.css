@@ -1,0 +1,75 @@
+﻿.dashboard-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.left-panel {
+    width: 100%;
+    max-width: 300px;
+    padding: 20px;
+}
+
+.counter-widget {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.calendar-container {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+#calendar {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.fc-event-title, .fc-event-time {
+    white-space: normal !important;
+}
+
+.fc-event-title {
+    font-size: 1em;
+}
+
+.fc-event-time {
+    font-size: 0.85em;
+}
+
+.fc-event-white {
+    background-color: white !important;
+}
+
+.fc-event-light-purple {
+    background-color: #dcd6f7 !important;
+}
+
+.fc-event-purple {
+    background-color: #a29bfe !important;
+}
+
+.fc-event-dark-purple {
+    background-color: #6c5ce7 !important;
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+
+    .left-panel, .calendar-container {
+        width: 100%;
+    }
+
+    .fc-event-title {
+        font-size: 0.85em;
+    }
+
+    .fc-event-time {
+        font-size: 0.75em;
+    }
+}
