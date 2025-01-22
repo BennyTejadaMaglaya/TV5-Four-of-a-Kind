@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TV5_VolunteerEventMgmtApp.Models
 {
@@ -26,9 +27,16 @@ namespace TV5_VolunteerEventMgmtApp.Models
         [Required(ErrorMessage ="Please enter a end time")]
         public DateTime EndTime { get; set; }
 
+
+        // this is used to capture the number of singers at this moment of time.
+        public int TotalSingers { get; set; }
+
 		[Display(Name = "Location")]
 		public int LocationId { get; set; }
 
         public Location? Location { get; set; }
+
+       
+  
 	}
 }
