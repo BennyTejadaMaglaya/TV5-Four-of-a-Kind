@@ -28,17 +28,11 @@
             <div class="statistics mt-4">
                 <h3>Attendance Statistics</h3>
                 <div id="specificLocationStats">
-                    <p>Mean Attendance: <span id="meanValue">--</span></p>
-                    <p>Median Attendance: <span id="medianValue">--</span></p>
-                    <p>Mode Attendance: <span id="modeValue">--</span></p>
+                    <p>Average Attendance: <span id="mean">--</span> (<span id="percentageAttendance">--</span>%)</p>
                 </div>
                 <div id="allLocationsStats" style="display: none;">
-                    <p><strong>Highest Mean Attendance:</strong> <span id="highestMean"></span> at <strong><span id="highestMeanLocation"></span></strong></p>
-                    <p><strong>Highest Median Attendance:</strong> <span id="highestMedian"></span> at <strong><span id="highestMedianLocation"></span></strong></p>
-                    <p><strong>Highest Mode Attendance:</strong> <span id="highestMode"></span> at <strong><span id="highestModeLocation"></span></strong></p>
-                    <p><strong>Lowest Mean Attendance:</strong> <span id="lowestMean"></span> at <strong><span id="lowestMeanLocation"></span></strong></p>
-                    <p><strong>Lowest Median Attendance:</strong> <span id="lowestMedian"></span> at <strong><span id="lowestMedianLocation"></span></strong></p>
-                    <p><strong>Lowest Mode Attendance:</strong> <span id="lowestMode"></span> at <strong><span id="lowestModeLocation"></span></strong></p>
+                    <p>Highest Average Attendance: <span id="highestmean"></span> (<span id="highestPercentageAttendance"></span>%) at <strong><span id="highestmeanLocation"></span></strong></p>
+                    <p>Lowest Average Attendance: <span id="lowestmean"></span> (<span id="lowestPercentageAttendance"></span>%) at <strong><span id="lowestmeanLocation"></span></strong></p>
                 </div>
             </div>
         </div>
@@ -181,38 +175,31 @@
                 .catch(error => console.error('Error fetching singer count:', error));
         }
 
-                function fetchStatistics(locationId) {
-        var url = locationId && locationId !== "all" ? `/AttendanceSheet/GetStatistics?locationId=${locationId}` : `/AttendanceSheet/GetStatistics`;
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                if (locationId && locationId !== "all") {
-                    document.getElementById('specificLocationStats').style.display = 'block';
-                    document.getElementById('allLocationsStats').style.display = 'none';
-                    document.getElementById('meanValue').textContent = data.mean.toFixed(2);
-                    document.getElementById('medianValue').textContent = data.median.toFixed(2);
-                    document.getElementById('modeValue').textContent = data.mode;
-                } else {
-                    document.getElementById('specificLocationStats').style.display = 'none';
-                    document.getElementById('allLocationsStats').style.display = 'block';
+        function fetchStatistics(locationId) {
+            var url = locationId && locationId !== "all" ? `/AttendanceSheet/GetStatistics?locationId=${locationId}` : `/AttendanceSheet/GetStatistics`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (locationId && locationId !== "all") {
+                        document.getElementById('specificLocationStats').style.display = 'block';
+                        document.getElementById('allLocationsStats').style.display = 'none';
+                        document.getElementById('mean').textContent = data.mean.toFixed(2);
+                        document.getElementById('percentageAttendance').textContent = data.percentageAttendance.toFixed(2);
+                    } else {
+                        document.getElementById('specificLocationStats').style.display = 'none';
+                        document.getElementById('allLocationsStats').style.display = 'block';
 
-                    document.getElementById('highestMean').textContent = data.highestMean.toFixed(2);
-                    document.getElementById('highestMeanLocation').textContent = data.highestMeanLocation;
-                    document.getElementById('highestMedian').textContent = data.highestMedian.toFixed(2);
-                    document.getElementById('highestMedianLocation').textContent = data.highestMedianLocation;
-                    document.getElementById('highestMode').textContent = data.highestMode;
-                    document.getElementById('highestModeLocation').textContent = data.highestModeLocation;
+                        document.getElementById('highestmean').textContent = data.highestmean.toFixed(2);
+                        document.getElementById('highestPercentageAttendance').textContent = data.highestPercentageAttendance.toFixed(2);
+                        document.getElementById('highestmeanLocation').textContent = data.highestMeanLocation;
 
-                    document.getElementById('lowestMean').textContent = data.lowestMean.toFixed(2);
-                    document.getElementById('lowestMeanLocation').textContent = data.lowestMeanLocation;
-                    document.getElementById('lowestMedian').textContent = data.lowestMedian.toFixed(2);
-                    document.getElementById('lowestMedianLocation').textContent = data.lowestMedianLocation;
-                    document.getElementById('lowestMode').textContent = data.lowestMode;
-                    document.getElementById('lowestModeLocation').textContent = data.lowestModeLocation;
-                }
-            })
-            .catch(error => console.error('Error fetching statistics:', error));
-    }
+                        document.getElementById('lowestmean').textContent = data.lowestmean.toFixed(2);
+                        document.getElementById('lowestPercentageAttendance').textContent = data.lowestPercentageAttendance.toFixed(2);
+                        document.getElementById('lowestmeanLocation').textContent = data.lowestMeanLocation;
+                    }
+                })
+                .catch(error => console.error('Error fetching statistics:', error));
+        }
 
         locationDropdown.addEventListener('change', function() {
             var locationId = this.value;
