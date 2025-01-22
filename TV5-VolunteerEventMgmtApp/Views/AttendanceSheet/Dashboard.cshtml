@@ -53,7 +53,7 @@
         </div>
     </div>
     <div class="calendar-container">
-        <div id="calendar"></div>
+        <div id="calendar" class="fc-calendar"></div>
     </div>
 </div>
 
@@ -82,9 +82,9 @@
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                right: 'dayGridMonth,dayGridWeek,listWeek'
             },
-            initialView: 'listWeek',
+            initialView: 'dayGridWeek',
             eventDidMount: function(info) {
                 // hides the time coz it takes too much space
                 const timeElement = info.el.querySelector('.fc-event-time');
