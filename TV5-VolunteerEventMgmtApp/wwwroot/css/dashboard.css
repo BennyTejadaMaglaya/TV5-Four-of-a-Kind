@@ -5,9 +5,15 @@
 }
 
 .left-panel {
-    width: 100%;
-    max-width: 300px;
-    padding: 20px;
+    width: 25%;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.right-panel {
+    width: 75%;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .counter-widget {
@@ -20,7 +26,7 @@
 
 .calendar-container {
     flex-grow: 1;
-    max-height: 350px;
+    max-height: 250px;
     overflow-y: auto;
     padding: 20px;
 }
