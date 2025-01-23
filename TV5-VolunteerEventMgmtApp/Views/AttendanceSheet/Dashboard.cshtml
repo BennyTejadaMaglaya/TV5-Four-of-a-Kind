@@ -25,6 +25,11 @@
             <h3>Total Singers</h3>
             <p id="singerCount">0</p>
         </div>
+    </div>
+    <div class="right-panel">
+        <div class="calendar-container">
+            <div id="calendar" class="fc-calendar"></div>
+        </div>
         <div class="counter-widget">
             <div class="statistics mt-4">
                 <h3>Attendance Statistics</h3>
@@ -37,9 +42,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="calendar-container">
-        <div id="calendar" class="fc-calendar"></div>
     </div>
     <div class="container">
         <div class="row justify-content-center">
@@ -80,7 +82,7 @@
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'dayGridMonth,dayGridWeek,listWeek'
+                right: 'dayGridWeek,listWeek'
             },
             initialView: 'dayGridWeek',
             eventDidMount: function(info) {
@@ -134,9 +136,29 @@
             detailsLink.href = `/AttendanceSheet/Details/${event.id}`;
 
             $('#eventModal').modal('show');
+        },
+        datesSet: function(info) {
+            var selectedYear = info.start.getFullYear();
+            var selectedLocationId = $('#locationDropdown').val();
+            loadAttendanceGraph(selectedYear, selectedLocationId);
         }
         });
         calendar.render();
+
+        function loadAttendanceGraph(year, locationId) {
+            var url = `/AttendanceSheet/ShowData?year=${year}&locationId=${locationId}`;
+            $('#attendance-graph-container').load(url);
+        }
+
+        var initialYear = new Date().getFullYear();
+        var initialLocationId = $('#locationDropdown').val();
+        loadAttendanceGraph(initialYear, initialLocationId);
+
+        $('#locationDropdown').change(function() {
+            var selectedYear = calendar.getDate().getFullYear();
+            var selectedLocationId = $(this).val();
+            loadAttendanceGraph(selectedYear, selectedLocationId);
+        });
 
         var locationDropdown = document.getElementById('locationDropdown');
         var singerCountEl = document.getElementById('singerCount');
