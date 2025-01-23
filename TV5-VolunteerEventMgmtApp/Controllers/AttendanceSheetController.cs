@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TV5_VolunteerEventMgmtApp.Data;
@@ -10,7 +9,7 @@ using TV5_VolunteerEventMgmtApp.CustomControllers;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
-	public class AttendanceSheetController : CognizantController
+	public class AttendanceSheetController : ElephantController
 
 	{
 		private readonly VolunteerEventMgmtAppDbContext _context;
@@ -22,7 +21,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
 		// GET: AttendanceSheet
 		public async Task<IActionResult> Index(int? LocationId, int? page, int? pageSizeID,
-			string? actionButton, string sortDirection = "desc", string sortField = "Date")
+			string? actionButton, string sortDirection = "desc", string sortField = "Date", string currentTab = "list")
 		{
 			// List of sort options
 			string[] sortOptions = new[] { "Date", "Location" };
@@ -54,7 +53,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				ViewData["ShowFilter"] = " show";
 			}
 
-			// Check if there is a called for a change of filtering or sorting
+			// Check if there is a call for a change of filtering or sorting
 			if (!String.IsNullOrEmpty(actionButton)) // Form Submitted
 			{
 				page = 1; // Reset page to start if filtering or sorting
@@ -113,6 +112,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			}
 
 			// Set sort for next time
+			ViewData["currentTab"] = currentTab;
 			ViewData["sortField"] = sortField;
 			ViewData["sortDirection"] = sortDirection;
 

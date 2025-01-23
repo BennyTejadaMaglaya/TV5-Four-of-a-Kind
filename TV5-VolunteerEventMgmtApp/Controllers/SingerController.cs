@@ -1,225 +1,264 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TV5_VolunteerEventMgmtApp.Data;
 using TV5_VolunteerEventMgmtApp.Models;
+using TV5_VolunteerEventMgmtApp.ViewModels;
+using TV5_VolunteerEventMgmtApp.Utilities;
+using TV5_VolunteerEventMgmtApp.CustomControllers;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
-    public class SingerController : Controller
-    {
-        private readonly VolunteerEventMgmtAppDbContext _context;
+	public class SingerController : ElephantController
+	{
+		private readonly VolunteerEventMgmtAppDbContext _context;
 
-        public SingerController(VolunteerEventMgmtAppDbContext context)
-        {
-            _context = context;
-        }
+		public SingerController(VolunteerEventMgmtAppDbContext context)
+		{
+			_context = context;
+		}
 
-        // GET: Singer
-        public async Task<IActionResult> Index(
-            string? actionButton,
-            string? searchFirst ="",
-            string? searchLast ="",
-            string sortDirection = "asc", 
-            string sortField = "First Name"
-            )
-        {
-            string[] sortOptions = ["First Name", "Last Name", "Date of Birth"];
-            var singers = _context.Singers.AsNoTracking();
+		// GET: Singer
+		public async Task<IActionResult> Index(
+			int? page,
+			int? pageSizeID,
+			string? actionButton,
+			string? searchFirst = "",
+			string? searchLast = "",
+			string sortDirection = "asc",
+			string sortField = "First Name"
+			)
+		{
+			// List of sort options
+			string[] sortOptions = ["First Name", "Last Name", "Date of Birth"];
 
-            if (!string.IsNullOrEmpty(searchFirst))
-            {
-                singers = singers.Where(s => s.FirstName.ToLower().Contains(searchFirst.ToLower()));
-            }
+			// Filtering data
+			ViewData["BtnBg"] = "btn-outline-dark";
+			ViewData["BtnText"] = "Filters";
+			int numberFilters = 0;
 
-            if (!string.IsNullOrEmpty(searchLast))
-            {
-                singers = singers.Where(s => s.LastName.ToLower().Contains(searchLast.ToLower()));
-            }
+			var singers = _context.Singers.AsNoTracking();
 
+			// Filters
+			if (!string.IsNullOrEmpty(searchFirst))
+			{
+				singers = singers.Where(s => s.FirstName.ToLower().Contains(searchFirst.ToLower()));
+				numberFilters++;
+			}
+			if (!string.IsNullOrEmpty(searchLast))
+			{
+				singers = singers.Where(s => s.LastName.ToLower().Contains(searchLast.ToLower()));
+				numberFilters++;
+			}
+			if (numberFilters != 0)
+			{
+				ViewData["BtnBg"] = "btn-dark";
+				ViewData["BtnText"] = $"{numberFilters} Filter{(numberFilters > 1 ? "s" : "")} Applied";
+				ViewData["ShowFilter"] = " show";
+			}
 
+			// Check if there is a call for a change of filtering or sorting
+			if (!String.IsNullOrEmpty(actionButton)) // Form Submitted
+			{
+				page = 1; // Reset page to start if filtering or sorting
 
-            if (!String.IsNullOrEmpty(actionButton)) //Form Submitted!
-            {
-                //page = 1;//Reset page to start
+				if (sortOptions.Contains(actionButton)) // Change of sort is requested
+				{
+					if (actionButton == sortField) // Reverse order on same field
+					{
+						sortDirection = sortDirection == "asc" ? "desc" : "asc";
+					}
+					else
+					{
+						if (actionButton == "Date of Birth")
+						{
+							sortDirection = "desc";
+						}
+						else
+						{
+							sortDirection = "asc";
+						}
+					}
+					sortField = actionButton; // Sort by the button clicked
+				}
+			}
 
-                if (sortOptions.Contains(actionButton))//Change of sort is requested
-                {
-                    if (actionButton == sortField) //Reverse order on same field
-                    {
-                        sortDirection = sortDirection == "asc" ? "desc" : "asc";
-                    }
-                    sortField = actionButton;//Sort by the button clicked
-                }
-            }
+			// Sort by
+			if (sortField == "First Name")
+			{
+				singers = sortDirection == "asc" 
+					? singers.OrderBy(s => s.FirstName).ThenBy(s => s.LastName) 
+					: singers.OrderByDescending(s => s.FirstName).ThenByDescending(s => s.LastName);
+			}
+			if (sortField == "Last Name")
+			{
+				singers = sortDirection == "asc" 
+					? singers.OrderBy(s => s.LastName).ThenBy(s => s.FirstName)
+					: singers.OrderByDescending(s => s.LastName).ThenByDescending(s => s.FirstName);
+			}
+			if (sortField == "Date of Birth")
+			{
+				singers = sortDirection == "asc"
+					? singers.OrderBy(s => s.DOB).ThenByDescending(s => s.FirstName).ThenByDescending(s => s.LastName)
+					: singers.OrderByDescending(s => s.DOB).ThenBy(s => s.FirstName).ThenBy(s => s.LastName);
+			}
 
+			// Set sort for next time
+			ViewData["sortField"] = sortField;
+			ViewData["searchFirst"] = searchFirst;
+			ViewData["searchLast"] = searchLast;
+			ViewData["sortDirection"] = sortDirection;
 
+			// Handle Paging
+			int pageSize = PageSizeHelper.SetPageSize(HttpContext, pageSizeID, ControllerName());
+			ViewData["pageSizeID"] = PageSizeHelper.PageSizeList(pageSize);
+			var pagedData = await PaginatedList<Singer>.CreateAsync(singers.AsNoTracking(), page ?? 1, pageSize);
 
-            if (sortField == "First Name")
-            {
-               singers = sortDirection == "asc" ? 
-                    singers.OrderByDescending(s => s.FirstName) : singers.OrderBy(s => s.FirstName);
-            }
-            if (sortField == "Last Name")
-            {
-                singers = sortDirection == "asc" ?
-                     singers.OrderByDescending(s => s.LastName) : singers.OrderBy(s => s.LastName);
-            }
+			return View(pagedData);
+		}
 
-            ViewData["sortField"] = sortField;
-            ViewData["searchFirst"] = searchFirst;
-            ViewData["searchLast"] = searchLast;
-            ViewData["sortDirection"] = sortDirection;
+		// GET: Singer/Details/5
+		public async Task<IActionResult> Details(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-            return View(await singers.ToListAsync());
-        }
+			var singer = await _context.Singers
+				.FirstOrDefaultAsync(m => m.Id == id);
+			if (singer == null)
+			{
+				return NotFound();
+			}
 
-        // GET: Singer/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+			return View(singer);
+		}
 
-            var singer = await _context.Singers
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (singer == null)
-            {
-                return NotFound();
-            }
+		// GET: Singer/Create
+		public IActionResult Create()
+		{
+			return View();
+		}
 
-            return View(singer);
-        }
+		// POST: Singer/Create
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Create([Bind("FirstName,LastName,DOB,Email,Phone")] Singer singer)
+		{
+			try
+			{
+				if (ModelState.IsValid)
+				{
+					_context.Add(singer);
+					await _context.SaveChangesAsync();
+					return RedirectToAction(nameof(Index));
+				}
+			}
+			catch
+			{ // todo whenever we add concurrency controls update this
+				ModelState.AddModelError("", "There was an error with your request ");
+			}
+			return View(singer);
+		}
 
-        // GET: Singer/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+		// GET: Singer/Edit/5
+		public async Task<IActionResult> Edit(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-        // POST: Singer/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FirstName,LastName,DOB,Email,Phone")] Singer singer)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    _context.Add(singer);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-            catch
-            { // todo whenever we add concurrency controls update this
-                ModelState.AddModelError("", "There was an error with your request ");
-            }
-            return View(singer);
-        }
+			var singer = await _context.Singers.FindAsync(id);
+			if (singer == null)
+			{
+				return NotFound();
+			}
+			return View(singer);
+		}
 
-        // GET: Singer/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		// POST: Singer/Edit/5
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Edit(int id)
+		{
+			var singer = await _context.Singers.FirstOrDefaultAsync(s => s.Id == id);
+			if (singer == null)
+			{
+				return NotFound();
+			}
 
-            var singer = await _context.Singers.FindAsync(id);
-            if (singer == null)
-            {
-                return NotFound();
-            }
-            return View(singer);
-        }
+			if (await TryUpdateModelAsync<Singer>(singer, "", c => c.FirstName, c => c.LastName, c => c.Email, c => c.Phone))
+			{
+				try
+				{
+					await _context.SaveChangesAsync();
+				}
+				catch (DbUpdateConcurrencyException)
+				{
+					if (!SingerExists(singer.Id))
+					{
+						return NotFound();
+					}
+					else
+					{
+						throw;
+					}
+				}
+				return RedirectToAction(nameof(Index));
+			}
+			return View(singer);
+		}
 
-        // POST: Singer/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id)
-        {
-            var singer = await _context.Singers.FirstOrDefaultAsync(s => s.Id == id);
-            if (singer == null) 
-            {
-                return NotFound();
-            }
+		// GET: Singer/Delete/5
+		public async Task<IActionResult> Delete(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-            if (await TryUpdateModelAsync<Singer>(singer, "", c=> c.FirstName, c=> c.LastName, c=> c.Email, c=> c.Phone))
-            {
-                try
-                {
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SingerExists(singer.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(singer);
-        }
+			var singer = await _context.Singers
+				.FirstOrDefaultAsync(m => m.Id == id);
+			if (singer == null)
+			{
+				return NotFound();
+			}
 
-        // GET: Singer/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+			return View(singer);
+		}
 
-            var singer = await _context.Singers
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (singer == null)
-            {
-                return NotFound();
-            }
+		// POST: Singer/Delete/5
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> DeleteConfirmed(int id)
+		{
+			var singer = await _context.Singers.FindAsync(id);
+			if (singer != null)
+			{
+				_context.Singers.Remove(singer);
+			}
+			try
+			{
 
-            return View(singer);
-        }
+				await _context.SaveChangesAsync();
+				return RedirectToAction(nameof(Index));
+			}
+			catch
+			{ // todo update when concurrency comes 
+				ModelState.AddModelError("", "Unable to delete this singer");
+				return View(singer);
+			}
+		}
 
-        // POST: Singer/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var singer = await _context.Singers.FindAsync(id);
-            if (singer != null)
-            {
-                _context.Singers.Remove(singer);
-            }
-            try
-            {
- 
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            { // todo update when concurrency comes 
-                ModelState.AddModelError("", "Unable to delete this singer");
-                return View(singer);
-            }
-        }
-
-        private bool SingerExists(int id)
-        {
-            return _context.Singers.Any(e => e.Id == id);
-        }
-    }
+		private bool SingerExists(int id)
+		{
+			return _context.Singers.Any(e => e.Id == id);
+		}
+	}
 }
