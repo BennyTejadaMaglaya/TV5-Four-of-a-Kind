@@ -545,7 +545,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				heatMapCells = AttendanceByDate
 			};
 
-			return View(vm);
+			return PartialView(vm);
 		}
 
 		
