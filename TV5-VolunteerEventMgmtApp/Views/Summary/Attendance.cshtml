@@ -49,7 +49,7 @@
                
                     <td>
                         @item.Sheet.Attendees.Count()
-                        (<span class="@item.Percentage.ClassName">@item.Percentage.Value.ToString("#0.##%")</span>)
+                        (<span class="@item.Percentage.ClassName">@item.Percentage.ToPercentString()</span>)
                     </td>
 
                 </tr>
