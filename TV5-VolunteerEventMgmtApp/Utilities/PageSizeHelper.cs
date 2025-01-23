@@ -35,7 +35,7 @@ namespace TV5_VolunteerEventMgmtApp.Utilities
             }
             if (pageSize == 0)
             {
-                //Get the saved defalult if there is one
+                //Get the saved default if there is one
                 pageSize = Convert.ToInt32(httpContext.Request.Cookies["DefaultpageSizeValue"]);
             }
             return (pageSize == 0) ? 5 : pageSize;//Neither Selected or in Cookie so go with default

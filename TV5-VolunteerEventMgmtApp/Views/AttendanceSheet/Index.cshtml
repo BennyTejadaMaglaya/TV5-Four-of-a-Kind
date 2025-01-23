@@ -11,6 +11,7 @@
 
 	<input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
 	<input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+	<input type="hidden" name="currentTab" value="@ViewData["currentTab"]" />
 
 	<div class="form-horizontal">
 
@@ -46,19 +47,30 @@
 	<!-- TABS -->
 	<ul class="nav nav-tabs mb-3" id="attendanceSheetTabs" role="tablist">
 		<li class="nav-item">
-			<a class="nav-link active fw-bold" id="list-tab" data-toggle="tab" href="#list" role="tab"
-			   aria-controls="list" aria-selected="false">&#x2630;</a>
+			<a class="nav-link @((string)ViewData["currentTab"] == "list" ? "active" : "") fw-bold"
+			   id="list-tab"
+			   data-toggle="tab"
+			   href="#list"
+			   role="tab"
+			   aria-controls="list"
+			   aria-selected="false">&#x2630;</a>
 		</li>
 		<li class="nav-item">
-			<a class="nav-link fw-bold" id="cards-tab" data-toggle="tab" href="#cards" role="tab"
-			   aria-controls="cards" aria-selected="true">&#x25AD;</a>
+			<a class="nav-link @((string)ViewData["currentTab"] == "cards" ? "active" : "") fw-bold"
+			   id="cards-tab"
+			   data-toggle="tab"
+			   href="#cards"
+			   role="tab"
+			   aria-controls="cards"
+			   aria-selected="true">&#x25AD;</a>
 		</li>
 	</ul>
 
 	<div class="tab-content" id="attendanceSheetTabsContent">
 
 		<!-- LIST -->
-		<div class="tab-pane fade show active" id="list" role="tabpanel" aria-labelledby="list-tab">
+		<div class="tab-pane fade @((string)ViewData["currentTab"] == "list" ? "show active" : "")"
+			 id="list" role="tabpanel" aria-labelledby="list-tab">
 			<table class="table table-hover">
 				<thead>
 					<tr>
@@ -133,7 +145,8 @@
 		</div>
 
 		<!-- CARDS -->
-		<div class="tab-pane fade" id="cards" role="tabpanel" aria-labelledby="cards-tab">
+		<div class="tab-pane fade @((string)ViewData["currentTab"] == "cards" ? "show active" : "")"
+			 id="cards" role="tabpanel" aria-labelledby="cards-tab">
 
 			<div class="fw-bold mb-3">
 				<span class="me-2">Sort by</span>
@@ -195,23 +208,31 @@
 </form>
 
 @section Scripts {
-	<script> // For tabs
+	<script>
+		// For tabs
 		$(document).ready(function () {
 			$('#attendanceSheetTabs a').on('click', function (e) {
 				e.preventDefault();
 				$(this).tab('show');
+				sessionStorage.setItem('currentTab', $(this).attr('href').substring(1));
 			});
+
+		var currentTab = sessionStorage.getItem('currentTab');
+		if (currentTab) {
+			$('#attendanceSheetTabs a[href="#' + currentTab + '"]').tab('show');
+			$('input[name="currentTab"]').val(currentTab);
+		}
 		});
 	</script>
-	<script type="text/javascript"> // For paging tooltips and showing modal
+	<script type="text/javascript">
+		// For paging tooltips and showing modal
 		var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
 		var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 			return new bootstrap.Tooltip(tooltipTriggerEl);
-					});
+		});
 		function showModal(modalId) {
 			var modal = new bootstrap.Modal(document.querySelector(modalId));
 			modal.show();
 		}
 	</script>
 }
-

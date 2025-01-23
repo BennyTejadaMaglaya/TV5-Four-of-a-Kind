@@ -56,12 +56,16 @@ select option:focus, select option:hover, select option:checked {
     box-shadow: 0 0 10px 100px var(--purple) inset !important;
 }
 
-.text-purple, text-purple:hover {
+.text-purple, a {
     color: var(--purple);
 }
 
 .text-purple:hover { /* some things were blue on hover */
     color: var(--purple) !important;
+}
+
+a:hover {
+    color: var(--purple-hover);
 }
 
 .text-gray {

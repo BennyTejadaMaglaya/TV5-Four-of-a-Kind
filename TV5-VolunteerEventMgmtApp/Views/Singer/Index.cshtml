@@ -1,70 +1,132 @@
 ﻿@model IEnumerable<TV5_VolunteerEventMgmtApp.Models.Singer>
 
 @{
-    ViewData["Title"] = "Index";
+	ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Singers</h1>
+<hr />
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<form>
-    <!-- This is unstyled but im adding the filtering stuff for it here so whoever ends up styling just needs to add classes :) -->
-        <div>
-        <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
-        <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
-            <input type="text" placeholder="First Name" name="searchFirst" value="@ViewData["searchFirst"]"/>
-        <input type="text" placeholder="Last Name" name="searchLast" value="@ViewData["searchLast"]" />
-            <input type="submit" value="Search"/>
-        </div>
-    <!-- This is unstyled but im adding the filtering stuff for it here so whoever ends up styling just needs to add classes :)-->
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    <input type="submit" name="actionButton" value="First Name" class="btn btn-link" />
-                </th>
-                <th>
-                    <input type="submit" name="actionButton" value="Last Name" class="btn btn-link" />
-                </th>
-                <th>
-                    <input type="submit" name="actionButton" value="Date of Birth" class="btn btn-link" />
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Email)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Phone)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-    @foreach (var item in Model) {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FirstName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LastName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DOB)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Phone)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-    }
-        </tbody>
-    </table>
+<form asp-action="Index" method="get">
+
+	<input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+	<input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+
+	@* <input type="text" placeholder="First Name" name="searchFirst" value="@ViewData["searchFirst"]" /> *@
+	@* <input type="text" placeholder="Last Name" name="searchLast" value="@ViewData["searchLast"]" /> *@
+
+	@* <input type="submit" value="Search" /> *@
+
+	<div class="form-horizontal">
+
+		<div class="mb-2">
+			<!-- CREATE BTN -->
+			<a asp-action="Create" class="btn btn-purple py-1">Create New</a>
+			<!-- FILTER BTN -->
+			<button class="btn @ViewData["BtnBg"] py-1" type="button" data-bs-toggle="collapse" id="filterToggle"
+					data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+				@ViewData["BtnText"]
+			</button>
+		</div>
+
+		<!-- FILTER BOX -->
+		<div class="filter-box collapse mb-2 @ViewData["ShowFilter"]" id="collapseFilter">
+			<div class="px-2 pb-0">
+
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label class="control-label">First Name</label>
+						@Html.TextBox("searchFirst", null, new { @class = "form-control p-1" })
+					</div>
+					<div class="form-group col-md-4">
+						<label class="control-label">Last Name</label>
+						@Html.TextBox("searchLast", null, new { @class = "form-control p-1" })
+					</div>
+
+					<div class="form-group col-md-4 align-self-end">
+						<input type="submit" id="btnApply" name="actionButton"
+							   value="Apply" class="btn btn-outline-purple py-1" />
+						<a asp-action="Index" id="btnClear" class="btn btn-outline-dark py-1">Clear</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>
+					<button type="submit" name="actionButton" value="First Name"
+							class="btn btn-toolbar p-0 fw-bold d-inline">
+						First Name <span class="text-purple">&#11137</span>
+					</button>
+				</th>
+				<th>
+					<button type="submit" name="actionButton" value="Last Name"
+							class="btn btn-toolbar p-0 fw-bold d-inline">
+						Last Name <span class="text-purple">&#11137</span>
+					</button>
+				</th>
+				<th class="d-none d-md-table-cell">
+					<button type="submit" name="actionButton" value="Date of Birth"
+							class="btn btn-toolbar p-0 fw-bold d-inline">
+						Date of Birth <span class="text-purple">&#11137</span>
+					</button>
+				</th>
+				<th class="d-none d-lg-table-cell">
+					@Html.DisplayNameFor(model => model.Email)
+				</th>
+				<th class="d-none d-sm-table-cell">
+					@Html.DisplayNameFor(model => model.Phone)
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td>
+						@Html.DisplayFor(modelItem => item.FirstName)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.LastName)
+					</td>
+					<td class="d-none d-md-table-cell">
+						@{
+							var dOB = item.DOB.ToString("MMM dd, yyyy");
+						}
+						@dOB
+					</td>
+					<td class="d-none d-lg-table-cell">
+						@Html.DisplayFor(modelItem => item.Email)
+					</td>
+					<td class="d-none d-sm-table-cell">
+						@Html.DisplayFor(modelItem => item.PhoneFormatted)
+					</td>
+					<td>
+						<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+						<a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+						<a asp-action="Delete" asp-route-id="@item.Id" class="text-danger">Delete</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<partial name="_PagingNavBar" />
 </form>
+
+@section Scripts {
+	<script type="text/javascript">
+		// For paging tooltips and showing modal
+		var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+		var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+			return new bootstrap.Tooltip(tooltipTriggerEl);
+					});
+		function showModal(modalId) {
+			var modal = new bootstrap.Modal(document.querySelector(modalId));
+			modal.show();
+		}
+	</script>
+}

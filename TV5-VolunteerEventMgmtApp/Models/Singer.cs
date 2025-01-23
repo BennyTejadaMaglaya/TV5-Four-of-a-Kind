@@ -6,11 +6,15 @@ namespace TV5_VolunteerEventMgmtApp.Models
     {
         public int Id { get; set; }
 
-        [Display(Name ="First Name")]//
+		[Display(Name = "Phone")]
+		public string PhoneFormatted => "(" + Phone?.Substring(0, 3) + ") "
+			+ Phone?.Substring(3, 3) + "-" + Phone?[6..];
+
+		[Display(Name ="First Name")]
         [Required(ErrorMessage = "Please enter a first name")]
         public string FirstName { get; set; }
         [Required(ErrorMessage = "Please enter a last name")]
-        [Display(Name = "Last Name")]//
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
         [Display(Name = "Date of Birth")]
         [Required(ErrorMessage ="Please enter the singers DOB")]
