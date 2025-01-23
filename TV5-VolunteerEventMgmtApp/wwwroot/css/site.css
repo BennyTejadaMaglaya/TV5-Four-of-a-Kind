@@ -50,28 +50,38 @@ body {
     color: #fff;
 }
 
-.text-purple {
-    color: var(--purple)
+select option:focus, select option:hover, select option:checked {
+    background: var(--purple) !important;
+    color: #fff !important;
+    box-shadow: 0 0 10px 100px var(--purple) inset !important;
+}
+
+.text-purple, text-purple:hover {
+    color: var(--purple);
+}
+
+.text-purple:hover { /* some things were blue on hover */
+    color: var(--purple) !important;
 }
 
 .text-gray {
-    color: var(--text-gray)
+    color: var(--text-gray);
 }
 
 .text-summary-poor{
-    color:#f2a134
+    color:#f2a134;
 }
 
 .text-summary-bad{
-    color:#e51f1f
+    color:#e51f1f;
 }
 
 .text-summary-good{
-color:#bbdb44
+    color:#bbdb44;
 }
 
 .text-summary-great{
-    color:#44ce1b
+    color:#44ce1b;
 }
 
 .home-links-container {

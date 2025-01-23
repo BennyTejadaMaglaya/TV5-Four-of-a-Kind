@@ -1,6 +1,5 @@
 ﻿namespace TV5_VolunteerEventMgmtApp.Utilities
 {
-
     public static class CookieHelper
     {
         /// <summary>  

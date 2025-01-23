@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using TV5_VolunteerEventMgmtApp.Data;
 using TV5_VolunteerEventMgmtApp.Models;
 using TV5_VolunteerEventMgmtApp.Utilities;
 using TV5_VolunteerEventMgmtApp.ViewModels;
+using TV5_VolunteerEventMgmtApp.CustomControllers;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
-	public class AttendanceSheetController : Controller
+	public class AttendanceSheetController : CognizantController
+
 	{
 		private readonly VolunteerEventMgmtAppDbContext _context;
 
@@ -24,7 +21,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		}
 
 		// GET: AttendanceSheet
-		public async Task<IActionResult> Index(int? LocationId,
+		public async Task<IActionResult> Index(int? LocationId, int? page, int? pageSizeID,
 			string? actionButton, string sortDirection = "desc", string sortField = "Date")
 		{
 			// List of sort options
@@ -35,9 +32,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			ViewData["BtnText"] = "Filters";
 			int numberFilters = 0;
 
-			ViewData["LocationID"] = new SelectList(_context.Locations, "ID", "City");
+			ViewData["LocationID"] = new SelectList(_context.Locations.OrderBy(l => l.City), "ID", "City");
 
-			var attendanceSheet = _context.AttendeesSheets
+			var attendanceSheets = _context.AttendeesSheets
 				.Include(a => a.Director)
 				.Include(a => a.Location)
 				.Include(a => a.Attendees)
@@ -47,7 +44,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			// Filters
 			if (LocationId.HasValue)
 			{
-				attendanceSheet = attendanceSheet.Where(a => a.LocationId == LocationId);
+				attendanceSheets = attendanceSheets.Where(a => a.LocationId == LocationId);
 				numberFilters++;
 			}
 			if (numberFilters != 0)
@@ -60,6 +57,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			// Check if there is a called for a change of filtering or sorting
 			if (!String.IsNullOrEmpty(actionButton)) // Form Submitted
 			{
+				page = 1; // Reset page to start if filtering or sorting
 
 				if (sortOptions.Contains(actionButton)) // Change of sort is requested
 				{
@@ -87,13 +85,13 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			{
 				if (sortDirection == "desc")
 				{
-					attendanceSheet = attendanceSheet
+					attendanceSheets = attendanceSheets
 						.OrderByDescending(a => a.Location.City)
 						.ThenBy(a => a.StartTime);
 				}
 				else
 				{
-					attendanceSheet = attendanceSheet
+					attendanceSheets = attendanceSheets
 						.OrderBy(a => a.Location.City)
 						.ThenByDescending(a => a.StartTime);
 				}
@@ -102,13 +100,13 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			{
 				if (sortDirection == "desc")
 				{
-					attendanceSheet = attendanceSheet
+					attendanceSheets = attendanceSheets
 						.OrderByDescending(a => a.StartTime)
 						.ThenBy(a => a.Location.City);
 				}
 				else
 				{
-					attendanceSheet = attendanceSheet
+					attendanceSheets = attendanceSheets
 						.OrderBy(a => a.StartTime)
 						.ThenByDescending(a => a.Location.City);
 				}
@@ -118,7 +116,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			ViewData["sortField"] = sortField;
 			ViewData["sortDirection"] = sortDirection;
 
-			return View(await attendanceSheet.ToListAsync());
+			// Handle Paging
+			int pageSize = PageSizeHelper.SetPageSize(HttpContext, pageSizeID, ControllerName());
+			ViewData["pageSizeID"] = PageSizeHelper.PageSizeList(pageSize);
+			var pagedData = await PaginatedList<AttendanceSheet>.CreateAsync(attendanceSheets.AsNoTracking(), page ?? 1, pageSize);
+
+			return View(pagedData);
 		}
 
 		// GET: AttendanceSheet/Details/5
