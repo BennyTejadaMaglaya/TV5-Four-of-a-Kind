@@ -33,6 +33,11 @@
             Value = summaryPercent;
         }
 
+        public string ToPercentString()
+        {
+            return Value.ToString("#0.##%");
+        }
+
 
     }
 }
