@@ -1,38 +1,77 @@
-﻿@model IEnumerable<TV5_VolunteerEventMgmtApp.ViewModels.AttendanceSheetSummaryVM>
+﻿@model TV5_VolunteerEventMgmtApp.ViewModels.AttendanceSummaryVM
 
-    <h1>@ViewData["summaryTitle"]</h1>
+    
 
+    <div class="border-dark border-1">
+        <h1>Overall Attendance Stats</h1>
+        <!--A litle bar displaying each cities average attendance -->
+        <partial name="~/Views/Shared/_AttendanceSummaryPartial.cshtml" model="@Model.LocationReport"/>
+    </div>
+
+
+<h2>@ViewData["summaryTitle"]</h2>
  <form>
      <div>
-        <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
-        <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
-        <label>Start Week</label>
-        <input type="datetime-local" name="startWeek" value="@(ViewData["startWeek"])" asp-format="yyyy-MM-dd" />
-        <label>End Week</label>
-        <input type="datetime-local" name="endWeek" value="@(ViewData["endWeek"])" asp-format="yyyy-MM-dd" />
-        <input type="submit" value="Get Attendance Sheets In Range"/>
-        <label for="searchCity">City</label>
-        <input id="searchCity" type="text" name="searchCity" value="@ViewData["searchCity"]" />
-        <label for="searchDirector">Director Name</label>
-        <input id="searchDirector" type="text" name="searchDirector" value="@ViewData["searchDirector"]" />
-        <input type="submit" value="Filter" />
+        <button class="btn btn-outline-dark py-1" type="button" data-bs-toggle="collapse" id="filterToggle"
+                data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+            Filters
+        </button>
+        <a class="btn btn-purple py-1 h-50" asp-action="ThisWeeksExcelReport">Export</a>
+        <div class="filter-box collapse mb-2 @ViewData["ShowFilter"]" id="collapseFilter">
 
+            <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+            <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+
+            <div class="d-inline-flex gap-3">
+                <div>
+                    <label class="d-block">Start Week</label>
+                    <input class="form-control p-1" type="datetime-local" name="startWeek" value="@(ViewData["startWeek"])" asp-format="yyyy-MM-dd" />
+                </div>
+
+                <div>
+                    <label class="d-block">End Week</label>
+                    <input class="form-control p-1" type="datetime-local" name="endWeek" value="@(ViewData["endWeek"])" asp-format="yyyy-MM-dd" />
+                </div>
+
+                <div>
+                    <label class="d-block" for="searchCity">City</label>
+                    <input class="form-control p-1" id="searchCity" type="text" name="searchCity" value="@ViewData["searchCity"]" />
+                </div>
+    
+                <div>
+                    <label class="d-block" for="searchDirector">Director</label>
+                    <input class="form-control p-1" id="searchDirector" type="text" name="searchDirector" value="@ViewData["searchDirector"]" />
+                </div>
+
+            </div>
+            <div>
+                <input class="btn btn-purple py-1 mt-2" type="submit" value="Filter" />
+                <a class="btn btn-outline-dark mt-2 py-1" asp-action="Attendance">Clear</a>
+            </div>
+            
+        </div>
     </div>
     <table class="table">
         <thead>
             <tr>
                 <th>Start Time</th>
                 <th>
-                    <input type="submit" value="City" name="actionButton" />
+                    <button class="btn btn-toolbar p-0 fw-bold d-inline" value="City" name="actionButton">
+                        City <span class="text-purple">⮁</span>
+                    </button>
                 </th>
-                <th><input type="submit" value="Director" name="actionButton" /></th>
+                <th>
+                    <button class="btn btn-toolbar p-0 fw-bold d-inline" name="actionButton" value="Director">
+                        Director<span class="text-purple">⮁</span>
+                    </button>
+                </th>
                 <th>Total Signups</th>
                 <th>Total Attended</th>
 
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.AttendanceSummaries)
             {
                 <tr>
                     <td>@Html.DisplayFor(m=> item.Sheet.StartTime)</td>
@@ -58,3 +97,10 @@
     </table>
 
 </form>
+
+
+                        <script>
+                            function clearFilters(e){
+                                e.preventDefault()
+                            }
+                        </script>

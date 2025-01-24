@@ -50,6 +50,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                         .AsNoTracking();
 
             FilterDateRange(startWeek, endWeek, ref summary);
+            summary = FilterAttendanceSheet(summary, searchCity, searchDirector);
             SortUtilities.SwapSortDirection(ref sortField, ref sortDirection, ["City", "Director"], actionButton);
             SortAttendanceSheets(ref summary, sortField, sortDirection);
             
@@ -62,13 +63,14 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 ViewData["endWeek"] = endWeek.Value;
             }
 
-                        
 
-            var summaryValue = await summary.Select(x => new AttendanceSheetSummaryVM
+
+            var summaryValue = await summary.Select(x => new AttendanceSheetVM
             { // todo when things are fixed we'll set this to only the Total singers and not check the count
                 TotalAttendees = x.TotalSingers != 0 ? x.TotalSingers : x.Location.SingerLocations.Where(l => l.Singer.isActive).Count(),
                 Sheet = x,
-                Percentage = new PercentageColorVM((double)x.Attendees.Count() / x.Location.SingerLocations.Where(l => l.Singer.isActive).Count())
+                Percentage = new PercentageColorVM((double)x.Attendees.Count() / x.Location.SingerLocations.Where(l => l.Singer.isActive).Count()),
+                
             })
             .ToListAsync();
 
@@ -88,7 +90,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 ViewData["endWeek"] = endWeek.Value.ToString("yyyy-MM-ddTHH:mm");
             }
 
-            return View(summaryValue);
+            return View(new AttendanceSummaryVM { LocationReport = SummarizeByLocation() , AttendanceSummaries=summaryValue});
 
         }
 
@@ -98,11 +100,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             var summary = ThisWeeksAttendanceExcel();
             using (ExcelPackage excel = new ExcelPackage())
             {
-                
+                int numRows = summary.Count();
 
                 var workSheet = excel.Workbook.Worksheets.Add("AttendanceReport");
                 workSheet.Cells[3, 1].LoadFromCollection(summary, true);
-
+                //workSheet.Cells[4, 1, numRows + 3, 2].Style.Font.Bold = true;
+                workSheet.Row(3).Style.Font.Bold = true;
                 //Add a title and timestamp at the top of the report
                 workSheet.Cells[1, 1].Value = reportTitle;
                 using (ExcelRange Rng = workSheet.Cells[1, 1, 1, 6])
@@ -110,13 +113,27 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                     Rng.Merge = true; //Merge columns start and end range
                     Rng.Style.Font.Bold = true; //Font should be bold
                     Rng.Style.Font.Size = 18;
-                    Rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    Rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                }
+                workSheet.Cells.AutoFitColumns();
+
+                DateTime utcDate = DateTime.UtcNow; // timestamp code
+                TimeZoneInfo esTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                DateTime localDate = TimeZoneInfo.ConvertTimeFromUtc(utcDate, esTimeZone);
+                using (ExcelRange Rng = workSheet.Cells[2, 3])
+                {
+                    Rng.Value = "Created: " + localDate.ToShortTimeString() + " on " +
+                        localDate.ToShortDateString();
+                    Rng.Style.Font.Bold = true; 
+                    Rng.Style.Font.Size = 18;
+                    Rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                 }
 
                 try
                 {
+                    // todo name the file bsed on the sort parameters when I implement that!
                     Byte[] theData = excel.GetAsByteArray();
-                    string filename = "Attendance-Summary-2025-01-22.xlsx";
+                    string filename = $"Attendance-Summary-{DateUtilities.GetWeekStart().ToShortDateString()}.xlsx";
                     string mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
                     return File(theData, mimeType, filename);
                 }
@@ -128,7 +145,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             
         }
 
-        private async Task<ICollection<AttendanceSheetSummaryVM>> ThisWeeksAttendance()
+        private async Task<ICollection<AttendanceSheetVM>> ThisWeeksAttendance()
         {
             var summary = _context.AttendeesSheets
                 .Where(s => s.StartTime >= DateUtilities.GetWeekStart() && s.StartTime <= DateUtilities.GetWeekEnd())
@@ -139,7 +156,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 .ThenInclude(s => s.Singer)
                 .AsNoTracking();
             
-            return await summary.Select(x => new AttendanceSheetSummaryVM
+            return await summary.Select(x => new AttendanceSheetVM
             { // todo when things are fixed we'll set this to only the Total singers and not check the count
                 TotalAttendees = x.Attendees.Count(),
                 Sheet = x,
@@ -160,11 +177,11 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 .AsNoTracking();
 
             return [.. summary.Select(x => new AttendanceSheetExcel { 
-                AvailableSingers=x.TotalSingers != 0 ? x.TotalSingers : x.Location.SingerLocations.Where(l => l.Singer.isActive).Count(), 
-                DirectorName=x.Director.NameSummary(), 
-                LocationName=x.Location.City,
-                TotalAttendees =x.Attendees.Count(),
-                PercentageAttended= x.TotalSingers != 0 ? ((x.Attendees.Count / x.TotalSingers)).ToString("#0.##%") 
+                Available_Singers=x.TotalSingers != 0 ? x.TotalSingers : x.Location.SingerLocations.Where(l => l.Singer.isActive).Count(), 
+                Director_Name=x.Director.NameSummary(), 
+                Location_Name=x.Location.City,
+                Total_Attendees =x.Attendees.Count(),
+                Percentage_Attended= x.TotalSingers != 0 ? ((x.Attendees.Count / x.TotalSingers)).ToString("#0.##%") 
                 :(((double)x.Attendees.Count() / x.Location.SingerLocations.Where(l => l.Singer.isActive).Count())).ToString("#0.##%")
             })];
         }
@@ -206,6 +223,59 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 sheets = sortDirection == "asc" ?
                     sheets.OrderByDescending(s => s.Location.City) : sheets.OrderBy(s => s.Location.City);
             }
+        }
+
+        private static IQueryable<AttendanceSheet> FilterAttendanceSheet(IQueryable<AttendanceSheet> sheets, string? searchCity, string? searchDirector)
+        {
+            if (!string.IsNullOrEmpty(searchDirector))
+            {
+                sheets = sheets.Where(s => s.Director.FirstName.ToLower().Contains(searchDirector.ToLower()) || s.Director.LastName.ToLower().Contains(searchDirector.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(searchCity))
+            {
+                sheets = sheets.Where(s => s.Location.City.ToLower().Contains(searchCity.ToLower()));
+            }
+            return sheets;
+        }
+
+
+        private LocationReportVM SummarizeByLocation()
+        {
+            // groupby query makes this code way more aids to read 
+            var summary = _context.Locations
+                .Include(L => L.AttendanceSheets)
+                .ThenInclude(l => l.Attendees)
+                
+                .Include(s => s.SingerLocations)
+                .ThenInclude(l => l.Singer)
+                .Include(L => L.DirectorLocations)
+                .ThenInclude(l => l.Director)
+                .AsNoTracking();
+
+            var summaryVM = new LocationReportVM (new List<LocationReportItem>() );
+
+            foreach(var l in summary)
+            {
+               
+                var vm = new LocationReportItem { 
+                    Average_Attendees =  l.AttendanceSheets.Average(s => s.Attendees.Count()) ,
+                    City = l.City,
+                    Current_Total_Singers = l.SingerLocations.Where(s => s.Singer.isActive).Count(),
+
+                };
+                Console.WriteLine(vm.Average_Attendees);
+                summaryVM.Items.Add(vm);
+            }
+
+            var low = summaryVM.Items.OrderBy(s => s.Average_Attendees).FirstOrDefault();
+            var high = summaryVM.Items.OrderByDescending(s => s.Average_Attendees).FirstOrDefault();
+            summaryVM.MinAvgAttendance = new AverageValue { Average = low.Average_Attendees, Name = low.City };
+
+            summaryVM.MaxAvgAttendance = new AverageValue { Average = high.Average_Attendees, Name = high.City };
+
+
+            return summaryVM;
         }
 
 
