@@ -5,10 +5,10 @@ namespace TV5_VolunteerEventMgmtApp.Models
     public class AttendanceSheetExcel
     {
 
-        public string LocationName { get; set; }
-        public string DirectorName { get; set; }
-        public int AvailableSingers { get; set; }
-        public int TotalAttendees { get; set; }
-        public string PercentageAttended { get; set; }
+        public string Location_Name { get; set; }
+        public string Director_Name { get; set; }
+        public int Available_Singers { get; set; }
+        public int Total_Attendees { get; set; }
+        public string Percentage_Attended { get; set; }
     }
 }

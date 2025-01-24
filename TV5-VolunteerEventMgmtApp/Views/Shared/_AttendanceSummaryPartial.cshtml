@@ -1,0 +1,13 @@
+﻿@model TV5_VolunteerEventMgmtApp.ViewModels.LocationReportVM;
+
+<div class="d-flex gap-5"> 
+    <div class="d-flex align-items-center flex-column">
+        Highest Avg Attendance 
+        <span class="mx-auto">@Model.MaxAvgAttendance.Average.ToString("#.##") at @Model.MaxAvgAttendance.Name</span>
+    </div>
+
+    <div class="d-flex align-items-center flex-column">
+        Lowest Avg Attendance
+        <span>@Model.MinAvgAttendance.Average.ToString("#.##") at <span class="text-purple fw-bold">@Model.MinAvgAttendance.Name</span> </span>
+    </div>
+</div>
