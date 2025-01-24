@@ -44,19 +44,19 @@
 			<div class="row">
 				<div class="form-group col-md-6">
 					<label class="control-label d-block">Present singers (<span id="count"></span>)</label>
-					@Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.SelectedSingers, 
-						new { @size = 12, @class = "form-control" })
-					<button id="btnRemove" class="btn btn-outline-danger py-0 px-2 my-2">
-						<strong>Remove singer/s</strong>
+					@Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.SelectedSingers,
+											new { @size = 12, @class = "form-control" })
+					<button id="btnRemove" class="btn btn-secondary py-0 px-2 my-2">
+						Remove singer/s
 					</button>
 				</div>
 
 				<div class="form-group col-md-6">
 					<label class="control-label d-block">Add singers to the attendance sheet</label>
-					@Html.ListBox("availableOptions", (MultiSelectList)ViewBag.AvailableSingers, 
-						new { @size = 12, @class = "form-control" })
-					<button id="btnAdd" class="btn btn-outline-success py-0 px-3 my-2">
-						<strong>Add singer/s</strong>
+					@Html.ListBox("availableOptions", (MultiSelectList)ViewBag.AvailableSingers,
+											new { @size = 12, @class = "form-control" })
+					<button id="btnAdd" class="btn btn-purple py-0 px-3 my-2">
+						Add singer/s
 					</button>
 				</div>
 			</div>
