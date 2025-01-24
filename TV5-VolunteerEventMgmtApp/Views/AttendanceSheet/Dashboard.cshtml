@@ -42,11 +42,22 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-auto">
-                @* buttons for now. but maybe change to images? *@
-                <div class="action-buttons mt-4 d-flex justify-content-center gap-3">
-                    <a class="btn btn-primary" asp-area="" asp-controller="Director" asp-action="Create">Create Director</a>
-                    <a class="btn btn-primary" asp-area="" asp-controller="Location" asp-action="Create">Create Location</a>
-                    <a class="btn btn-primary" asp-area="" asp-controller="CsvImport" asp-action="Index">Import Singers</a>
+                <div class="action-buttons mt-4 d-flex justify-content-center flex-column flex-md-row gap-3">
+                    <a asp-area="" asp-controller="Director" asp-action="Create" class="text-center">
+                        @* temporary *@
+                        <div>Create Director</div>
+                        <img src="/images/Hue_Saturation-1.png" alt="Create Director" style="height: 240px; width: auto;" />
+                    </a>
+                    <a asp-area="" asp-controller="Location" asp-action="Create" class="text-center">
+                        @* temporary *@
+                        <div>Create Location</div>
+                        <img src="/images/Hue_Saturation-4.png" alt="Create Location" style="height: 240px; width: auto;" />
+                    </a>
+                    <a asp-area="" asp-controller="CsvImport" asp-action="Index" class="text-center">
+                        @* temporary *@
+                        <div>Import Singers</div>
+                        <img src="/images/Hue_Saturation-6.png" alt="Import Singers" style="height: 240px; width: auto;" />
+                    </a>
                 </div>
             </div>
         </div>
@@ -222,8 +233,6 @@
                 })
                 .catch(error => console.error('Error fetching statistics:', error));
         }
-
-        $('#attendance-graph-container').load("/AttendanceSheet/ShowData")
 
         locationDropdown.addEventListener('change', function() {
             var locationId = this.value;
