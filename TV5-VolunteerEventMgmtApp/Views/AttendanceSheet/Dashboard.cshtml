@@ -10,7 +10,6 @@
 
 <div class="dashboard-container">
     <div class="left-panel">
-        <div id="attendance-graph-container"></div>
         <div class="dropdown mb-4">
             <label for="locationDropdown">Select Location:</label>
             <select id="locationDropdown" class="form-control">
@@ -22,27 +21,24 @@
             </select>
         </div>
         <div class="counter-widget">
-            <h3>Total Singers</h3>
-            <p id="singerCount">0</p>
+            <div class="statistics mt-4">
+                <p>Total Singers: <span id="singerCount" class="highlighted-stat">0</span></p>
+                <div id="specificLocationStats">
+                    <p>Average Attendance: <span id="mean" class="highlighted-stat">--</span> <span class="highlighted-stat">(<span id="percentageAttendance">--</span>%)</span></p>
+                </div>
+                <div id="allLocationsStats" style="display: none;">
+                    <p>Highest Average Attendance: <span id="highestmean" class="highlighted-stat"></span> <span class="highlighted-stat">(<span id="highestPercentageAttendance"></span>%)</span> at <strong><span id="highestmeanLocation"></span></strong></p>
+                    <p>Lowest Average Attendance: <span id="lowestmean" class="highlighted-stat"></span> <span class="highlighted-stat">(<span id="lowestPercentageAttendance"></span>%)</span> at <strong><span id="lowestmeanLocation"></span></strong></p>
+                </div>
+            </div>
         </div>
+        <div id="attendance-graph-container"></div>
     </div>
     <div class="right-panel">
         <div class="calendar-container">
             <div id="calendar" class="fc-calendar"></div>
         </div>
-        <div class="counter-widget">
-            <div class="statistics mt-4">
-                <h3>Attendance Statistics</h3>
-                <div id="specificLocationStats">
-                    <p>Average Attendance: <span id="mean">--</span> (<span id="percentageAttendance">--</span>%)</p>
-                </div>
-                <div id="allLocationsStats" style="display: none;">
-                    <p>Highest Average Attendance: <span id="highestmean"></span> (<span id="highestPercentageAttendance"></span>%) at <strong><span id="highestmeanLocation"></span></strong></p>
-                    <p>Lowest Average Attendance: <span id="lowestmean"></span> (<span id="lowestPercentageAttendance"></span>%) at <strong><span id="lowestmeanLocation"></span></strong></p>
-                </div>
-            </div>
-        </div>
-    </div>
+   </div>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-auto">
