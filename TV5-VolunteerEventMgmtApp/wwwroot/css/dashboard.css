@@ -5,13 +5,13 @@
 }
 
 .left-panel {
-    width: 25%;
+    flex: 1 1 25%;
     padding: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .right-panel {
-    width: 75%;
+    flex: 3 1 75%;
     padding: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -24,20 +24,26 @@
     text-align: center;
 }
 
+.highlighted-stat {
+    font-weight: bold;
+    color: #D86FD8;
+}
+
 .calendar-container {
     flex-grow: 1;
-    max-height: 250px;
     overflow-y: auto;
     padding: 20px;
+    height: 90vh;
 }
 
 #calendar {
     max-width: 100%;
+    height: 100%;
     margin: 0 auto;
 }
 
 .fc {
-    max-height: 100%;
+    height: 100%;
 }
 
 .fc-event-title, .fc-event-time {
@@ -68,13 +74,19 @@
     background-color: #6c5ce7 !important;
 }
 
+/* Change the color of the event dot to red */
+.fc .fc-daygrid-event-dot {
+    background-color: red; /* Red dot color */
+}
+
 @media (max-width: 768px) {
     .dashboard-container {
         flex-direction: column;
     }
 
-    .left-panel, .calendar-container {
+    .left-panel, .right-panel, .calendar-container {
         width: 100%;
+        height: auto;
     }
 
     .fc-event-title {
