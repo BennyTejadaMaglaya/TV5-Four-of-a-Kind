@@ -21,8 +21,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
 		// GET: AttendanceSheet
 		public async Task<IActionResult> Index(int? LocationId, int? page, int? pageSizeID,
-			string? actionButton, string sortDirection = "desc", string sortField = "Date", string currentTab = "list")
+			string? actionButton, string sortDirection = "desc", string sortField = "Date", 
+			string currentTab = "list")
 		{
+			// Selected tab
+			ViewData["currentTab"] = currentTab;
+
 			// List of sort options
 			string[] sortOptions = new[] { "Date", "Location" };
 
@@ -112,7 +116,6 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			}
 
 			// Set sort for next time
-			ViewData["currentTab"] = currentTab;
 			ViewData["sortField"] = sortField;
 			ViewData["sortDirection"] = sortDirection;
 
