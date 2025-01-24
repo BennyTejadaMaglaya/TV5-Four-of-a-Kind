@@ -74,11 +74,6 @@
     background-color: #6c5ce7 !important;
 }
 
-/* Change the color of the event dot to red */
-.fc .fc-daygrid-event-dot {
-    background-color: red; /* Red dot color */
-}
-
 @media (max-width: 768px) {
     .dashboard-container {
         flex-direction: column;
