@@ -47,7 +47,7 @@
 	<!-- TABS -->
 	<ul class="nav nav-tabs mb-3" id="attendanceSheetTabs" role="tablist">
 		<li class="nav-item">
-			<a class="nav-link @((string)ViewData["currentTab"] == "list" ? "active" : "") fw-bold"
+			<a class="nav-link @((string)ViewData["currentTab"] == "list" ? "active" : "") fw-bold text-purple"
 			   id="list-tab"
 			   data-toggle="tab"
 			   href="#list"
@@ -57,7 +57,7 @@
 			   onclick="setTab('list')">&#x2630;</a>
 		</li>
 		<li class="nav-item">
-			<a class="nav-link @((string)ViewData["currentTab"] == "cards" ? "active" : "") fw-bold"
+			<a class="nav-link @((string)ViewData["currentTab"] == "cards" ? "active" : "") fw-bold text-purple"
 			   id="cards-tab"
 			   data-toggle="tab"
 			   href="#cards"

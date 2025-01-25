@@ -20,7 +20,7 @@
 			</div>
 			<div class="form-group">
 				<label asp-for="DirectorId" class="control-label"></label>
-				<select asp-for="DirectorId" class="form-control" asp-items="ViewBag.DirectorId"></select>
+				<select asp-for="DirectorId" id="directors" class="form-control" asp-items="ViewBag.DirectorId"></select>
 				<span asp-validation-for="DirectorId" class="text-danger"></span>
 			</div>
 			<div class="form-group">
@@ -43,21 +43,21 @@
 		<div class="col-md-8">
 			<div class="row">
 				<div class="form-group col-md-6">
-					<label class="control-label d-block">Present singers (<span id="count"></span>)</label>
+					<label class="control-label d-block">Attending Singers (<span id="count"></span>)</label>
 					@Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.SelectedSingers,
 											new { @size = 12, @class = "form-control" })
-					<button id="btnRemove" class="btn btn-secondary py-0 px-2 my-2">
+					<button id="btnRemove" class="btn btn-secondary py-1 px-2 my-2">
 						Remove singer/s
-					</button>
+					</button> <small class="text-gray">(Select and Remove)</small>
 				</div>
 
 				<div class="form-group col-md-6">
-					<label class="control-label d-block">Add singers to the attendance sheet</label>
+					<label class="control-label d-block">Add Attending Singers</label>
 					@Html.ListBox("availableOptions", (MultiSelectList)ViewBag.AvailableSingers,
 											new { @size = 12, @class = "form-control" })
-					<button id="btnAdd" class="btn btn-purple py-0 px-3 my-2">
+					<button id="btnAdd" class="btn btn-purple py-1 px-3 my-2">
 						Add singer/s
-					</button>
+					</button> <small class="text-gray">(Select and Add)</small>
 				</div>
 			</div>
 		</div>
@@ -65,6 +65,8 @@
 
 	<div class="form-group">
 		<input type="submit" id="btnSubmit" value="Save" class="btn btn-purple" />
+		<button type="button" class="btn btn-outline-dark" 
+			onclick="document.getElementById('backToListLink').click()">Cancel</button>
 	</div>
 </form>
 
@@ -79,9 +81,11 @@
 	}
 	<script src="~/js/multiselect.js"></script>
 	<script>
-			document.addEventListener('DOMContentLoaded', function () {
+		document.addEventListener('DOMContentLoaded', function () {
+			// When location is selected
 			document.getElementById('LocationId').addEventListener('change', function () {
 				var locationId = this.value;
+				// Get singers from selected location
 				fetch('@Url.Action("GetSingersByLocation")?locationId=' + locationId)
 					.then(response => {
 						if (!response.ok) {
@@ -90,7 +94,6 @@
 						return response.json();
 					})
 					.then(data => {
-						console.log("Received Data: ", data); // Debugging line
 						var selectedOptions = document.getElementById('selectedOptions');
 						var availableOptions = document.getElementById('availableOptions');
 						selectedOptions.innerHTML = '';
@@ -104,7 +107,32 @@
 					})
 					.catch(error => {
 						console.error("Fetch Error: ", error); // Debugging line
-					});
+				});
+				// Get directors from seleted location
+				fetch('@Url.Action("GetDirectorsByLocation")?locationId=' + locationId)
+					.then(response => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok ' + response.statusText);
+						}
+						return response.json();
+					})
+					.then(data => {
+						var selectDirector = document.getElementById('directors');
+						selectDirector.innerHTML = '';
+						var label = document.createElement('option');
+						label.value = '';
+						label.text = 'Select Director';
+						selectDirector.appendChild(label);
+						data.forEach(dir => {
+							var option = document.createElement('option');
+							option.value = dir.id;
+							option.text = dir.firstName + ' ' + dir.lastName;
+							selectDirector.appendChild(option);
+						});
+					})
+					.catch(error => {
+						console.error("Fetch Error: ", error); // Debugging line
+				});
 			});
 		});
 	</script>

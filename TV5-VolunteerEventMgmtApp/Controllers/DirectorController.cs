@@ -89,8 +89,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
 
             var director = await _context.Directors
-                .Include(d => d.DirectorLocations)
-                .FirstOrDefaultAsync(l => l.ID == id);
+                .Include(d => d.DirectorLocations).ThenInclude(dl => dl.LocationID)
+				.FirstOrDefaultAsync(l => l.ID == id);
             if (director == null)
             {
                 return NotFound();
@@ -109,8 +109,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         public async Task<IActionResult> Edit(int id, int location =-1)
         {
             var director = await _context.Directors
-                .Include(d => d.DirectorLocations)
-                .FirstOrDefaultAsync(d => d.ID == id);
+                .Include(d => d.DirectorLocations).ThenInclude(dl => dl.LocationID)
+				.FirstOrDefaultAsync(d => d.ID == id);
             if(director == null)
             {
                 return NotFound();

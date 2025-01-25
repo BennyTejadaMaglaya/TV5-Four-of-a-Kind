@@ -161,11 +161,13 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				EndTime = thisHour.AddHours(1) // End time is one hour after start time
 			};
 
-			ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName");
 			ViewData["LocationID"] = new SelectList(_context.Locations.OrderBy(l => l.City), "ID", "City");
 
-			//PopulateSingerListBoxes(attendanceSheet);
-			// Empty lists at first, then AvailableSingers will be populated when the location is selected
+			// Directors and singers lists will be empty at first,
+			// Then they will be populated when the location is selected
+			// ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName");
+			// PopulateSingerListBoxes(attendanceSheet);
+
 			ViewData["SelectedSingers"] = new MultiSelectList(Enumerable.Empty<ListOptionVM>(), "ID", "DisplayText");
 			ViewData["AvailableSingers"] = new MultiSelectList(Enumerable.Empty<ListOptionVM>(), "ID", "DisplayText");
 
@@ -210,8 +212,14 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			{
 				return NotFound();
 			}
-			ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName", attendanceSheet.DirectorId);
-			ViewData["LocationId"] = new SelectList(_context.Locations.OrderBy(l => l.City), "ID", "City", attendanceSheet.LocationId);
+			// 
+			ViewData["LocationId"] = new SelectList(_context.Locations
+				.OrderBy(l => l.City), "ID", "City", attendanceSheet.LocationId);
+			var locationId = attendanceSheet.LocationId;
+			// Director sfor that location
+			ViewData["DirectorId"] = new SelectList(_context.Directors
+				.Where(d => d.DirectorLocations
+				.Any(ld => ld.LocationID == locationId)), "ID", "FullName", attendanceSheet.DirectorId);
 
 			PopulateSingerListBoxes(attendanceSheet);
 			return View(attendanceSheet);
@@ -373,13 +381,23 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			}
 		}
 
-
 		public async Task<IActionResult> GetSingersByLocation(int locationId)
 		{
 			var singers = await _context.Singers
 				.Where(s => s.SingerLocation.Any(sl => sl.LocationId == locationId))
 				.Select(s => new { s.Id, s.FirstName, s.LastName })
 				.OrderBy(s => s.FirstName).ThenBy(s => s.LastName)
+				.ToListAsync();
+
+			return Json(singers);
+		}
+
+		public async Task<IActionResult> GetDirectorsByLocation(int locationId)
+		{
+			var singers = await _context.Directors
+				.Where(d => d.DirectorLocations.Any(dl => dl.LocationID == locationId))
+				.Select(d => new { d.ID, d.FirstName, d.LastName })
+				.OrderBy(d => d.FirstName).ThenBy(d => d.LastName)
 				.ToListAsync();
 
 			return Json(singers);
@@ -550,8 +568,6 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
 			return PartialView(vm);
 		}
-
-		
 
 		private bool AttendanceSheetExists(int id)
 		{

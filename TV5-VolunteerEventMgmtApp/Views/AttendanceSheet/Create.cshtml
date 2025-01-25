@@ -21,7 +21,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="DirectorId" class="control-label"></label>
-                <select asp-for="DirectorId" class="form-control" asp-items="ViewBag.DirectorId">
+                <select asp-for="DirectorId" disabled id="directors" class="form-control" asp-items="ViewBag.DirectorId">
                     <option value="">Select Director</option>
                 </select>
                 <span asp-validation-for="DirectorId" class="text-danger"></span>
@@ -46,27 +46,31 @@
         <div class="col-md-8">
             <div class="row">
                 <div class="form-group col-md-6">
-                    <label class="control-label d-block">Present singers (<span id="count"></span>)</label>
+                    <label class="control-label d-block">Attending Singers (<span id="count"></span>)</label>
                     @Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.SelectedSingers,
-                             new { @size = 12, @class = "form-control", id = "selectedOptions" })
-                    <button id="btnRemove" class="btn btn-secondary py-0 px-2 my-2">
+                        new { @size = 12, @class = "form-control", id = "selectedOptions", @disabled = "disabled" })
+                    <button id="btnRemove" class="btn btn-secondary py-1 px-2 my-2">
                         Remove singer/s
-                    </button>
+					</button> <small class="text-gray">(Select and Remove)</small>
                 </div>
 
                 <div class="form-group col-md-6">
-                    <label class="control-label d-block">Add singers to the attendance sheet</label>
-                    @Html.ListBox("availableOptions", (MultiSelectList)ViewBag.AvailableSingers, 
-                        new { @size = 12, @class = "form-control", id = "availableOptions" })
-                    <button id="btnAdd" class="btn btn-purple py-0 px-3 my-2">
+                    <label class="control-label d-block">Add Attending Singers</label>
+                    @Html.ListBox("availableOptions", (MultiSelectList)ViewBag.AvailableSingers,
+                        new { @size = 12, @class = "form-control", id = "availableOptions", @disabled = "disabled" })
+                    <button id="btnAdd" class="btn btn-purple py-1 px-3 my-2">
                         Add singer/s
-                    </button>
+                    </button> <small class="text-gray">(Select and Add)</small>
                 </div>
             </div>
         </div>
 
         <div class="form-group">
             <input type="submit" id="btnSubmit" value="Create" class="btn btn-purple" />
+            <button type="button" class="btn btn-outline-dark"
+                    onclick="document.getElementById('backToListLink').click()">
+                Cancel
+            </button>
         </div>
     </div>
 </form>
@@ -81,9 +85,11 @@
 	}
 	<script src="~/js/multiselect.js"></script>
     <script>
-            document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function () {
+            // When location is selected
             document.getElementById('LocationId').addEventListener('change', function () {
                 var locationId = this.value;
+                // Get singers from selected location
                 fetch('@Url.Action("GetSingersByLocation")?locationId=' + locationId)
                     .then(response => {
                         if (!response.ok) {
@@ -94,6 +100,14 @@
                     .then(data => {
                         var selectedOptions = document.getElementById('selectedOptions');
                         var availableOptions = document.getElementById('availableOptions');
+                        if (locationId === "") {
+                            selectedOptions.disabled = true;
+                            availableOptions.disabled = true;
+                        }
+                        else {
+                            selectedOptions.disabled = false;
+                            availableOptions.disabled = false;
+                        }
                         selectedOptions.innerHTML = '';
                         availableOptions.innerHTML = '';
                         data.forEach(singer => {
@@ -105,7 +119,36 @@
                     })
                     .catch(error => {
                         console.error("Fetch Error: ", error); // Debugging line
-                    });
+                });
+                // Get directors from seleted location
+                fetch('@Url.Action("GetDirectorsByLocation")?locationId=' + locationId)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        var selectDirector = document.getElementById('directors');
+                        if (locationId === "") {
+                            selectDirector.disabled = true;
+                        }
+                        else selectDirector.disabled = false;
+                        selectDirector.innerHTML = '';
+                        var label = document.createElement('option');
+                        label.value = '';
+                        label.text = 'Select Director';
+                        selectDirector.appendChild(label);
+                        data.forEach(dir => {
+                            var option = document.createElement('option');
+                            option.value = dir.id;
+                            option.text = dir.firstName + ' ' + dir.lastName;
+                            selectDirector.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Fetch Error: ", error); // Debugging line
+                });
             });
         });
     </script>
