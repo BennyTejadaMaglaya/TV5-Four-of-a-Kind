@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Information;
 using TV5_VolunteerEventMgmtApp.Data;
 using TV5_VolunteerEventMgmtApp.Models;
 using TV5_VolunteerEventMgmtApp.Services;
@@ -33,11 +34,14 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             var location = await _context.Locations.FirstOrDefaultAsync(c => c.ID == locationId);
             if (location == null)
             {
-                return NotFound("There is no location with id " + locationId);
+                return Json(new
+                {
+                    Message = $"There is no location with the ID {locationId}",
+                    Success = false
+                });
             }
 
             ViewBag.Locations = LocationSelectList(selected: locationId);
-            Console.WriteLine(csvFile.ToString(), csvFile.Length);
             if (csvFile != null && csvFile.Length > 0)
             {
                 Console.WriteLine("Here1");
@@ -45,10 +49,15 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 {
                     try
                     {
-                        var users = _csvService.ReadSingerCsvFile(stream).ToList();
+                        var newSingers = _csvService.ReadSingerCsvFile(stream).ToList();
 
-                        UploadSingers(users, location);
-                        return View(users);
+                        UploadSingers(newSingers, location);
+                        //return Json(new
+                        //{
+                        //    Message = $"Successfully added {newSingers.Count()} new singers.",
+                        //    Success=true
+                        //});
+                        return View(newSingers);
                     }
                     catch (ApplicationException ex)
                     { // invalid csv errors
@@ -57,7 +66,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                     }
                     catch (Exception ex)
                     {
-                        ModelState.AddModelError(string.Empty, $"An unexpected error occurred: {ex.Message}");
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                        //return Json(new
+                        //{
+                        //    Message = $"An unexpected error occured.",
+                        //    Success = false
+                        //});
                     }
                 }
             }
@@ -65,6 +79,11 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             {
                 ModelState.AddModelError(string.Empty, "Please select a valid CSV file.");
             }
+            //return Json(new
+            //{
+            //    Message = $"Please submit a valid CSV File.",
+            //    Success = false
+            //});
             return View(new List<SingerCsvUpload>());
         }
 

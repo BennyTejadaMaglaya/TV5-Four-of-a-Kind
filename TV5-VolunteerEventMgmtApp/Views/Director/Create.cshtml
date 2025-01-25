@@ -1,10 +1,10 @@
 ﻿@model TV5_VolunteerEventMgmtApp.Models.Director
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create a Director";
 }
 
-<h1>Create</h1>
+<h1>Create a New Director</h1>
 
 <h4>Director</h4>
 <hr />
@@ -32,11 +32,14 @@
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            <select name="location" asp-items="ViewBag.availableLocations">
+            <div class="form-group">
+                <label for="locationSelect">Location</label>
+            <select id="locationSelect" class="form-control mb-3" name="location" asp-items="ViewBag.availableLocations">
                 <option value="-1">Select a Location?</option>
             </select>
+            </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-purple" />
             </div>
         </form>
     </div>
