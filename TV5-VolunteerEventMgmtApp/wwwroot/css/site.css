@@ -4,28 +4,28 @@
     --text-gray: #656565;
 }
 
-.border-solid{
-    border:solid
+.border-solid {
+    border: solid
 }
 
-.rounded{
-    border-radius:4px;
+.rounded {
+    border-radius: 4px;
 }
 
 html {
-  font-size: 14px;
-  position: relative;
-  min-height: 100%;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 body {
@@ -55,20 +55,22 @@ form label {
     background: var(--purple);
     color: #fff;
 }
-.btn-purple:hover {
-    background: var(--purple-hover);
-    color: #fff;
-}
+
+    .btn-purple:hover {
+        background: var(--purple-hover);
+        color: #fff;
+    }
 
 /*btn-outline-purple*/
 .btn-outline-purple {
     border: 1px solid var(--purple);
     color: var(--purple);
 }
-.btn-outline-purple:hover {
-    background: var(--purple);
-    color: #fff;
-}
+
+    .btn-outline-purple:hover {
+        background: var(--purple);
+        color: #fff;
+    }
 
 select option:focus, select option:hover, select option:checked {
     background: var(--purple) !important;
@@ -80,46 +82,94 @@ select option:focus, select option:hover, select option:checked {
     color: var(--purple);
 }
 
-.text-purple:hover { /* some things were blue on hover */
-    color: var(--purple) !important;
-}
+    .text-purple:hover { /* some things were blue on hover */
+        color: var(--purple) !important;
+    }
 
-a:hover {
-    color: var(--purple-hover);
-}
+    a:hover {
+        color: var(--purple-hover);
+    }
 
 .text-gray {
     color: var(--text-gray);
 }
 
-.text-summary-poor{
-    color:#f2a134;
+.text-summary-poor {
+    color: #f2a134;
 }
 
-.text-summary-bad{
-    color:#e51f1f;
+.text-summary-bad {
+    color: #e51f1f;
 }
 
-.text-summary-good{
-    color:#bbdb44;
+.text-summary-good {
+    color: #bbdb44;
 }
 
-.text-summary-great{
-    color:#44ce1b;
+.text-summary-great {
+    color: #44ce1b;
 }
 
-.home-links-container {
-    height: 55vw;
+/* Home header */
+#home-header-bg-container {
+    height: 85vh;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 20px;
+    z-index: -100;
+    background-image: url('../images/MK5D9717.jpg');
+    background-position: left top;
+    background-size: cover;
+    padding: 1vh 0;
+    overflow: hidden;
+    box-shadow: 0 0 20px 2px #000;
 }
 
-.home-links-container a {
-    background: #00000090;
-    padding: 10px 25px;
+#home-header {
+    height: 70vh;
+    margin-top: -80px;
+}
+/* -- */
+
+/* Home big linkks */
+#home-links-container {
+    height: 100%;
+    display: grid;
+    grid-gap: 30px;
+    align-items: end;
+    justify-content: space-around;
 }
 
-.home-links-container a:hover {
-    background: #000000;
+#home-links-container a {
+    padding: 0;
+    width: 60vw;
+    height: 60vw;
+    max-height: 250px;
+    max-width: 250px;
+    margin: auto;
 }
+
+#home-links-container a > div {
+    height: 100%;
+    width: 100%;
+    background-image: url('../images/Hue_Saturation-6.png');
+    background-position: center;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#home-links-container a div div {
+    position: absolute;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    box-shadow: 0 0 50px 35px #00000080;
+    z-index: -50;
+}
+/* -- */
 
 .filter-box {
     background: #f7f7f7;
@@ -151,9 +201,9 @@ a:hover {
     grid-column-gap: 15px;
 }
 
-.card-inner-grid:nth-child(1) {
-    grid-template-columns: 1fr;
-}
+    .card-inner-grid:nth-child(1) {
+        grid-template-columns: 1fr;
+    }
 
 .sub-inner-grid {
     display: grid;
@@ -173,12 +223,17 @@ a:hover {
 
 /* From 768px */
 @media(width > 768px) {
-    .home-links-container {
-        height: 45vw;
+    #home-links-container {
+        grid-template-columns: 1fr 1fr;
     }
+    #home-links-container a div div {
+        box-shadow: 0 0 60px 35px #00000080;
+    }
+
     .attendance-card {
         grid-template-columns: 3fr 2fr 1fr;
     }
+
     .card-inner-grid:nth-child(1) {
         grid-template-columns: 1fr 2fr;
     }
@@ -186,9 +241,14 @@ a:hover {
 
 /* From 1200px */
 @media(width > 1200px) {
-    .home-links-container {
-        height: 40vw;
+    #home-links-container a {
+        max-height: 350px;
+        max-width: 350px;
     }
+    #home-links-container a div div {
+        box-shadow: 0 0 80px 60px #00000080;
+    }
+
     .attendance-cards-grid {
         grid-template-columns: 1fr 1fr;
         grid-row-gap: 30px;
