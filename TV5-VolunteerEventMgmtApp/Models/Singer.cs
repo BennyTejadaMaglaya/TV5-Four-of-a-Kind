@@ -31,6 +31,10 @@ namespace TV5_VolunteerEventMgmtApp.Models
         [Display(Name = "Active")]
         public bool isActive { get; set; } = true;
 
+        [Display(Name = "Location")]
+        [Required(ErrorMessage = "Please select a location.")]
+        public int LocationId { get; set; }
+        public Location? Location { get; set; }
         public ICollection<SingerLocation> SingerLocation { get; set; } = new HashSet<SingerLocation>();
     }
 }

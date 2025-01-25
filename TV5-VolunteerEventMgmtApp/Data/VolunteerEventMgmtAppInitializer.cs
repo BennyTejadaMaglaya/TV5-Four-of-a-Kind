@@ -271,7 +271,8 @@ namespace TV5_VolunteerEventMgmtApp.Data
                                         Email = (firstName + random.Next(11, 111).ToString() + "@outlook.com").ToLower(),
                                         DOB = DateOnly.FromDateTime(DateTime.Today.AddDays(-random.Next(2922, 6575))),
                                         Phone = random.Next(2, 10).ToString() + random.Next(213214131, 989898989).ToString(),
-                                        isActive = true
+                                        isActive = true,
+                                        LocationId = random.Next(1, 7)
                                     };
                                     try
                                     {

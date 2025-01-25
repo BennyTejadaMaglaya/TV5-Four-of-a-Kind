@@ -125,9 +125,10 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				return NotFound();
 			}
 
-			var singer = await _context.Singers
-				.FirstOrDefaultAsync(m => m.Id == id);
-			if (singer == null)
+            var singer = await _context.Singers
+                .Include(s => s.Location)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (singer == null)
 			{
 				return NotFound();
 			}
@@ -138,7 +139,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		// GET: Singer/Create
 		public IActionResult Create()
 		{
-			return View();
+            ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City");
+            return View();
 		}
 
 		// POST: Singer/Create
@@ -146,7 +148,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("FirstName,LastName,DOB,Email,Phone")] Singer singer)
+		public async Task<IActionResult> Create([Bind("FirstName,LastName,DOB,Email,Phone,LocationId")] Singer singer)
 		{
 			try
 			{
@@ -161,7 +163,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			{ // todo whenever we add concurrency controls update this
 				ModelState.AddModelError("", "There was an error with your request ");
 			}
-			return View(singer);
+            ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", singer.LocationId);
+            return View(singer);
 		}
 
 		// GET: Singer/Edit/5
@@ -177,7 +180,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			{
 				return NotFound();
 			}
-			return View(singer);
+            ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", singer.LocationId);
+            return View(singer);
 		}
 
 		// POST: Singer/Edit/5
@@ -193,7 +197,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				return NotFound();
 			}
 
-			if (await TryUpdateModelAsync<Singer>(singer, "", c => c.FirstName, c => c.LastName, c => c.Email, c => c.Phone))
+			if (await TryUpdateModelAsync<Singer>(singer, "", c => c.FirstName, c => c.LastName, c => c.Email, c => c.Phone, c => c.LocationId))
 			{
 				try
 				{
@@ -212,7 +216,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				}
 				return RedirectToAction(nameof(Index));
 			}
-			return View(singer);
+            ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", singer.LocationId);
+            return View(singer);
 		}
 
 		// GET: Singer/Delete/5
