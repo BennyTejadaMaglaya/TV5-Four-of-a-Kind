@@ -146,15 +146,15 @@ select option:focus, select option:hover, select option:checked {
     padding: 0;
     width: 60vw;
     height: 60vw;
-    max-height: 250px;
-    max-width: 250px;
+    max-height: 350px;
+    max-width: 350px;
     margin: auto;
 }
 
 #home-links-container a > div {
     height: 100%;
     width: 100%;
-    background-image: url('../images/Hue_Saturation-6.png');
+    background-image: url('../images/purple-splash.png');
     background-position: center;
     background-size: cover;
     display: flex;
@@ -243,8 +243,8 @@ select option:focus, select option:hover, select option:checked {
 /* From 1200px */
 @media(width > 1200px) {
     #home-links-container a {
-        max-height: 350px;
-        max-width: 350px;
+        max-height: 450px;
+        max-width: 450px;
     }
     #home-links-container a div div {
         box-shadow: 0 0 80px 60px #00000080;
