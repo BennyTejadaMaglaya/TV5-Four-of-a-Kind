@@ -139,6 +139,7 @@ select option:focus, select option:hover, select option:checked {
     grid-gap: 30px;
     align-items: end;
     justify-content: space-around;
+    margin-bottom: 80px;
 }
 
 #home-links-container a {
