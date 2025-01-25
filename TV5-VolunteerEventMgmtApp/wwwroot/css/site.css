@@ -42,6 +42,14 @@ main {
     margin-bottom: 1rem;
 }
 
+form label {
+    font-weight: bold;
+}
+
+.btn {
+    min-width: 80px;
+}
+
 /*btn-purple*/
 .btn-purple {
     background: var(--purple);

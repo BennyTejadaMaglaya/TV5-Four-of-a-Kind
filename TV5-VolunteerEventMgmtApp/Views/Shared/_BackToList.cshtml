@@ -3,15 +3,15 @@
     {
         if (ViewData.ContainsKey("returnURL"))
         {
-            <a class="" href='@ViewData["returnURL"]'>Back to the @ViewData["ControllerFriendlyName"] List</a>
+            <a class="" id="backToListLink" href='@ViewData["returnURL"]'>Back to the @ViewData["ControllerFriendlyName"] List</a>
         }
         else
         {
-            <a asp-action="Index">Back to the @ViewData["ControllerFriendlyName"] List</a>
+            <a id="backToListLink" asp-action="Index">Back to the @ViewData["ControllerFriendlyName"] List</a>
         }
     }
     else
     {
-        <a asp-action="Index">Back to List</a>
+        <a id="backToListLink" asp-action="Index">Back to List</a>
     }
 }
