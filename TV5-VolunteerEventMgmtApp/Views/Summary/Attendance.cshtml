@@ -96,8 +96,8 @@
                     </td>
                
                     <td>
-                        @item.Sheet.Attendees.Count()
-                        (<span class="@item.Percentage.ClassName">@item.Percentage.ToPercentString()</span>)
+                        @item.Sheet.Attendees.Count() / 
+                        <span class="@item.Percentage.ClassName fw-bold">@item.Percentage.ToPercentString()</span>
                     </td>
 
                 </tr>

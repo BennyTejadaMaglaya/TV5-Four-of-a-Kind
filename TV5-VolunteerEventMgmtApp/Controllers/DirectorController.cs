@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TV5_VolunteerEventMgmtApp.Data;
 using TV5_VolunteerEventMgmtApp.Models;
+using TV5_VolunteerEventMgmtApp.Utilities;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
@@ -21,9 +22,27 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         }
 
         // GET: Director
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? actionButton,
+                                    string? searchName,
+                                    string sortDirection = "asc",
+                                    string sortField = "First Name")
         {
-            return View(await _context.Directors.ToListAsync());
+            var directors = _context
+                .Directors
+                .Include(d => d.DirectorLocations)
+                .ThenInclude(s => s.Location)
+                .AsNoTracking();
+
+            if(!string.IsNullOrEmpty(searchName))
+            {
+                directors = directors.Where(s => s.FirstName.ToLower().Contains(searchName.ToLower()) || s.LastName.ToLower().Contains(searchName.ToLower()));
+            }
+            SortUtilities.SwapSortDirection(ref sortField, ref sortDirection, ["First Name", "Last Name", "Location"], actionButton);
+            SortDirectors(ref directors, sortField, sortDirection);
+            PopulateSortFields(sortDirection, sortField);
+            ViewData["searchName"] = searchName;
+
+            return View(await directors.ToListAsync());
         }
 
         // GET: Director/Details/5
@@ -35,6 +54,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             }
 
             var director = await _context.Directors
+                .Include(d => d.DirectorLocations)
+                .ThenInclude(d => d.Location)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (director == null)
             {
@@ -62,6 +83,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    Console.WriteLine("ms");
                     if(location > -1)
                     {
                         director.DirectorLocations.Add(new DirectorLocation { LocationID = location });
@@ -96,8 +118,11 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 return NotFound();
             }
             Console.WriteLine(director.DirectorLocations.Count);
+
+            
+            
             ViewBag.availableLocations = director.DirectorLocations.Count > 0 ?
-                LocationSelectList(true ,director.DirectorLocations.First().DirectorID) : LocationSelectList(true);
+                LocationSelectList(true, director.DirectorLocations.First().LocationID) : LocationSelectList(true);
             return View(director);
         }
 
@@ -169,7 +194,16 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 _context.Directors.Remove(director);
             }
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.InnerException.Message);
+                ModelState.AddModelError("", StaticMessages.PlaceholderError);
+                return View(director);
+            }
             return RedirectToAction(nameof(Index));
         }
 
@@ -187,7 +221,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         private void UpdateDirectorLocation(int location, Director director)
         {
             if (location == -1)
-            { // if we have multiple directors in the future we just need to change this to filter out the id
+            { // if we have multiple directors in the future we just need to change this to filter out the ids
                 // this is messy for now but if the issue arises its in place already.
                 Console.WriteLine("Dir = 0");
                 director.DirectorLocations = new List<DirectorLocation>();
@@ -208,6 +242,32 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                         new List<DirectorLocation>() { new DirectorLocation { DirectorID = director.ID, LocationID = location } };
 
             }
+        }
+
+        private void SortDirectors(ref IQueryable<Director> sheets, string sortField, string sortDirection)
+        {
+            if (sortField == "First Name")
+            {
+                sheets = sortDirection == "asc" ?
+                    sheets.OrderByDescending(s => s.FirstName.ToLower()) : sheets.OrderBy(s => s.FirstName.ToLower());
+            }
+
+            if (sortField == "Last Name")
+            {
+                sheets = sortDirection == "asc" ?
+                    sheets.OrderByDescending(s => s.LastName.ToLower()) : sheets.OrderBy(s => s.LastName.ToLower());
+            }
+            if(sortField == "Location")
+            {
+                sheets = sortDirection == "asc" ?
+                    sheets.OrderByDescending(s => s.DirectorLocations.FirstOrDefault().Location.City) : sheets.OrderBy(s => s.DirectorLocations.FirstOrDefault().Location.City);
+            }
+        }
+
+        private void PopulateSortFields(string sortDirection, string sortField)
+        {
+            ViewData["sortDirection"] = sortDirection;
+            ViewData["sortField"] = sortField;
         }
     }
 }

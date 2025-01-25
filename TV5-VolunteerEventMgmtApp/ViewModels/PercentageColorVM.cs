@@ -2,7 +2,7 @@
 {
     public class PercentageColorVM
     {
-        public const string GreatColor = "#44ce1b";
+        public const string GreatColor = "#006610";
         public const string GoodColor = "#bbdb44";
         public const string PoorColor = "#f2a134";
         public const string BadColor = "#e51f1f";
