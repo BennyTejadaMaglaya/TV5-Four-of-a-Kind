@@ -6,8 +6,11 @@
 		{
 			<ul class="pagination justify-content-center pagination-sm mt-4 mx-0">
 				<li class="page-item">
-					<button type="button" title="Click to change page size" data-bs-toggle="modal" 
-						data-bs-target="#pageSizeModal" class="btn btn-outline-primary py-0 mx-1">
+					<button type="button"
+							title="Click to change page size"
+							onClick="showModal('#pageSizeModal')"
+							data-bs-toggle="tooltip"
+						class="btn btn-outline-purple py-0 mx-1">
 						No Data to Show
 					</button>
 				</li>
@@ -17,8 +20,11 @@
 		{
 			<ul class="pagination justify-content-center pagination-sm mt-4 mx-0">
 				<li class="page-item">
-					<button type="button" title="Click to change page size" data-bs-toggle="modal" data-bs-target="#pageSizeModal"
-							class="btn btn-outline-primary py-0 mx-1">
+					<button type="button"
+							onClick="showModal('#pageSizeModal')"
+							data-bs-toggle="tooltip"
+						title="Click to change page size"
+						class="btn btn-outline-purple py-0 mx-1">
 						Page @Model.PageIndex of @Model.TotalPages
 					</button>
 				</li>

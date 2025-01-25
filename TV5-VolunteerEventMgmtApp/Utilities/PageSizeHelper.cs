@@ -47,7 +47,7 @@ namespace TV5_VolunteerEventMgmtApp.Utilities
         /// <returns></returns>
         public static SelectList PageSizeList(int? pageSize)
         {
-            return new SelectList(new[] { "3", "5", "7", "10", "15", "20", "30", "40", "50", "100", "500" }, pageSize.ToString());
+            return new SelectList(new[] { "4", "6", "8", "10", "20", "30", "40", "50", "100", "500" }, pageSize.ToString());
         }
     }
 
