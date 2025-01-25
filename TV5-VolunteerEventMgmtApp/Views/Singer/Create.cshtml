@@ -4,9 +4,7 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-
-<h4>Singer</h4>
+<h1>Create a New Singer</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -36,6 +34,13 @@
                 <label asp-for="Phone" class="control-label"></label>
                 <input asp-for="Phone" class="form-control" />
                 <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Location</label>
+                <select name="locationID" class="form-control" asp-items="ViewBag.AvailableLocations">
+                    <option value="-1">Select a Location?</option>
+                </select>
             </div>
 
             <div class="form-group">

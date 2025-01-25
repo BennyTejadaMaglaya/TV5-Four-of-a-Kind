@@ -6,6 +6,7 @@ using TV5_VolunteerEventMgmtApp.Models;
 using TV5_VolunteerEventMgmtApp.ViewModels;
 using TV5_VolunteerEventMgmtApp.Utilities;
 using TV5_VolunteerEventMgmtApp.CustomControllers;
+using System.IO;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
@@ -114,6 +115,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			ViewData["pageSizeID"] = PageSizeHelper.PageSizeList(pageSize);
 			var pagedData = await PaginatedList<Singer>.CreateAsync(singers.AsNoTracking(), page ?? 1, pageSize);
 
+
 			return View(pagedData);
 		}
 
@@ -131,13 +133,14 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			{
 				return NotFound();
 			}
-
+		
 			return View(singer);
 		}
 
 		// GET: Singer/Create
 		public IActionResult Create()
 		{
+			PopulateLocationSelect();
 			return View();
 		}
 
@@ -146,13 +149,23 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("FirstName,LastName,DOB,Email,Phone")] Singer singer)
+		public async Task<IActionResult> Create([Bind("FirstName,LastName,DOB,Email,Phone")] Singer singer, int locationID =-1)
 		{
 			try
 			{
 				if (ModelState.IsValid)
 				{
 					_context.Add(singer);
+					if (locationID > -1)
+					{ 
+						var location = await _context.Locations.FirstOrDefaultAsync(x => x.ID == locationID);
+						if(location != null)
+						{
+                            _context.Add(new SingerLocation { Location = location, Singer=singer });
+                        }
+                        
+                    }
+					
 					await _context.SaveChangesAsync();
 					return RedirectToAction(nameof(Index));
 				}
@@ -161,6 +174,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			{ // todo whenever we add concurrency controls update this
 				ModelState.AddModelError("", "There was an error with your request ");
 			}
+			PopulateLocationSelect();
 			return View(singer);
 		}
 
@@ -172,11 +186,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				return NotFound();
 			}
 
-			var singer = await _context.Singers.FindAsync(id);
+			var singer = await _context.Singers.Include(s => s.SingerLocation).FirstOrDefaultAsync(s => s.Id == id);
 			if (singer == null)
 			{
 				return NotFound();
 			}
+			PopulateLocationSelect(selected:singer.SingerLocation.Count() > 0 ? singer.SingerLocation.First().LocationId : -1 );
 			return View(singer);
 		}
 
@@ -185,9 +200,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id)
+		public async Task<IActionResult> Edit(int id, int locationID = -1)
 		{
-			var singer = await _context.Singers.FirstOrDefaultAsync(s => s.Id == id);
+			var singer = await _context.Singers.Include(s => s.SingerLocation).FirstOrDefaultAsync(s => s.Id == id);
 			if (singer == null)
 			{
 				return NotFound();
@@ -197,6 +212,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			{
 				try
 				{
+					UpdateSingerLocation(singer, locationID);
+
 					await _context.SaveChangesAsync();
 				}
 				catch (DbUpdateConcurrencyException)
@@ -212,6 +229,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				}
 				return RedirectToAction(nameof(Index));
 			}
+			PopulateLocationSelect(selected:locationID);
 			return View(singer);
 		}
 
@@ -259,6 +277,37 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		private bool SingerExists(int id)
 		{
 			return _context.Singers.Any(e => e.Id == id);
+		}
+
+
+		private void PopulateLocationSelect(bool availableOnly = true, int selected=-1)
+		{
+            ViewBag.AvailableLocations = new SelectList(availableOnly ?
+                _context.Locations.Where(l => l.IsActive) : _context.Locations, "ID", "City", selected);
+        }
+
+
+		private void UpdateSingerLocation(Singer singer, int locationID)
+		{
+			if(locationID == -1) 
+			{
+				singer.SingerLocation = new List<SingerLocation>();
+			}
+            else
+			{
+                var l = singer.SingerLocation.FirstOrDefault();
+                if (l?.LocationId != locationID)
+                {
+                    if (l != null)
+                    {
+                        _context.Remove(singer.SingerLocation.First());
+                    }
+
+
+                }
+                singer.SingerLocation =
+                        new List<SingerLocation>() { new SingerLocation { Singer = singer, LocationId = locationID } };
+            }
 		}
 	}
 }
