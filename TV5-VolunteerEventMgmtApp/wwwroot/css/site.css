@@ -56,10 +56,10 @@ form label {
     color: #fff;
 }
 
-    .btn-purple:hover {
-        background: var(--purple-hover);
-        color: #fff;
-    }
+.btn-purple:hover {
+    background: var(--purple-hover);
+    color: #fff;
+}
 
 /*btn-outline-purple*/
 .btn-outline-purple {
