@@ -2,7 +2,7 @@
 
     
 
-    <div class="border-dark border-1">
+    <div class="mb-3">
         <h1>Overall Attendance Stats</h1>
         <!--A litle bar displaying each cities average attendance -->
         <partial name="~/Views/Shared/_AttendanceSummaryPartial.cshtml" model="@Model.LocationReport"/>
@@ -65,8 +65,17 @@
                         Director<span class="text-purple">⮁</span>
                     </button>
                 </th>
-                <th>Total Signups</th>
-                <th>Total Attended</th>
+                <th>
+                    <button class="btn btn-toolbar p-0 fw-bold d-inline" name="actionButton" value="Total Signups">
+                        Total Signups<span class="text-purple">⮁</span>
+                        </button>
+                </th>
+                
+                <th>
+                    <button class="btn btn-toolbar p-0 fw-bold d-inline" name="actionButton" value="Total Attended">
+                        Total Attended<span class="text-purple">⮁</span>
+                    </button>
+                </th>
 
             </tr>
         </thead>
@@ -74,7 +83,7 @@
             @foreach (var item in Model.AttendanceSummaries)
             {
                 <tr>
-                    <td>@Html.DisplayFor(m=> item.Sheet.StartTime)</td>
+                    <td>@item.Sheet.StartTime.ToString("MMMM d, yyyy")</td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Sheet.Location.City)
                     </td>

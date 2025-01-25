@@ -4,26 +4,17 @@
 
     {
         public ICollection<LocationReportItem> Items { get; set; } = new List<LocationReportItem>();
-        public AverageValue MinAvgAttendance { get; set; }
-        public AverageValue MaxAvgAttendance { get; set; }
-        public LocationReportVM(ICollection<LocationReportItem> items) 
-        { 
-            Items = items;
-
-            if(Items.Any())
-            {
-                var low = Items.OrderBy(s => s.Average_Attendees).FirstOrDefault();
-                var high = Items.OrderByDescending(s => s.Average_Attendees).FirstOrDefault();
-                MinAvgAttendance = new AverageValue { Average= low.Average_Attendees, Name=low.City };
-               
-                MaxAvgAttendance = new AverageValue { Average = high.Average_Attendees, Name = high.City };
-            } // need to extract name
-        }
+        public NamedValue MinAvgAttendance { get; set; }
+        public NamedValue MaxAvgAttendance { get; set; }
+        public NamedValue MaxTotalSingers { get; set; }
+        public NamedValue MinTotalSingers { get; set; }
+        public int ActiveSingers { get; set; }
+        
     }
 
-    public struct AverageValue()
+    public struct NamedValue()
     {
-        public double Average { get; set; }
+        public double Value { get; set; }
         public string Name { get; set; }
     }
 }
