@@ -1,13 +1,27 @@
 ﻿@model TV5_VolunteerEventMgmtApp.ViewModels.LocationReportVM;
 
-<div class="d-flex gap-5"> 
-    <div class="d-flex align-items-center flex-column">
+<div class="d-flex gap-5 border-bottom border-dark pb-2"> 
+    <div class="d-flex align-items-center flex-column border border-dark border-solid rounded p-2 fw-bold">
         Highest Avg Attendance 
-        <span class="mx-auto">@Model.MaxAvgAttendance.Average.ToString("#.##") at @Model.MaxAvgAttendance.Name</span>
+        <span class="mx-auto">@Model.MaxAvgAttendance.Value.ToString("#.##") at <span class="text-purple fw-bold">@Model.MaxAvgAttendance.Name</span></span>
     </div>
 
-    <div class="d-flex align-items-center flex-column">
+    <div class="d-flex align-items-center flex-column border border-dark border-solid rounded p-2 fw-bold">
         Lowest Avg Attendance
-        <span>@Model.MinAvgAttendance.Average.ToString("#.##") at <span class="text-purple fw-bold">@Model.MinAvgAttendance.Name</span> </span>
+        <span>@Model.MinAvgAttendance.Value.ToString("#.##") at <span class="text-purple fw-bold">@Model.MinAvgAttendance.Name</span> </span>
+    </div>
+
+    <div class="d-flex align-items-center flex-column border border-dark border-solid rounded p-2 fw-bold">
+        Highest Total Singers
+        <span>@Model.MinTotalSingers.Value at <span class="text-purple fw-bold">@Model.MinTotalSingers.Name</span> </span>
+    </div>
+
+    <div class="d-flex align-items-center flex-column border border-dark border-solid rounded p-2 fw-bold">
+        Lowest Total Singers
+        <span>@Model.MaxTotalSingers.Value at <span class="text-purple fw-bold">@Model.MaxTotalSingers.Name</span> </span>
+    </div>
+
+    <div class="d-flex align-items-center flex-column border border-dark border-solid rounded p-2 fw-bold">
+        Registered Singers<span class="text-purple fw-bold">@Model.ActiveSingers</span>
     </div>
 </div>

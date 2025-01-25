@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using System.Globalization;
-using System.Linq;
 using TV5_VolunteerEventMgmtApp.Data;
 using TV5_VolunteerEventMgmtApp.Models;
 using TV5_VolunteerEventMgmtApp.Utilities;
@@ -51,18 +49,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
             FilterDateRange(startWeek, endWeek, ref summary);
             summary = FilterAttendanceSheet(summary, searchCity, searchDirector);
-            SortUtilities.SwapSortDirection(ref sortField, ref sortDirection, ["City", "Director"], actionButton);
+            SortUtilities.SwapSortDirection(ref sortField, ref sortDirection, ["City", "Director", "Total Attended", "Total Signups"], actionButton);
             SortAttendanceSheets(ref summary, sortField, sortDirection);
-            
-            if (startWeek.HasValue)
-            {
-                ViewData["startWeek"] = startWeek.Value;
-            }
-            if (endWeek.HasValue)
-            {
-                ViewData["endWeek"] = endWeek.Value;
-            }
-
+    
 
 
             var summaryValue = await summary.Select(x => new AttendanceSheetVM
@@ -70,9 +59,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 TotalAttendees = x.TotalSingers != 0 ? x.TotalSingers : x.Location.SingerLocations.Where(l => l.Singer.isActive).Count(),
                 Sheet = x,
                 Percentage = new PercentageColorVM((double)x.Attendees.Count() / x.Location.SingerLocations.Where(l => l.Singer.isActive).Count()),
-                
-            })
-            .ToListAsync();
+
+            }).ToListAsync();
+            SortSummarizedAttendanceSheet(ref summaryValue, sortField, sortDirection);
 
 
             ViewData["summaryTitle"] = (!startWeek.HasValue && !endWeek.HasValue) ? "This Weeks Attendance Summary" 
@@ -81,7 +70,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             ViewData["sortDirection"] = sortDirection;
             ViewData["searchCity"] = searchCity;
             ViewData["searchDirector"] = searchDirector;
-            if (startWeek.HasValue) // todo fix this ( think i
+            if (startWeek.HasValue) 
             {
                 ViewData["startWeek"] = startWeek.Value.ToString("yyyy-MM-ddTHH:mm");
             }
@@ -186,7 +175,6 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             })];
         }
 
-
         private static void FilterDateRange(DateTime? start, DateTime? end, ref IQueryable<AttendanceSheet> sheets)
         {
             // if theres no start week and no end week we default to this week otherwise we use the range
@@ -225,6 +213,24 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             }
         }
 
+        private static void SortSummarizedAttendanceSheet(ref List<AttendanceSheetVM> sheets, string sortField, string sortDirection)
+        {
+            
+            if(sortField == "Total Attended")
+            {
+
+                sheets = (sortDirection == "asc" ?
+                    sheets.OrderByDescending(s => s.Percentage.Value) : sheets.OrderBy(s => s.Percentage.Value)).ToList();
+            }
+            if(sortField == "Total Signups")
+            {
+                sheets = (sortDirection == "asc" ?
+                    sheets.OrderByDescending(s => s.TotalAttendees) : sheets.OrderBy(s => s.TotalAttendees)).ToList();
+            }
+            
+        }
+
+
         private static IQueryable<AttendanceSheet> FilterAttendanceSheet(IQueryable<AttendanceSheet> sheets, string? searchCity, string? searchDirector)
         {
             if (!string.IsNullOrEmpty(searchDirector))
@@ -253,26 +259,32 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 .ThenInclude(l => l.Director)
                 .AsNoTracking();
 
-            var summaryVM = new LocationReportVM (new List<LocationReportItem>() );
+            var summaryVM = new LocationReportVM ();
 
             foreach(var l in summary)
             {
-               
-                var vm = new LocationReportItem { 
-                    Average_Attendees =  l.AttendanceSheets.Average(s => s.Attendees.Count()) ,
-                    City = l.City,
-                    Current_Total_Singers = l.SingerLocations.Where(s => s.Singer.isActive).Count(),
 
+                var vm = new LocationReportItem
+                {
+                    Average_Attendees = l.AttendanceSheets.Average(s => s.Attendees.Count()),
+                    City = l.City,
+                    Current_Active_Singers = l.SingerLocations.Where(s => s.Singer.isActive).Count(),
+                    Current_Inactive_Singers = l.SingerLocations.Where(s => !s.Singer.isActive).Count()
                 };
-                Console.WriteLine(vm.Average_Attendees);
                 summaryVM.Items.Add(vm);
             }
 
             var low = summaryVM.Items.OrderBy(s => s.Average_Attendees).FirstOrDefault();
             var high = summaryVM.Items.OrderByDescending(s => s.Average_Attendees).FirstOrDefault();
-            summaryVM.MinAvgAttendance = new AverageValue { Average = low.Average_Attendees, Name = low.City };
+            var highSingers = summaryVM.Items.OrderByDescending(s => s.Current_Active_Singers).FirstOrDefault();
+            var lowSingers = summaryVM.Items.OrderBy(s => s.Current_Active_Singers).FirstOrDefault();
+            summaryVM.MinAvgAttendance = new NamedValue { Value = low.Average_Attendees, Name = low.City };
+            summaryVM.ActiveSingers = summaryVM.Items.Sum(s => s.Current_Active_Singers + s.Current_Inactive_Singers); 
+            // Not total in DB just counting total singerLocation  relationships
 
-            summaryVM.MaxAvgAttendance = new AverageValue { Average = high.Average_Attendees, Name = high.City };
+            summaryVM.MinTotalSingers = new NamedValue { Value = lowSingers.Current_Active_Singers, Name=lowSingers.City };
+            summaryVM.MaxTotalSingers = new NamedValue { Value = highSingers.Current_Active_Singers, Name = highSingers.City };
+            summaryVM.MaxAvgAttendance = new NamedValue { Value = high.Average_Attendees, Name = high.City };
 
 
             return summaryVM;

@@ -4,6 +4,14 @@
     --text-gray: #656565;
 }
 
+.border-solid{
+    border:solid
+}
+
+.rounded{
+    border-radius:4px;
+}
+
 html {
   font-size: 14px;
   position: relative;
