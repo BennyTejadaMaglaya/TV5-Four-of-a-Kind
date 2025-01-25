@@ -261,8 +261,13 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
             var summaryVM = new LocationReportVM ();
 
-            foreach(var l in summary)
+            foreach (var l in summary)
             {
+                if (l.AttendanceSheets.Count() == 0)
+                {
+                    summaryVM.Items.Add(new LocationReportItem { Average_Attendees = 0, City=l.City, Current_Active_Singers=0, Current_Inactive_Singers=0 });
+                    continue;
+                }
 
                 var vm = new LocationReportItem
                 {
@@ -276,14 +281,14 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
             var low = summaryVM.Items.OrderBy(s => s.Average_Attendees).FirstOrDefault();
             var high = summaryVM.Items.OrderByDescending(s => s.Average_Attendees).FirstOrDefault();
-            var highSingers = summaryVM.Items.OrderByDescending(s => s.Current_Active_Singers).FirstOrDefault();
-            var lowSingers = summaryVM.Items.OrderBy(s => s.Current_Active_Singers).FirstOrDefault();
+            var lowSingerTotal = summaryVM.Items.OrderByDescending(s => s.Current_Active_Singers).FirstOrDefault();
+            var highSingerTotal = summaryVM.Items.OrderBy(s => s.Current_Active_Singers).FirstOrDefault();
             summaryVM.MinAvgAttendance = new NamedValue { Value = low.Average_Attendees, Name = low.City };
             summaryVM.ActiveSingers = summaryVM.Items.Sum(s => s.Current_Active_Singers + s.Current_Inactive_Singers); 
             // Not total in DB just counting total singerLocation  relationships
 
-            summaryVM.MinTotalSingers = new NamedValue { Value = lowSingers.Current_Active_Singers, Name=lowSingers.City };
-            summaryVM.MaxTotalSingers = new NamedValue { Value = highSingers.Current_Active_Singers, Name = highSingers.City };
+            summaryVM.MinTotalSingers = new NamedValue { Value = lowSingerTotal.Current_Active_Singers, Name=lowSingerTotal.City };
+            summaryVM.MaxTotalSingers = new NamedValue { Value = highSingerTotal.Current_Active_Singers, Name = highSingerTotal.City };
             summaryVM.MaxAvgAttendance = new NamedValue { Value = high.Average_Attendees, Name = high.City };
 
 
