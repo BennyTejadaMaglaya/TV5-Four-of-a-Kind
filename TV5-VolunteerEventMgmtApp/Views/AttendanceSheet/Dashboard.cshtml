@@ -43,20 +43,37 @@
         <div class="row justify-content-center">
             <div class="col-auto">
                 <div class="action-buttons mt-4 d-flex justify-content-center flex-column flex-md-row gap-3">
+                    <a asp-area="" asp-controller="CsvImport" asp-action="Index" class="text-center">
+                        <div class="big-link background-image-1">
+                            <div class="link-box">
+                                <span class="create-text">Upload</span>
+                                <span class="emp-text">Singer Data</span>
+                            </div>
+                        </div>
+                    </a>
+                    <a asp-area="" asp-controller="AttendanceSheet" asp-action="Create" class="text-center">
+                        <div class="big-link background-image-2">
+                            <div class="link-box">
+                                <span class="create-text">Create</span>
+                                <span class="emp-text">Attendance Sheet</span>
+                            </div>
+                        </div>
+                    </a>
                     <a asp-area="" asp-controller="Director" asp-action="Create" class="text-center">
-                        @* temporary *@
-                        <div>Create Director</div>
-                        <img src="/images/Hue_Saturation-1.png" alt="Create Director" style="height: 240px; width: auto;" />
+                        <div class="big-link background-image-3">
+                            <div class="link-box">
+                                <span class="create-text">Create</span>
+                                <span class="emp-text">Director</span>
+                            </div>
+                        </div>
                     </a>
                     <a asp-area="" asp-controller="Location" asp-action="Create" class="text-center">
-                        @* temporary *@
-                        <div>Create Location</div>
-                        <img src="/images/Hue_Saturation-4.png" alt="Create Location" style="height: 240px; width: auto;" />
-                    </a>
-                    <a asp-area="" asp-controller="CsvImport" asp-action="Index" class="text-center">
-                        @* temporary *@
-                        <div>Import Singers</div>
-                        <img src="/images/Hue_Saturation-6.png" alt="Import Singers" style="height: 240px; width: auto;" />
+                        <div class="big-link background-image-4">
+                            <div class="link-box">
+                                <span class="create-text">Create</span>
+                                <span class="emp-text">Location</span>
+                            </div>
+                        </div>
                     </a>
                 </div>
             </div>
