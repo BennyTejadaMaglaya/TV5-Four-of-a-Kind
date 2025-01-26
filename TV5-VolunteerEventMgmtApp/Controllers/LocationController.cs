@@ -25,7 +25,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             var locations = _context.Locations
                 .Include(l => l.DirectorLocations)
                 .Include(l => l.AttendanceSheets)
-                .Include(l => l.Venues);
+                .Include(l => l.Venues)
+                ;
 
             // sort/filter by director
             // preview of this weeks attendence numbers? 
@@ -42,6 +43,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             }
 
             var location = await _context.Locations
+                .Include (l => l.DirectorLocations).ThenInclude(d => d.Director)
+                .Include (l => l.SingerLocations).ThenInclude(d => d.Singer)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (location == null)
             {
