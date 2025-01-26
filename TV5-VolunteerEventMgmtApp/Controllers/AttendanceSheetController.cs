@@ -489,12 +489,13 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 {
                     ls.LocationName,
                     mean = ls.AttendanceCounts.Any() ? ls.AttendanceCounts.Average() : 0,
-                    PercentageAttendance = ls.TotalSingers > 0 ? (ls.AttendanceCounts.Any() ? (ls.AttendanceCounts.Average() / ls.TotalSingers) * 100 : 0) : 0
+                    PercentageAttendance = ls.TotalSingers > 0 ? (ls.AttendanceCounts.Any() ? (ls.AttendanceCounts.Average() / ls.TotalSingers) * 100 : 0) : 0,
+                    TotalSingers = ls.TotalSingers
                 })
                 .ToList();
 
-                var highestMean = stats.OrderByDescending(s => s.PercentageAttendance).FirstOrDefault();
-                var lowestMean = stats.OrderBy(s => s.PercentageAttendance).FirstOrDefault();
+                var highestMean = stats.OrderByDescending(s => s.PercentageAttendance * s.TotalSingers).FirstOrDefault();
+                var lowestMean = stats.OrderBy(s => s.PercentageAttendance * s.TotalSingers).FirstOrDefault();
 
                 return Json(new
                 {
