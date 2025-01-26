@@ -154,7 +154,7 @@ select option:focus, select option:hover, select option:checked {
 #home-links-container a > div {
     height: 100%;
     width: 100%;
-    background-image: url('../images/purple-splash.png');
+    background-image: url('../images/Hue_Saturation-6-02.png');
     background-position: center;
     background-size: cover;
     display: flex;
@@ -167,7 +167,7 @@ select option:focus, select option:hover, select option:checked {
     height: 100px;
     width: 100px;
     border-radius: 50%;
-    box-shadow: 0 0 50px 35px #00000080;
+    box-shadow: 0 0 65px 50px #00000090;
     z-index: -50;
 }
 /* -- */
@@ -228,7 +228,7 @@ select option:focus, select option:hover, select option:checked {
         grid-template-columns: 1fr 1fr;
     }
     #home-links-container a div div {
-        box-shadow: 0 0 60px 35px #00000080;
+        box-shadow: 0 0 70px 50px #00000090;
     }
 
     .attendance-card {
@@ -247,7 +247,7 @@ select option:focus, select option:hover, select option:checked {
         max-width: 450px;
     }
     #home-links-container a div div {
-        box-shadow: 0 0 80px 60px #00000080;
+        box-shadow: 0 0 100px 80px #00000090;
     }
 
     .attendance-cards-grid {
