@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TV5_VolunteerEventMgmtApp.Data;
 
 #nullable disable
 
-namespace TV5_VolunteerEventMgmtApp.Data.EventMigrations
+namespace TV5_VolunteerEventMgmtApp.Data.VolunteerMigrations
 {
     [DbContext(typeof(VolunteerEventMgmtAppDbContext))]
-    partial class VolunteerEventMgmtAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250125221002_v0.08")]
+    partial class v008
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -254,7 +257,7 @@ namespace TV5_VolunteerEventMgmtApp.Data.EventMigrations
                     b.HasOne("TV5_VolunteerEventMgmtApp.Models.Singer", "Singer")
                         .WithMany("Attendance")
                         .HasForeignKey("SingerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("AttendanceSheet");

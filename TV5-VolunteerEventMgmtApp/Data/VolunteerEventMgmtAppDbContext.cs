@@ -45,29 +45,28 @@ namespace TV5_VolunteerEventMgmtApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //this disables the delete from a director to the Location.
-            modelBuilder.Entity<Director>()
-                .HasMany<DirectorLocation>(d => d.DirectorLocations)
-                .WithOne(d => d.Director)
-                .HasForeignKey(d => d.DirectorID)
-                .OnDelete(DeleteBehavior.Restrict);
+            
+            //modelBuilder.Entity<Director>()
+            //    .HasMany<DirectorLocation>(d => d.DirectorLocations)
+            //    .WithOne(d => d.Director)
+            //    .HasForeignKey(d => d.DirectorID)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
             //i believe this one will require cascade delete
             modelBuilder.Entity<Location>()
                 .HasMany<AttendanceSheet>(d => d.AttendanceSheets)
                 .WithOne(d => d.Location)
-                .HasForeignKey(d => d.LocationId);
+                .HasForeignKey(d => d.LocationId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Location>()
                 .HasMany<Venue>(d => d.Venues)
                 .WithOne(d => d.Location)
                 .HasForeignKey(d => d.LocationId);
 
-            modelBuilder.Entity<Singer>()
-                .HasMany<Attendee>(d => d.Attendance)
-                .WithOne(d => d.Singer)
-                .HasForeignKey(d => d.SingerId)
-                .OnDelete(DeleteBehavior.Restrict);
+           
+
+
 
             // this might need cascade delete?
             modelBuilder.Entity<AttendanceSheet>()
@@ -77,11 +76,12 @@ namespace TV5_VolunteerEventMgmtApp.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
           
-            modelBuilder.Entity<Singer>()
-                .HasMany<SingerLocation>(d => d.SingerLocation)
-                .WithOne(d => d.Singer)
-                .HasForeignKey(d => d.SingerId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<Singer>()
+            //    .HasMany<SingerLocation>(d => d.SingerLocation)
+            //    .WithOne(d => d.Singer)
+            //    .HasForeignKey(d => d.SingerId)
+            //    .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Location>()
                 .HasMany<SingerLocation>(d => d.SingerLocations)
                 .WithOne(d => d.Location)
@@ -101,6 +101,21 @@ namespace TV5_VolunteerEventMgmtApp.Data
                 .HasKey(d => new { d.LocationID, d.DirectorID });
             modelBuilder.Entity<SingerLocation>()
                 .HasKey(d => new { d.SingerId, d.LocationId });
+
+
+
+            modelBuilder.Entity<Singer>()
+                .HasIndex(d => new { d.FirstName, d.LastName, d.DOB })
+                .IsUnique();
+
+            modelBuilder.Entity<Director>()
+                .HasIndex(d => d.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<Location>()
+                .HasIndex(d => d.City)
+                .IsUnique();
+                
 
 
         }
