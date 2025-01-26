@@ -45,12 +45,8 @@ namespace TV5_VolunteerEventMgmtApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             
-            //modelBuilder.Entity<Director>()
-            //    .HasMany<DirectorLocation>(d => d.DirectorLocations)
-            //    .WithOne(d => d.Director)
-            //    .HasForeignKey(d => d.DirectorID)
-            //    .OnDelete(DeleteBehavior.Cascade);
 
             //i believe this one will require cascade delete
             modelBuilder.Entity<Location>()
@@ -88,6 +84,11 @@ namespace TV5_VolunteerEventMgmtApp.Data
                 .HasForeignKey(d => d.LocationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Location>()
+                .HasMany<DirectorLocation>(d => d.DirectorLocations)
+                .WithOne(d => d.Location)
+                .HasForeignKey(d => d.LocationID)
+                .OnDelete(DeleteBehavior.Restrict);
           
 
 
