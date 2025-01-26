@@ -88,7 +88,7 @@
                         @Html.DisplayFor(modelItem => item.Sheet.Location.City)
                     </td>
                     <td>
-                        @item.Sheet.Director.NameSummary()
+                        @item.Sheet.Director?.NameSummary()
                     </td>
                     
                     <td>
