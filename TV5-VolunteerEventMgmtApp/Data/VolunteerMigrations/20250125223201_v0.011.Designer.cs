@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TV5_VolunteerEventMgmtApp.Data;
 
 #nullable disable
 
-namespace TV5_VolunteerEventMgmtApp.Data.EventMigrations
+namespace TV5_VolunteerEventMgmtApp.Data.VolunteerMigrations
 {
     [DbContext(typeof(VolunteerEventMgmtAppDbContext))]
-    partial class VolunteerEventMgmtAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250125223201_v0.011")]
+    partial class v0011
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -23,7 +26,7 @@ namespace TV5_VolunteerEventMgmtApp.Data.EventMigrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("DirectorId")
+                    b.Property<int>("DirectorId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("EndTime")
@@ -228,7 +231,9 @@ namespace TV5_VolunteerEventMgmtApp.Data.EventMigrations
                 {
                     b.HasOne("TV5_VolunteerEventMgmtApp.Models.Director", "Director")
                         .WithMany("AttendanceSheets")
-                        .HasForeignKey("DirectorId");
+                        .HasForeignKey("DirectorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("TV5_VolunteerEventMgmtApp.Models.Location", "Location")
                         .WithMany("AttendanceSheets")
@@ -252,7 +257,7 @@ namespace TV5_VolunteerEventMgmtApp.Data.EventMigrations
                     b.HasOne("TV5_VolunteerEventMgmtApp.Models.Singer", "Singer")
                         .WithMany("Attendance")
                         .HasForeignKey("SingerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("AttendanceSheet");
@@ -271,7 +276,7 @@ namespace TV5_VolunteerEventMgmtApp.Data.EventMigrations
                     b.HasOne("TV5_VolunteerEventMgmtApp.Models.Location", "Location")
                         .WithMany("DirectorLocations")
                         .HasForeignKey("LocationID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Director");

@@ -9,7 +9,7 @@ namespace TV5_VolunteerEventMgmtApp.Models
         public int Id { get; set; }
 
 		[Display(Name = "Director")]
-		public int DirectorId { get; set; }
+		public int? DirectorId { get; set; }
 
 		public Director? Director { get; set; }
 

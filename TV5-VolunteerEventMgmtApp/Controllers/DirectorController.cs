@@ -111,7 +111,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
 
             var director = await _context.Directors
-                .Include(d => d.DirectorLocations).ThenInclude(dl => dl.LocationID)
+                .Include(d => d.DirectorLocations).ThenInclude(dl => dl.Location)
 				.FirstOrDefaultAsync(l => l.ID == id);
             if (director == null)
             {
@@ -134,7 +134,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         public async Task<IActionResult> Edit(int id, int location =-1)
         {
             var director = await _context.Directors
-                .Include(d => d.DirectorLocations).ThenInclude(dl => dl.LocationID)
+                .Include(d => d.DirectorLocations).ThenInclude(dl => dl.Location)
 				.FirstOrDefaultAsync(d => d.ID == id);
             if(director == null)
             {
@@ -189,7 +189,10 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var director = await _context.Directors.FindAsync(id);
+            var director = await _context.Directors
+                .Include(d => d.AttendanceSheets)
+                .FirstOrDefaultAsync(d => d.ID == id);
+
             if (director != null)
             {
                 _context.Directors.Remove(director);
@@ -197,6 +200,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
             try
             {
+                foreach(var item in director.AttendanceSheets)
+                {
+                    item.DirectorId = null;
+                }
+
+
                 await _context.SaveChangesAsync();
             }
             catch(Exception ex)
