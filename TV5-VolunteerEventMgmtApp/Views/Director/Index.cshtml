@@ -4,16 +4,17 @@
     ViewData["Title"] = "View Directors";
 }
 
-<h1>View Directors</h1>
+<h1>Directors</h1>
 
 <form>
     <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
     <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+    <a asp-action="Create" class="btn btn-purple py-1">Create New</a>
     <button class="btn btn-outline-dark py-1" type="button" data-bs-toggle="collapse" id="filterToggle"
             data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
         Filters
     </button>
-    <a asp-action="Create" class="btn btn-purple py-1">Create New</a>
+    
 
     <div class="filter-box collapse mb-2 @ViewData["ShowFilter"]" id="collapseFilter">
 

@@ -316,47 +316,7 @@ namespace TV5_VolunteerEventMgmtApp.Data
                         }
 
 
-                        if (!context.AttendeesSheets.Any())
-                        {
-                           
-                            
-                            int[] locationIds = context.Locations.Select(d => d.ID).ToArray();
-                            foreach (var location in locationIds)
-                            {
-                                int[] VenueIDs = context.Venues.Where(d => d.LocationId == location).Select(d => d.ID).ToArray();
-                                int directorID = context.DirectorLocations.Where(d => d.LocationID == location).Select(d => d.DirectorID).FirstOrDefault();
-
-                                for(int i = 0; i < 10; i++)
-                                {
-                                    
-
-                                    DateTime randDay = DateTime.Now.AddDays(-random.Next(1,90));
-                                    
-                                   
-                                    AttendanceSheet sheet = new AttendanceSheet
-                                    {
-                                        DirectorId = directorID,
-                                        Notes = "example notes.",
-                                        LocationId = location,
-                                        
-                                        StartTime = randDay.AddHours(random.Next(10, 12)),
-                                        EndTime = randDay.AddHours(random.Next(13, 16))
-                                    };
-                                    try
-                                    {
-                                        context.AttendeesSheets.Add(sheet);
-                                        context.SaveChanges();
-                                    }
-                                    catch(Exception ex)
-                                    {
-                                        context.AttendeesSheets.Remove(sheet);
-                                    }
-                                }
-
-
-
-                            }
-                        }
+                       
 
                         if(!context.SingerLocations.Any())
                         {
@@ -388,8 +348,50 @@ namespace TV5_VolunteerEventMgmtApp.Data
                             
                         }
 
+                        if (!context.AttendeesSheets.Any())
+                        {
 
-                        if(!context.Attendees.Any())
+
+                            int[] locationIds = context.Locations.Select(d => d.ID).ToArray();
+                            foreach (var location in locationIds)
+                            {
+                                int[] VenueIDs = context.Venues.Where(d => d.LocationId == location).Select(d => d.ID).ToArray();
+                                int directorID = context.DirectorLocations.Where(d => d.LocationID == location).Select(d => d.DirectorID).FirstOrDefault();
+
+                                for (int i = 0; i < 10; i++)
+                                {
+
+
+                                    DateTime randDay = DateTime.Now.AddDays(-random.Next(1, 90));
+
+
+                                    AttendanceSheet sheet = new AttendanceSheet
+                                    {
+                                        DirectorId = directorID,
+                                        Notes = "example notes.",
+                                        LocationId = location,
+                                        TotalSingers = context.SingerLocations.Where(d => d.LocationId == location).Count(),
+                                        StartTime = randDay.AddHours(random.Next(10, 12)),
+                                        EndTime = randDay.AddHours(random.Next(13, 16))
+                                    };
+                                    try
+                                    {
+                                        context.AttendeesSheets.Add(sheet);
+                                        context.SaveChanges();
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        context.AttendeesSheets.Remove(sheet);
+                                    }
+                                }
+
+
+
+                            }
+                        }
+
+
+                        if (!context.Attendees.Any())
                         {
                             int[] locationIds = context.Locations.Select(d => d.ID).ToArray();
                             foreach (var location in locationIds)
