@@ -1,7 +1,11 @@
-﻿namespace TV5_VolunteerEventMgmtApp.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TV5_VolunteerEventMgmtApp.Models
 {
     public class SingerLocation
     {
+      
+
         public int SingerId { get; set; }
         public Singer? Singer { get; set; }
 

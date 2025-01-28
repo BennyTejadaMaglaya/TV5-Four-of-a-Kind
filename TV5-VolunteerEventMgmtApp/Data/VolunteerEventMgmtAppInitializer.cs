@@ -53,31 +53,37 @@ namespace TV5_VolunteerEventMgmtApp.Data
                                 new Location
                                 {
                                     City = "Niagara",
+                                    Color = "#4CAF50",
                                     IsActive = true
                                 },
                                 new Location
                                 {
                                     City = "Hamilton",
+                                    Color = "#2196F3",
                                     IsActive = true
                                 },
                                 new Location
                                 {
                                     City = "Toronto",
+                                    Color = "#9C27B0",
                                     IsActive = true
                                 },
                                 new Location
                                 {
                                     City = "Saskatoon",
+                                    Color = "#00BCD4",
                                     IsActive = true
                                 },
                                 new Location
                                 {
                                     City = "Surrey",
+                                    Color = "#8BC34A",
                                     IsActive = true
                                 },
                                 new Location
                                 {
                                     City = "Vancouver",
+                                    Color = "#607D8B",
                                     IsActive = false
                                 }
                                 );
@@ -250,8 +256,8 @@ namespace TV5_VolunteerEventMgmtApp.Data
 
                         if (!context.Singers.Any())
                         {
-                            string[] firstNames = new string[] { "Woodstock", "Violet", "Charlie", "Lucy", "Linus", "Franklin", "Marcie", "Schroeder", "Lyric", "Antoinette", "Kendal", "Vivian", "Ruth", "Jamison", "Emilia", "Natalee", "Yadiel", "Jakayla", "Lukas", "Moses", "Kyler", "Karla", "Chanel", "Tyler", "Camilla", "Quintin", "Braden", "Clarence" };
-                            string[] lastNames = new string[] { "Hightower", "Broomspun", "Jones", "Bloggs" };
+                            string[] firstNames = new string[] { "Woodstock", "Violet", "Charlie", "Lucy", "Linus", "Franklin", "Marcie", "Schroeder", "Lyric", "Antoinette", "Kendal", "Vivian", "Ruth", "Jamison", "Emilia", "Natalee", "Yadiel", "Jakayla", "Lukas", "Moses", "Kyler", "Karla", "Chanel", "Tyler", "Camilla", "Quintin", "Braden", "Clarence", "Olivia", "Elliot", "Sophia", "Jackson", "Emma", "Lucas", "Amelia", "Henry", "Isabella", "Caden", "Ava", "James", "Zoe", "Owen", "Grace", "Matthew", "Leah", "Evan", "Ella", "Nathan", "Chloe", "Samuel", "Hannah", "Elijah", "Harper", "Caleb", "Sophie", "Isaac", "Lily", "Liam", "Mia", "Benjamin", "Abigail", "Noah", "Scarlett", "William", "Aria", "Joshua", "Charlotte", "Daniel", "Victoria", "Jacob", "Madison", "Gabriel", "Aiden", "Mackenzie", "Logan", "Sophia", "Jack", "Catherine", "Ethan", "Sadie", "Landon", "Addison", "Matthew", "Ella", "Dylan", "Lillian", "Carter", "Levi", "Samuel", "Hazel", "Jack", "Scarlett", "Lydia", "Avery", "Zachary", "Gracie", "Asher", "Nora", "Jameson", "Holly", "Jackson", "Megan", "Finn", "Cameron", "Delilah", "Ellie", "Aiden", "Skylar", "Connor", "Lydia", "Nicholas", "Paisley", "Samantha", "Mason", "Faith", "Leo", "Ivy", "Jaxon", "Ellis", "Benjamin", "Ruby", "Julian", "Mila", "Jackson" };
+                            string[] lastNames = new string[] { "Hightower", "Broomspun", "Jones", "Bloggs", "Brown", "Smith", "Daniel", "Watts", "Randall", "Arias", "Weber", "Stone", "Carlson", "Robles", "Frederick", "Parker", "Morris", "Soto", "Bruce", "Orozco", "Boyer", "Burns", "Cobb", "Blankenship", "Houston", "Estes", "Atkins", "Miranda", "Zuniga", "Ward", "Mayo", "Costa", "Reeves", "Anthony", "Cook", "Krueger", "Crane", "Watts", "Little", "Henderson", "Bishop", "Mitchell", "Gilbert", "Bryant", "Langford", "West", "Nelson", "Chapman", "Lawrence", "Roberts", "Knight", "Walker", "King", "Adams", "Bailey", "Young", "Russell", "Simmons", "Gonzalez", "Miller", "Moore", "Richards", "Collins", "Perez", "Scott", "Bennett", "Torres", "Graham", "Ramirez", "Cooper", "Gomez", "Wright", "Green", "Reed", "Cooke", "Martin", "Robinson", "Turner", "Gray", "Evans", "James", "Morris", "Davis", "Martinez", "Anderson", "Williams", "Harris", "Baker", "Wood", "Long", "Jameson", "Freeman", "Guthrie", "Shaw", "Stewart", "Mason", "Elliott", "Hamilton", "Sullivan", "Cameron", "Black", "Douglas", "Baker", "Kelley", "Powell", "Riley", "Wallace", "Hayes", "Chapman", "Lawson", "Fox", "Murray", "Ross", "Rich", "Fox", "Dixon", "Chapman", "Lloyd", "Lambert", "Robinson", "Marshall", "Chang", "Foster", "Perry", "Hartman", "Murray" };
 
                             //Choose a random HashSet of 5 first names
                             List<string> selectedFirstNames = new List<string>();
@@ -272,6 +278,7 @@ namespace TV5_VolunteerEventMgmtApp.Data
                                         DOB = DateOnly.FromDateTime(DateTime.Today.AddDays(-random.Next(2922, 6575))),
                                         Phone = random.Next(2, 10).ToString() + random.Next(213214131, 989898989).ToString(),
                                         isActive = true
+                                        
                                     };
                                     try
                                     {
@@ -362,7 +369,7 @@ namespace TV5_VolunteerEventMgmtApp.Data
                                 {
 
 
-                                    DateTime randDay = DateTime.Now.AddDays(-random.Next(1, 90));
+                                    DateTime randDay = DateTime.Now.AddDays(-random.Next(1, 60));
 
 
                                     AttendanceSheet sheet = new AttendanceSheet
