@@ -10,7 +10,13 @@ namespace TV5_VolunteerEventMgmtApp.Models
         [MaxLength(125, ErrorMessage = "City name cannot exeed 125 characters.")]
         public string City { get; set; }
 
-        public bool IsActive { get; set; }
+        
+        public string Color { get; set; }
+
+
+        public bool IsActive { get; set; } = true;
+
+
 
         public ICollection<DirectorLocation> DirectorLocations { get; set; } = new HashSet<DirectorLocation>();
 
