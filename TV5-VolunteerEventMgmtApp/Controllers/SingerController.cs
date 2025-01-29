@@ -259,7 +259,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			var singer = await _context.Singers.FindAsync(id);
 			if (singer != null)
 			{
-				_context.Singers.Remove(singer);
+				singer.isActive = false;
 			}
 			try
 			{

@@ -195,17 +195,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
             if (director != null)
             {
-                _context.Directors.Remove(director);
+                director.IsActive = false;
             }
 
             try
             {
-                foreach(var item in director.AttendanceSheets)
-                {
-                    item.DirectorId = null;
-                }
-
-
+                
                 await _context.SaveChangesAsync();
             }
             catch(Exception ex)
