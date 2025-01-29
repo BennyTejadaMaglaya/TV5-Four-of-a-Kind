@@ -26,6 +26,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 .Include(l => l.DirectorLocations)
                 .Include(l => l.AttendanceSheets)
                 .Include(l => l.Venues)
+                .Where(d => d.IsActive == true)
                 ;
 
             // sort/filter by director
@@ -44,8 +45,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
             var location = await _context.Locations
                 .Include (l => l.DirectorLocations).ThenInclude(d => d.Director)
+                
                 .Include (l => l.SingerLocations).ThenInclude(d => d.Singer)
+                
                 .FirstOrDefaultAsync(m => m.ID == id);
+
+            
             if (location == null)
             {
                 return NotFound();
@@ -188,7 +193,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             var location = await _context.Locations.FindAsync(id);
             if (location != null)
             {
-                _context.Locations.Remove(location);
+                location.IsActive = false;
             }
 
             await _context.SaveChangesAsync();

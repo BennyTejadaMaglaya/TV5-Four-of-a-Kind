@@ -38,7 +38,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			ViewData["BtnText"] = "Filters";
 			int numberFilters = 0;
 
-			var singers = _context.Singers.AsNoTracking();
+			var singers = _context.Singers.Where(d => d.isActive == true).AsNoTracking();
 
 			// Filters
 			if (!string.IsNullOrEmpty(searchFirst))
@@ -259,7 +259,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			var singer = await _context.Singers.FindAsync(id);
 			if (singer != null)
 			{
-				_context.Singers.Remove(singer);
+				singer.isActive = false;
 			}
 			try
 			{

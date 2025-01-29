@@ -161,7 +161,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				EndTime = thisHour.AddHours(1) // End time is one hour after start time
 			};
 
-			ViewData["LocationID"] = new SelectList(_context.Locations.OrderBy(l => l.City), "ID", "City");
+			ViewData["LocationID"] = new SelectList(_context.Locations.Where(d => d.IsActive).OrderBy(l => l.City), "ID", "City");
 
 			// Directors and singers lists will be empty at first,
 			// Then they will be populated when the location is selected
@@ -314,7 +314,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		{
 			var locationId = attendanceSheet.LocationId;
 			//var allSingers = _context.Singers;
-			var allSingersInLocation = _context.Singers.Where(s => s.SingerLocation.Any(sl => sl.LocationId == locationId));
+			var allSingersInLocation = _context.Singers.Where(s => s.SingerLocation.Any(sl => sl.LocationId == locationId) && s.isActive == true);
 			var currentSingersHS = new HashSet<int>(attendanceSheet.Attendees.Select(e => e.SingerId));
 
 			var selected = new List<ListOptionVM>();
@@ -384,7 +384,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		public async Task<IActionResult> GetSingersByLocation(int locationId)
 		{
 			var singers = await _context.Singers
-				.Where(s => s.SingerLocation.Any(sl => sl.LocationId == locationId))
+				.Where(s => s.SingerLocation.Any(sl => sl.LocationId == locationId) && s.isActive == true)
 				.Select(s => new { s.Id, s.FirstName, s.LastName })
 				.OrderBy(s => s.FirstName).ThenBy(s => s.LastName)
 				.ToListAsync();
@@ -395,7 +395,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		public async Task<IActionResult> GetDirectorsByLocation(int locationId)
 		{
 			var singers = await _context.Directors
-				.Where(d => d.DirectorLocations.Any(dl => dl.LocationID == locationId))
+				.Where(d => d.DirectorLocations.Any(dl => dl.LocationID == locationId) && d.IsActive == true)
 				.Select(d => new { d.ID, d.FirstName, d.LastName })
 				.OrderBy(d => d.FirstName).ThenBy(d => d.LastName)
 				.ToListAsync();
