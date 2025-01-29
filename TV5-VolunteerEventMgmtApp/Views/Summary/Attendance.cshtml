@@ -12,7 +12,7 @@
 <h2>@ViewData["summaryTitle"]</h2>
  <form>
      <div>
-        <a class="btn btn-purple py-1 h-50" asp-action="ThisWeeksExcelReport">Export</a>
+        <a class="btn btn-purple py-1 h-50" href="@("ExportToExcel" + ViewData["exportLink"])">Export</a>
         <button class="btn btn-outline-dark py-1" type="button" data-bs-toggle="collapse" id="filterToggle"
                 data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
             Filters

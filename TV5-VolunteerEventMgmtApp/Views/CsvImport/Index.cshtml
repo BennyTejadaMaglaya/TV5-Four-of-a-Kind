@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="~/css/site.css">
 </head>
 <body>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="container">
         <h1>Upload Singer Data</h1>
         <form asp-controller="CsvImport" asp-action="Index" method="post" enctype="multipart/form-data" >
