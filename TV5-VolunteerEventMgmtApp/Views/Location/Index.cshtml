@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<TV5_VolunteerEventMgmtApp.Models.Location>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Tomorrow's Voices";
 }
 
 <h1>Locations</h1>
@@ -13,9 +13,6 @@
                 <th>
                     @Html.DisplayNameFor(model => model.City)
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.IsActive)
-                </th>
                 <th></th>
             </tr>
         </thead>
@@ -25,9 +22,6 @@
                 <tr>
                     <td>
                         @Html.DisplayFor(modelItem => item.City)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.IsActive)
                     </td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |

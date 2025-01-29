@@ -1,7 +1,7 @@
 ﻿@model TV5_VolunteerEventMgmtApp.Models.Location
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Tomorrow's Voices";
 }
 
 <h4>Create a new location</h4>
@@ -16,11 +16,7 @@
                 <input asp-for="City" class="form-control" />
                 <span asp-validation-for="City" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
-                </label>
-            </div>
+            
                 <select name="director" asp-items="ViewBag.availableDirectors">
                     <option value="-1">Select a Director?</option>
                 </select>

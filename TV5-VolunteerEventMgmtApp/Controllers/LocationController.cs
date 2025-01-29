@@ -12,6 +12,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 {
     public class LocationController : Controller
     {
+        private List<string> DefaultColors = new List<string> { "#4CAF50", "#2196F3", "#9C27B0", "#00BCD4", "#8BC34A", "#607D8B" };
+
         private readonly VolunteerEventMgmtAppDbContext _context;
 
         public LocationController(VolunteerEventMgmtAppDbContext context)
@@ -71,10 +73,16 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("City,IsActive")] Location location, int director =-1)
+        public async Task<IActionResult> Create([Bind("City, Color")] Location location, int director =-1)
         {
             try
             {
+                string newColor = DefaultColors[_context.Locations.Count() % DefaultColors.Count()];
+                location.Color = newColor;
+
+                ModelState.Remove("Color");
+               
+
                 if (ModelState.IsValid)
                 {
                     if(director > -1)

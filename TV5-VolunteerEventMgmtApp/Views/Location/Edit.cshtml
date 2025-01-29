@@ -1,7 +1,7 @@
 ﻿@model TV5_VolunteerEventMgmtApp.Models.Location
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Tomorrow's Voices";
 }
 
 <h4>Edit @(Model.City)</h4>
@@ -16,11 +16,6 @@
                 <input asp-for="City" class="form-control" />
                 <span asp-validation-for="City" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
-                </label>
-            </div>
             <select name="director" asp-items="ViewBag.availableDirectors">
                 <option value="-1">Select a Director?</option>
             </select>
@@ -33,7 +28,7 @@
 
 <div>
     <a asp-action="Delete" asp-route-id="@Model.ID" class="text-danger">Delete</a>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to Locations</a>
 </div>
 
 @section Scripts {
