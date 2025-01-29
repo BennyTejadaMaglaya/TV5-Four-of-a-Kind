@@ -38,7 +38,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			ViewData["BtnText"] = "Filters";
 			int numberFilters = 0;
 
-			var singers = _context.Singers.AsNoTracking();
+			var singers = _context.Singers.Where(d => d.isActive == true).AsNoTracking();
 
 			// Filters
 			if (!string.IsNullOrEmpty(searchFirst))

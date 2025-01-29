@@ -31,6 +31,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 .Directors
                 .Include(d => d.DirectorLocations)
                 .ThenInclude(s => s.Location)
+                .Where(d => d.IsActive ==  true)
                 .AsNoTracking();
 
             if(!string.IsNullOrEmpty(searchName))
