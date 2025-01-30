@@ -113,12 +113,6 @@
     display: none !important;
 }
 
-.fc-list-event:hover {
-    background-color: inherit !important;
-    color: inherit !important;
-    text-decoration: none !important;
-}
-
 a {
     text-decoration: none;
 }
@@ -150,17 +144,17 @@ a {
 .big-link {
     color: #fff;
     display: flex;
-    height: 220px;
+    height: 80px;
     justify-content: center;
     margin: auto;
     position: relative;
     text-decoration: none;
-    width: 220px;
+    width: 80px;
     font-weight: bold;
 }
 
 .emp-text {
-    font-size: 1.45em;
+    font-size: .7em;
 }
 
 .link-box {
