@@ -51,9 +51,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             summary = FilterAttendanceSheet(summary, searchCity, searchDirector);
             SortUtilities.SwapSortDirection(ref sortField, ref sortDirection, ["City", "Director", "Total Attended", "Total Signups"], actionButton);
             SortAttendanceSheets(ref summary, sortField, sortDirection);
-    
 
 
+            
             var summaryValue = await summary.Select(x => new AttendanceSheetVM
             { // todo when things are fixed we'll set this to only the Total singers and not check the count
                 TotalAttendees = x.TotalSingers != 0 ? x.TotalSingers : x.Location.SingerLocations.Where(l => l.Singer.isActive).Count(),
@@ -70,6 +70,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             ViewData["sortDirection"] = sortDirection;
             ViewData["searchCity"] = searchCity;
             ViewData["searchDirector"] = searchDirector;
+            ViewData["exportLink"] = Request.QueryString.ToString();
             if (startWeek.HasValue) 
             {
                 ViewData["startWeek"] = startWeek.Value.ToString("yyyy-MM-ddTHH:mm");
@@ -134,25 +135,112 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             
         }
 
-        private async Task<ICollection<AttendanceSheetVM>> ThisWeeksAttendance()
+        [HttpGet]
+        public IActionResult ExportToExcel(DateTime? startWeek,
+                                    DateTime? endWeek,
+                                    string? actionButton,
+                                    string? searchCity,
+                                    string? searchDirector,
+                                    string sortDirection = "asc",
+                                    string sortField = "City")
         {
-            var summary = _context.AttendeesSheets
-                .Where(s => s.StartTime >= DateUtilities.GetWeekStart() && s.StartTime <= DateUtilities.GetWeekEnd())
+            var sheets = _context.AttendeesSheets
                 .Include(s => s.Director)
-
                 .Include(s => s.Location)
                 .ThenInclude(s => s.SingerLocations)
                 .ThenInclude(s => s.Singer)
+                .Include(s => s.Attendees)
                 .AsNoTracking();
-            
-            return await summary.Select(x => new AttendanceSheetVM
-            { // todo when things are fixed we'll set this to only the Total singers and not check the count
-                TotalAttendees = x.Attendees.Count(),
-                Sheet = x,
-                Percentage = new PercentageColorVM((double)x.Attendees.Count() / x.TotalSingers != 0 ? x.TotalSingers : x.Location.SingerLocations.Where(l => l.Singer.isActive).Count())
-            }).ToListAsync();
 
+
+            FilterDateRange(startWeek, endWeek, ref sheets);
+            var filteredSheets = FilterAttendanceSheet(sheets, searchCity, searchDirector);
+            SortAttendanceSheets(ref filteredSheets, sortDirection, sortField);
+
+            var lists = (sortDirection == "asc" ?
+                filteredSheets.OrderByDescending(s => (double)s.Attendees.Count() / s.Location.SingerLocations.Where(l => l.Singer.isActive).Count())
+                :
+                filteredSheets.OrderBy(s => (double)s.Attendees.Count() / s.Location.SingerLocations.Where(l => l.Singer.isActive).Count())).ToList();
+
+
+            var finalized = new List<AttendanceSheetExcel>();
+            var l = new List<string>();
+            Console.WriteLine(finalized.Count());
+            foreach(var x in lists)
+            {
+                Console.WriteLine(x);
+                finalized.Add(new AttendanceSheetExcel
+                {
+                    Available_Singers = x.TotalSingers != 0 ? x.TotalSingers : x.Location.SingerLocations.Where(l => l.Singer.isActive).Count(),
+                    Director_Name = x.Director == null ? "No director (temp)" : x.Director.NameSummary(),
+                    Location_Name = x.Location.City,
+                    Total_Attendees = x.Attendees.Count(),
+                    Percentage_Attended = /*x.TotalSingers != 0 ? ((x.Attendees.Count / x.TotalSingers)).ToString("#0.##%"):*/
+               (((double)x.Attendees.Count() / x.Location.SingerLocations.Where(l => l.Singer.isActive).Count())).ToString("#0.##%")
+                });
+            }
+
+           
+
+            try
+            {
+                var excel = CreateExcel($"Attendance Summary {SummaryUtilities.DateRangeMessage(startWeek, endWeek)}", finalized);
+                return File(excel.Data, excel.MimeType, excel.FileName);
+            }
+            catch
+            {
+
+            }
+
+            return BadRequest(StaticMessages.UnableToCreateReport);
         }
+
+        
+
+
+        private FileData CreateExcel(string reportTitle, ICollection<AttendanceSheetExcel> summary)
+        {
+            using (ExcelPackage excel = new ExcelPackage())
+            {
+                int numRows = summary.Count();
+
+                var workSheet = excel.Workbook.Worksheets.Add("AttendanceReport");
+                workSheet.Cells[3, 1].LoadFromCollection(summary, true);
+                //workSheet.Cells[4, 1, numRows + 3, 2].Style.Font.Bold = true;
+                workSheet.Row(3).Style.Font.Bold = true;
+                //Add a title and timestamp at the top of the report
+                workSheet.Cells[1, 1].Value = reportTitle;
+                using (ExcelRange Rng = workSheet.Cells[1, 1, 1, 6])
+                {
+                    Rng.Merge = true; //Merge columns start and end range
+                    Rng.Style.Font.Bold = true; //Font should be bold
+                    Rng.Style.Font.Size = 18;
+                    Rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                }
+                workSheet.Cells.AutoFitColumns();
+
+                DateTime utcDate = DateTime.UtcNow; // timestamp code
+                TimeZoneInfo esTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                DateTime localDate = TimeZoneInfo.ConvertTimeFromUtc(utcDate, esTimeZone);
+                using (ExcelRange Rng = workSheet.Cells[2, 3])
+                {
+                    Rng.Value = "Created: " + localDate.ToShortTimeString() + " on " +
+                        localDate.ToShortDateString();
+                    Rng.Style.Font.Bold = true;
+                    Rng.Style.Font.Size = 18;
+                    Rng.Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                }
+
+                // todo name the file bsed on the sort parameters when I implement that!
+                Byte[] theData = excel.GetAsByteArray();
+                string filename = $"Attendance-Summary-{DateUtilities.GetWeekStart().ToShortDateString()}.xlsx";
+                string mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                return new FileData { MimeType=mimeType, Data=theData, FileName=filename };
+                
+            }
+        }
+
+ 
 
         private  ICollection<AttendanceSheetExcel> ThisWeeksAttendanceExcel()
         { // todo for speeds sake i will clean this up later but im just tryna get this excel shit working
@@ -229,7 +317,6 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             }
             
         }
-
 
         private static IQueryable<AttendanceSheet> FilterAttendanceSheet(IQueryable<AttendanceSheet> sheets, string? searchCity, string? searchDirector)
         {

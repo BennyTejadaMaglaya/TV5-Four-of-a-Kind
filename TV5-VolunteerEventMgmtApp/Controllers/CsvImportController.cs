@@ -1,10 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Information;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
+using System.IO;
 using TV5_VolunteerEventMgmtApp.Data;
 using TV5_VolunteerEventMgmtApp.Models;
 using TV5_VolunteerEventMgmtApp.Services;
+using TV5_VolunteerEventMgmtApp.Utilities;
+using TV5_VolunteerEventMgmtApp.Utilities.Csv;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
@@ -45,35 +50,41 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             if (csvFile != null && csvFile.Length > 0)
             {
                 Console.WriteLine("Here1");
-                using (var stream = csvFile.OpenReadStream())
+                try
                 {
-                    try
-                    {
-                        var newSingers = _csvService.ReadSingerCsvFile(stream).ToList();
+                    var newSingers = ReadSingerCsv(csvFile);
 
-                        UploadSingers(newSingers, location);
-                        //return Json(new
-                        //{
-                        //    Message = $"Successfully added {newSingers.Count()} new singers.",
-                        //    Success=true
-                        //});
-                        return View(newSingers);
-                    }
-                    catch (ApplicationException ex)
-                    { // invalid csv errors
-                        Console.WriteLine(ex.Message);
-                        ModelState.AddModelError(string.Empty, ex.Message);
-                    }
-                    catch (Exception ex)
+                    //var csvErrors = ValidateAndAddSingers(newSingers, location, out var dbErrors, out var successCount);
+                    var csvErrors = ValidateSingers(newSingers);
+                    
+                        var dbErrors = await AddSingersToDb(newSingers, location);
+                        foreach (var error in dbErrors.Errors)
+                        {
+                            Console.WriteLine($"{error}");
+                        ModelState.AddModelError("", error);
+                        }
+                    
+                        
+                    foreach(var error in csvErrors)
                     {
-                        ModelState.AddModelError(string.Empty, ex.Message);
-                        //return Json(new
-                        //{
-                        //    Message = $"An unexpected error occured.",
-                        //    Success = false
-                        //});
+                       foreach(var e in error.Errors)
+                        {
+                            Console.WriteLine(e);
+                            ModelState.AddModelError("", e);
+                        }
                     }
+                    return View(newSingers);
                 }
+                catch (ApplicationException ex)
+                { // invalid csv errors
+                    Console.WriteLine(ex.Message);
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+
             }
             else
             {
@@ -82,22 +93,118 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             //return Json(new
             //{
             //    Message = $"Please submit a valid CSV File.",
-            //    Success = false
+            //    IsValid = false
             //});
             return View(new List<SingerCsvUpload>());
         }
 
-        private void UploadSingers(List<SingerCsvUpload> singers, Location location)
+        [HttpPost, Route("UploadSingers")]
+        public async Task<IActionResult> UploadSingers(IFormFile csvFile, int locationId)
         {
+            var location = await _context.Locations.FirstOrDefaultAsync(c => c.ID == locationId);
+            if (location == null)
+            {
+                return NotFound("There is no location matching " + locationId);
+            }
+            List<SingerCsvUpload>? newSingers = null;
+            try
+            {
+                newSingers = ReadSingerCsv(csvFile);
+               
+            }
+            catch
+            {
+                // invalid csv File ( most likely headers )
+                return BadRequest(StaticMessages.InvalidCSV);
+            }
+
+            if (newSingers != null)
+            {
+                var csvErrors = ValidateSingers(newSingers);
+                var dbErrors = await AddSingersToDb(newSingers, location);
+                return Json(new
+                {
+                    // CsvErrors type => List<CsvValidationResponse>
+                    CsvErrors = csvErrors, // List<CsvValidationResponse> of errors with a value in the csv file (no first/lastname/DOB in a row
+                    DbErrors = dbErrors.Errors, // List<String> of errors caused by the db (existing child being added, etc.)
+                    dbErrors.SuccessCount, // number of records successfully added
+                });
+                
+                
+            }
+
+
+            return BadRequest(StaticMessages.InvalidCSV);
+        }
+
+        private List<CsvValidationResponse> ValidateSingers(List<SingerCsvUpload> singers)
+        {
+            int lineCount = 1;
+            var errors = new List<CsvValidationResponse>();
+            var failedToAdd = new List<string>();
             foreach (var singer in singers)
             {
-                if (!singer.IsValid())
+                var valid = singer.IsValid();
+                if (!valid.IsValid)
                 {
-                    Console.WriteLine("Invalid singer");
-                    // either we stop entire operation or just skip this one not sure yet
-                    continue; // for now we just skip
+                    valid.LineOfRecord = lineCount;
+                    errors.Add(valid);
+
                 }
 
+                lineCount++;
+
+            }
+
+
+            return errors;
+        }
+
+        //private List<CsvValidationResponse> ValidateAndAddSingers(
+        //    List<SingerCsvUpload> singers,
+        //    Location location,
+        //    out List<string> dbErrors,
+        //    out int successCount)
+        //{
+        //    // we first validate the entire file of singers making sure required info is there
+        //    // return an error message if theres an invalid singer provide the line 
+        //    var errors = ValidateSingers(singers);
+        //    var failedToAdd = new List<string>();
+
+        //    if (errors.Count < 1)
+        //    {
+        //        // then we can try and add them to the database
+        //        try
+        //        {
+        //            var success = AddSingersToDb(singers, location, ref failedToAdd);
+                    
+        //        }
+        //        catch(Exception e)
+        //        {
+        //            Console.WriteLine(e.GetBaseException().Message);
+        //        }
+        //    }
+        //    dbErrors = failedToAdd;
+        //    successCount = 0;
+        //    return errors;
+
+        //}
+
+        private SelectList LocationSelectList(bool activeOnly = true, int selected = -1)
+        {
+            return new SelectList(activeOnly ? _context.Locations.Where(s => s.IsActive) :
+                _context.Locations, "ID", "City", selected);
+        }
+
+        private async Task<DbErrorCollection> AddSingersToDb(
+            List<SingerCsvUpload> singers,
+            Location location
+            )
+        {
+            var collection = new DbErrorCollection();
+            //int success = 0;
+            foreach (var singer in singers)
+            {
                 var singerObj = new Singer
                 {
                     LastName = singer.LastName,
@@ -111,23 +218,52 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 {
                     _context.Add(singerObj);
                     _context.Add(lo);
-                    _context.SaveChanges();
-                    
-                    
+                    await  _context.SaveChangesAsync();
+                    collection.SuccessCount++;
+
+
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    if (e.GetBaseException().Message.Contains("UNIQUE"))
+                    {
+                        collection.Errors.Add($"Unable to add the singer {singerObj.FirstName} " +
+                            $"{singerObj.LastName} as they already exist in the database.");
+                    }
                     _context.Remove(singerObj);
-                    _context.Remove(lo);
+                    //_context.Remove(lo);
+                }
+
+            }
+            return collection;
+        }
+
+        private List<SingerCsvUpload> ReadSingerCsv(IFormFile csvFile)
+        {
+            if (csvFile != null && csvFile.Length > 0)
+            {
+                using (var stream = csvFile.OpenReadStream())
+                {
+                    var newSingers = _csvService.ReadSingerCsvFile(stream).ToList();
+                    return newSingers;
                 }
             }
+            return [];
 
         }
 
-        private SelectList LocationSelectList(bool activeOnly=true, int selected=-1)
+        private List<DirectorCsvUpload> ReadDirectorCsv(IFormFile csvFile)
         {
-            return new SelectList(activeOnly ? _context.Locations.Where(s => s.IsActive) : _context.Locations, "ID", "City", selected);
+            if (csvFile != null && csvFile.Length > 0)
+            {
+                using (var stream = csvFile.OpenReadStream())
+                {
+                    var newDirectors = _csvService.ReadDirectorCsvFile(stream).ToList();
+                    return newDirectors;
+                }
+            }
+            return [];
+
         }
     }
 }
