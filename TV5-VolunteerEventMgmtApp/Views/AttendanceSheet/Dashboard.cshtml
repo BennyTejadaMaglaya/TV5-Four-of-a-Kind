@@ -10,6 +10,45 @@
 
 <link href="~/css/dashboard.css" rel="stylesheet" />
 
+<div class="container my-5">
+	<div class="action-buttons my-4 d-flex justify-content-center gap-5 flex-wrap"
+		 style="max-width: 100%">
+
+		<a asp-area="" asp-controller="AttendanceSheet" asp-action="Create" class="">
+			<div class="big-link background-image-1">
+				<div class="link-box">
+					<span style="font-size: 1.2em;">Create</span>
+					<span class="emp-text">Attendance Sheet</span>
+				</div>
+			</div>
+		</a>
+		<a asp-area="" asp-controller="CsvImport" asp-action="Index" class="">
+			<div class="big-link background-image-2">
+				<div class="link-box">
+					<span style="font-size: 1.2em;">Upload</span>
+					<span class="emp-text">Singer Data</span>
+				</div>
+			</div>
+		</a>
+		<a asp-area="" asp-controller="Director" asp-action="Create" class="">
+			<div class="big-link background-image-3">
+				<div class="link-box">
+					<span style="font-size: 1.2em;">Create</span>
+					<span class="emp-text">Director</span>
+				</div>
+			</div>
+		</a>
+		<a asp-area="" asp-controller="Location" asp-action="Create" class="">
+			<div class="big-link background-image-4">
+				<div class="link-box">
+					<span style="font-size: 1.2em;">Create</span>
+					<span class="emp-text">Location</span>
+				</div>
+			</div>
+		</a>
+	</div>
+</div>
+
 <div class="dashboard-container">
 
 	<!--Left-->
@@ -62,45 +101,6 @@
 	
 </div>
 
-<div class="container my-5">
-	<div class="action-buttons my-4 d-flex justify-content-center gap-5 flex-wrap"
-		 style="max-width: 100%">
-
-		<a asp-area="" asp-controller="AttendanceSheet" asp-action="Create" class="">
-			<div class="big-link background-image-1">
-				<div class="link-box">
-					<span style="font-size: 1.2em;">Create</span>
-					<span class="emp-text">Attendance Sheet</span>
-				</div>
-			</div>
-		</a>
-		<a asp-area="" asp-controller="CsvImport" asp-action="Index" class="">
-			<div class="big-link background-image-2">
-				<div class="link-box">
-					<span style="font-size: 1.2em;">Upload</span>
-					<span class="emp-text">Singer Data</span>
-				</div>
-			</div>
-		</a>
-		<a asp-area="" asp-controller="Director" asp-action="Create" class="">
-			<div class="big-link background-image-3">
-				<div class="link-box">
-					<span style="font-size: 1.2em;">Create</span>
-					<span class="emp-text">Director</span>
-				</div>
-			</div>
-		</a>
-		<a asp-area="" asp-controller="Location" asp-action="Create" class="">
-			<div class="big-link background-image-4">
-				<div class="link-box">
-					<span style="font-size: 1.2em;">Create</span>
-					<span class="emp-text">Location</span>
-				</div>
-			</div>
-		</a>
-	</div>
-</div>
-
 <!-- Event Details Modal -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
@@ -136,29 +136,56 @@
 					timeElement.style.display = 'none';
 				}
 				// change the color based on attendance, kinda how GitHub does the contribution activity
-				var attendancePercentage = info.event.extendedProps.attendancePercentage;
-				if (attendancePercentage) {
-					var backgroundColor = '';
-					var textColor = '';
-					if (attendancePercentage >= 1 && attendancePercentage <= 25) {
-						// Contrast Ratio: 17.34:1 (WCAG AAA: Pass)
-						backgroundColor = '#F6E4F6'; // very light purple
-						textColor = '#000000';
-					} else if (attendancePercentage >= 26 && attendancePercentage <= 50) {
-						// Contrast Ratio: 12.5:1 (WCAG AAA: Pass)
-						backgroundColor = '#EBB7EB'; // medium light purple
-						textColor = '#000000';
-					} else if (attendancePercentage >= 51 && attendancePercentage <= 75) {
-						// Contrast Ratio: 7.18:1 (WCAG AAA: Pass)
-						backgroundColor = '#D86FD8'; // base purple
-						textColor = '#000000';
-					} else if (attendancePercentage >= 76 && attendancePercentage <= 100) {
-						// Contrast Ratio: 7.29:1 (WCAG AAA: Pass)
-						backgroundColor = '#902790'; // dark purple
-						textColor = '#ffffff';
-					}
+				// var attendancePercentage = info.event.extendedProps.attendancePercentage;
+				// if (attendancePercentage) {
+				// 	var backgroundColor = '';
+				// 	var textColor = '';
+				// 	if (attendancePercentage >= 1 && attendancePercentage <= 25) {
+				// 		Contrast Ratio: 17.34:1 (WCAG AAA: Pass)
+				// 		backgroundColor = '#F6E4F6'; very light purple
+				// 		textColor = '#000000';
+				// 	} else if (attendancePercentage >= 26 && attendancePercentage <= 50) {
+				// 		Contrast Ratio: 12.5:1 (WCAG AAA: Pass)
+				// 		backgroundColor = '#EBB7EB'; medium light purple
+				// 		textColor = '#000000';
+				// 	} else if (attendancePercentage >= 51 && attendancePercentage <= 75) {
+				// 		Contrast Ratio: 7.18:1 (WCAG AAA: Pass)
+				// 		backgroundColor = '#D86FD8'; base purple
+				// 		textColor = '#000000';
+				// 	} else if (attendancePercentage >= 76 && attendancePercentage <= 100) {
+				// 		Contrast Ratio: 7.29:1 (WCAG AAA: Pass)
+				// 		backgroundColor = '#902790'; dark purple
+				// 		textColor = '#ffffff';
+				// 	}
+				// 	info.el.style.backgroundColor = backgroundColor;
+				// 	info.el.style.color = textColor;
+				// }
+
+				// these are from Location Controller...
+				var DefaultColors = ["#4CAF50", "#2196F3", "#9C27B0", "#00BCD4", "#8BC34A", "#607D8B"];
+
+				var locationId = info.event.extendedProps.locationId;
+
+				if (locationId !== undefined) {
+					var index = (locationId - 1) % DefaultColors.length;
+					var backgroundColor = DefaultColors[index];
+
+					var textColor = getContrastYIQ(backgroundColor);
+
 					info.el.style.backgroundColor = backgroundColor;
 					info.el.style.color = textColor;
+				}
+
+				// Function to determine the best text color (black or white) based on background color
+				function getContrastYIQ(hexcolor){
+					hexcolor = hexcolor.replace("#", "");
+					var r = parseInt(hexcolor.substr(0,2),16);
+					var g = parseInt(hexcolor.substr(2,2),16);
+					var b = parseInt(hexcolor.substr(4,2),16);
+					// Calculate the perceptive luminance
+					var yiq = ((r*299)+(g*587)+(b*114))/1000;
+					// Return black or white depending on brightness
+					return (yiq >= 128) ? '#000000' : '#ffffff';
 				}
 			},
 			eventClick: function(info) {

@@ -417,7 +417,10 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                     Title = (a.Location != null ? a.Location.City : "N/A") + $" Attendance ({a.Attendees.Count} / {_context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == locationId))})",
                     Start = a.StartTime.ToString("yyyy-MM-ddTHH:mm:ss"),
 					End = a.EndTime.ToString("yyyy-MM-ddTHH:mm:ss"),
-                    ExtendedProps = new { AttendancePercentage = (a.Attendees.Count * 100) / _context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == a.LocationId)) }
+                    ExtendedProps = new {
+						AttendancePercentage = (a.Attendees.Count * 100) / _context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == a.LocationId)),
+                        LocationId = a.LocationId
+                    }
                 }).ToListAsync();
 
 			return Json(attendanceHistory);
@@ -445,7 +448,10 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                     Title = (a.Location != null ? a.Location.City : "N/A") + $" Attendance ({a.Attendees.Count} / {_context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == a.LocationId))})",
                     Start = a.StartTime.ToString("yyyy-MM-ddTHH:mm:ss"),
 					End = a.EndTime.ToString("yyyy-MM-ddTHH:mm:ss"),
-                    ExtendedProps = new { AttendancePercentage = (a.Attendees.Count * 100) / _context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == a.LocationId)) }
+                    ExtendedProps = new {
+						AttendancePercentage = (a.Attendees.Count * 100) / _context.Singers.Count(s => s.SingerLocation.Any(sl => sl.LocationId == a.LocationId)),
+                        LocationId = a.LocationId
+                    }
                 }).ToListAsync();
 
 			return Json(attendanceHistory);

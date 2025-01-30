@@ -7,6 +7,7 @@
 
 .left-panel {
     flex: 1 1 25%;
+    height: fit-content;
     padding: 15px;
     margin-bottom: 30px;
     box-shadow: 0 4px 12px 4px #00000020;
@@ -40,7 +41,7 @@
 
 #calendar {
     max-width: 100%;
-    height: fit-content;
+    height: 450px; /*make the height adjust in relation with the left widget*/
     margin: 0 auto;
 }
 
@@ -112,6 +113,12 @@
     display: none !important;
 }
 
+.fc-list-event:hover {
+    background-color: inherit !important;
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
 a {
     text-decoration: none;
 }
@@ -143,17 +150,17 @@ a {
 .big-link {
     color: #fff;
     display: flex;
-    height: 250px;
+    height: 220px;
     justify-content: center;
     margin: auto;
     position: relative;
     text-decoration: none;
-    width: 250px;
+    width: 220px;
     font-weight: bold;
 }
 
 .emp-text {
-    font-size: 1.6em;
+    font-size: 1.45em;
 }
 
 .link-box {
@@ -189,5 +196,23 @@ a {
 
     .fc-event-time {
         font-size: 0.75em;
+    }
+
+    .action-buttons a {
+        flex-basis: calc(40% - 1rem);
+    }
+
+    .big-link {
+        height: 150px;
+        width: 150px;
+    }
+
+    .big-link img {
+        width: 100%;
+        height: auto;
+    }
+
+    .emp-text {
+        font-size: 1.15em;
     }
 }
