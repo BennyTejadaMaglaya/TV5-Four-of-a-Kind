@@ -128,7 +128,10 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			}
 
 			var singer = await _context.Singers
-				.FirstOrDefaultAsync(m => m.Id == id);
+				.Include(s => s.SingerLocation)
+				.ThenInclude(s => s.Location).Where(l => l.isActive == true)
+				.FirstOrDefaultAsync(s => s.Id == id);
+
 			if (singer == null)
 			{
 				return NotFound();
@@ -186,7 +189,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				return NotFound();
 			}
 
-			var singer = await _context.Singers.Include(s => s.SingerLocation).FirstOrDefaultAsync(s => s.Id == id);
+			var singer = await _context.Singers
+				.Include(s => s.SingerLocation)
+				.FirstOrDefaultAsync(s => s.Id == id);
 			if (singer == null)
 			{
 				return NotFound();
