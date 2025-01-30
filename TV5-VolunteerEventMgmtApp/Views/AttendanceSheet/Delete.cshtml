@@ -26,14 +26,20 @@
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.StartTime)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartTime)
+        <dd class="col-sm-10">
+            @{
+                var start = Model.StartTime.ToString("MMM dd, yyyy - hh:mm tt");
+            }
+            @start
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.EndTime)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndTime)
+        <dd class="col-sm-10">
+            @{
+                var end = Model.EndTime.ToString("MMM dd, yyyy - hh:mm tt");
+            }
+            @end
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Location)

@@ -39,10 +39,21 @@
             </div>
 
             <div class="form-group">
-                <label>Location</label>
-                <select name="locationID" class="form-control" asp-items="ViewBag.AvailableLocations">
-                    <option value="-1">Select a Location?</option>
+                <label asp-for="SingerLocation" class="control-label"></label>
+                <select asp-for="SingerLocation" name="locationID" class="form-control" asp-items="ViewBag.AvailableLocations">
                 </select>
+                <span asp-validation-for="SingerLocation" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="EmergencyContactName" class="control-label"></label>
+                <input asp-for="EmergencyContactName" class="form-control" />
+                <span asp-validation-for="EmergencyContactName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Notes" class="control-label"></label>
+                <textarea asp-for="Notes" class="form-control"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
             </div>
 
             <div class="form-group">

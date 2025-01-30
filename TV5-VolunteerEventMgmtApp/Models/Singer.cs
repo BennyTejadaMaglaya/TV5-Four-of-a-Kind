@@ -23,6 +23,7 @@ namespace TV5_VolunteerEventMgmtApp.Models
         [StringLength(128, ErrorMessage = "A first name must be less than 128 characters long.")]
         [Required(ErrorMessage = "Please enter a first name")]
         public string FirstName { get; set; }
+
         [Required(ErrorMessage = "Please enter a last name")]
         [StringLength(128, ErrorMessage = "A last name must be less than 128 characters long.")]
         [Display(Name = "Last Name")]
@@ -56,7 +57,9 @@ namespace TV5_VolunteerEventMgmtApp.Models
         public bool isActive { get; set; } = true;
 
         public ICollection<Attendee> Attendance {  get; set; } = new HashSet<Attendee>();
-        public ICollection<SingerLocation> SingerLocation { get; set; } = new HashSet<SingerLocation>();
+
+		[Display(Name = "Locations")]
+		public ICollection<SingerLocation> SingerLocation { get; set; } = new HashSet<SingerLocation>();
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
