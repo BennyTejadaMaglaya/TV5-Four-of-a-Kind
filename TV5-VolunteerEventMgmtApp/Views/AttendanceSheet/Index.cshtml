@@ -27,20 +27,19 @@
 
 		<!-- FILTER BOX -->
 		<div class="filter-box collapse mb-2 @ViewData["ShowFilter"]" id="collapseFilter">
-			<div class="px-2 pb-0">
 
-				<div class="row">
-					<div class="form-group col-md-4">
-						<label class="control-label">Filter by Location</label>
-						@Html.DropDownList("LocationId", null, "All", htmlAttributes: new { @class = "form-control p-1" })
-					</div>
+			<div class="row">
+				<div class="form-group col-md-4">
+					<label class="control-label">Filter by Location</label>
+					@Html.DropDownList("LocationId", null, "All", htmlAttributes: new { @class = "form-control p-1" })
+				</div>
 
-					<div class="form-group col-md-4 align-self-end">
-						<input type="submit" id="btnApply" name="actionButton" value="Apply" class="btn btn-outline-purple py-1" />
-						<a asp-action="Index" id="btnClear" class="btn btn-outline-dark py-1">Clear</a>
-					</div>
+				<div class="form-group col-md-4 align-self-end">
+					<input type="submit" id="btnApply" name="actionButton" value="Apply" class="btn btn-purple py-1" />
+					<a asp-action="Index" id="btnClear" class="btn btn-outline-dark py-1">Clear</a>
 				</div>
 			</div>
+
 		</div>
 	</div>
 
@@ -92,13 +91,7 @@
 							</button>
 						</th>
 						<th>
-							@Html.DisplayNameFor(model => model.StartTime)
-						</th>
-						<th>
 							@Html.DisplayNameFor(model => model.Attendees)
-						</th>
-						<th class="d-none d-lg-table-cell">
-							@Html.DisplayNameFor(model => model.Notes)
 						</th>
 						<th></th>
 					</tr>
@@ -121,20 +114,7 @@
 								@date
 							</td>
 							<td>
-								@{
-									var startTime = item.StartTime.ToString("hh:mm tt");
-								}
-								@startTime
-							</td>
-							<td>
 								@Html.DisplayFor(modelItem => item.Attendees.Count)
-							</td>
-							<td class="d-none d-lg-table-cell col-3">
-								@{
-									var notes = item.Notes;
-									var truncatedNotes = notes.Length > 20 ? notes.Substring(0, 20) + "..." : notes;
-								}
-								@truncatedNotes
 							</td>
 							<td>
 								<a asp-action="Edit" asp-route-id="@item.Id" class="text-purple text-decoration-none">Edit</a> |

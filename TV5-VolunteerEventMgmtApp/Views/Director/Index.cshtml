@@ -1,97 +1,103 @@
 ﻿@model IEnumerable<TV5_VolunteerEventMgmtApp.Models.Director>
 
 @{
-    ViewData["Title"] = "Tomorrow's Voices";
+	ViewData["Title"] = "Tomorrow's Voices";
 }
 
 <h1>Directors</h1>
 
+<hr />
 <form>
-    <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
-    <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
-    <a asp-action="Create" class="btn btn-purple py-1">Create New</a>
-    <button class="btn btn-outline-dark py-1" type="button" data-bs-toggle="collapse" id="filterToggle"
-            data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
-        Filters
-    </button>
-    
+	<input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
+	<input type="hidden" name="sortField" value="@ViewData["sortField"]" />
 
-    <div class="filter-box collapse mb-2 @ViewData["ShowFilter"]" id="collapseFilter">
+	<div class="form-horizontal">
 
-        <input type="hidden" name="sortDirection" value="@ViewData["sortDirection"]" />
-        <input type="hidden" name="sortField" value="@ViewData["sortField"]" />
+		<div class="mb-2">
+			<a asp-action="Create" class="btn btn-purple py-1">Create New</a>
 
-        <div class="d-inline-flex gap-3">
-            <div>
-                <label class="d-block" for="searchName">Name</label>
-                <input class="form-control p-1" id="searchName" type="text" name="searchName" value="@ViewData["searchName"]" />
-            </div>
+			<button class="btn @ViewData["BtnBg"] py-1" type="button" data-bs-toggle="collapse" id="filterToggle"
+					data-bs-target="#collapseFilter" aria-expanded="false" aria-controls="collapseFilter">
+				@ViewData["BtnText"]
+			</button>
+		</div>
 
-        </div>
-        <div>
-            <input class="btn btn-purple py-1 mt-2" type="submit" value="Filter" />
-            <a class="btn btn-outline-dark mt-2 py-1" asp-action="Index">Clear</a>
-        </div>
+		<div class="filter-box collapse mb-2 @ViewData["ShowFilter"]" id="collapseFilter">
 
-    </div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    <button type="submit" name="actionButton" value="First Name"
-                            class="btn btn-toolbar p-0 fw-bold d-inline">
-                        First Name <span class="text-purple">&#11137</span>
-                    </button>
-                </th>
-                <th>
-                    <button type="submit" name="actionButton" value="Last Name"
-                            class="btn btn-toolbar p-0 fw-bold d-inline">
-                        Last Name <span class="text-purple">&#11137</span>
-                    </button>
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.PhoneNumber)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Email)
-                </th>
-                <th>
-                    <button type="submit" name="actionButton" value="Location"
-                            class="btn btn-toolbar p-0 fw-bold d-inline">
-                        Locations <span class="text-purple">&#11137</span>
-                    </button>
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-    @foreach (var item in Model) {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FirstName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LastName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PhoneNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-                    @foreach(var location in item.DirectorLocations)
-                    {
-                        <span class="d-block">@location.Location.City</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-                </td>
-            </tr>
-    }
-        </tbody>
-    </table>
+			<div class="row">
+				<div class="form-group col-md-4">
+					<label class="d-block" for="searchName">Filter by Name</label>
+					<input class="form-control p-1" id="searchName" type="text" name="searchName" value="@ViewData["searchName"]" />
+				</div>
+
+				<div class="form-group col-md-4 align-self-end">
+					<input class="btn btn-purple py-1 mt-2" type="submit" value="Apply" />
+					<a class="btn btn-outline-dark mt-2 py-1" asp-action="Index">Clear</a>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>
+					<button type="submit" name="actionButton" value="First Name"
+							class="btn btn-toolbar p-0 fw-bold d-inline">
+						First Name <span class="text-purple">&#11137</span>
+					</button>
+				</th>
+				<th>
+					<button type="submit" name="actionButton" value="Last Name"
+							class="btn btn-toolbar p-0 fw-bold d-inline">
+						Last Name <span class="text-purple">&#11137</span>
+					</button>
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.PhoneNumber)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.Email)
+				</th>
+				<th>
+					<button type="submit" name="actionButton" value="Location"
+							class="btn btn-toolbar p-0 fw-bold d-inline">
+						Locations <span class="text-purple">&#11137</span>
+					</button>
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td>
+						@Html.DisplayFor(modelItem => item.FirstName)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.LastName)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.PhoneNumber)
+					</td>
+					<td>
+						@Html.DisplayFor(modelItem => item.Email)
+					</td>
+					<td>
+						@foreach (var location in item.DirectorLocations)
+						{
+							<span class="d-block">@location.Location.City</span>
+						}
+					</td>
+					<td>
+						<a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+						<a asp-action="Details" asp-route-id="@item.ID">Details</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
 </form>

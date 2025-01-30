@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using TV5_VolunteerEventMgmtApp.CustomControllers;
 using TV5_VolunteerEventMgmtApp.Data;
 using TV5_VolunteerEventMgmtApp.Models;
 using TV5_VolunteerEventMgmtApp.Utilities;
@@ -13,8 +14,8 @@ using TV5_VolunteerEventMgmtApp.ViewModels;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
-    public class DirectorController : Controller
-    {
+    public class DirectorController : ElephantController
+	{
         private readonly VolunteerEventMgmtAppDbContext _context;
 
         public DirectorController(VolunteerEventMgmtAppDbContext context)
@@ -28,6 +29,11 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                                     string sortDirection = "asc",
                                     string sortField = "First Name")
         {
+			// Filtering data
+			ViewData["BtnBg"] = "btn-outline-dark";
+			ViewData["BtnText"] = "Filters";
+			int numberFilters = 0;
+
             var directors = _context
                 .Directors
                 .Include(d => d.DirectorLocations)
@@ -35,11 +41,19 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 .Where(d => d.IsActive ==  true)
                 .AsNoTracking();
 
-            if(!string.IsNullOrEmpty(searchName))
+			if (!string.IsNullOrEmpty(searchName))
             {
                 directors = directors.Where(s => s.FirstName.ToLower().Contains(searchName.ToLower()) || s.LastName.ToLower().Contains(searchName.ToLower()));
-            }
-            SortUtilities.SwapSortDirection(ref sortField, ref sortDirection, ["First Name", "Last Name", "Location"], actionButton);
+				numberFilters++;
+			}
+			if (numberFilters != 0)
+			{
+				ViewData["BtnBg"] = "btn-dark";
+				ViewData["BtnText"] = $"{numberFilters} Filter{(numberFilters > 1 ? "s" : "")} Applied";
+				ViewData["ShowFilter"] = " show";
+			}
+
+			SortUtilities.SwapSortDirection(ref sortField, ref sortDirection, ["First Name", "Last Name", "Location"], actionButton);
             SortDirectors(ref directors, sortField, sortDirection);
             PopulateSortFields(sortDirection, sortField);
             ViewData["searchName"] = searchName;

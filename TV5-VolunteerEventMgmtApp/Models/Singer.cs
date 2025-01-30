@@ -13,7 +13,6 @@ namespace TV5_VolunteerEventMgmtApp.Models
             SocialWorker
         }
 
-
         public int Id { get; set; }
 
 		[Display(Name = "Phone")]
@@ -54,25 +53,20 @@ namespace TV5_VolunteerEventMgmtApp.Models
         [DataType(DataType.PhoneNumber)]
         public string? Phone {  get; set; }
 
-
         public bool isActive { get; set; } = true;
 
         public ICollection<Attendee> Attendance {  get; set; } = new HashSet<Attendee>();
         public ICollection<SingerLocation> SingerLocation { get; set; } = new HashSet<SingerLocation>();
 
-
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-             
-            if(DOB > DateOnly.FromDateTime(DateTime.Now.AddYears(-8))){
+            if (DOB > DateOnly.FromDateTime(DateTime.Now.AddYears(-8))){
                 yield return new ValidationResult("Singers must be at least 8 years old.");
             }
-            if(DOB < DateOnly.FromDateTime(DateTime.Now.AddYears(-18)))
+            if (DOB < DateOnly.FromDateTime(DateTime.Now.AddYears(-18)))
             {
                 yield return new ValidationResult("Singers cannot be over the age of 18.");
-            }
-
-                    
+            }      
         }
     }
 }
