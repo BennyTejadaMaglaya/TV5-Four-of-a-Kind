@@ -4,7 +4,7 @@
     ViewData["Title"] = "Tomorrow's Voices";
 }
 
-<h1>@(Model.FullName) Details</h1>
+<h1>Director @(Model.FullName) Details</h1>
 
 <div>
    
@@ -47,5 +47,5 @@
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.ID">Edit</a> |
-    <a asp-action="Index">Back to Directors</a>
+    <partial name="_BackToList" />
 </div>

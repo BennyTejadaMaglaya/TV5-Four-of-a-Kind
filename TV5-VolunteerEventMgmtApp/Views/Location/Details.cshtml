@@ -4,11 +4,10 @@
     ViewData["Title"] = "Tomorrow's Voices";
 }
 
-<h4>@(Model.City) Details</h4>
+<h1>Location @(Model.City) Details</h1>
 
+<hr />
 <div>
-    
-    <hr />
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.City)
@@ -50,5 +49,5 @@
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.ID">Edit</a> |
-    <a asp-action="Index">Back to Locations</a>
+    <partial name="_BackToList" />
 </div>

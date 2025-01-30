@@ -5,11 +5,11 @@
 }
 
 <h1>Delete Director @Model.NameSummary()</h1>
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-<h3>Are you sure you want to delete this?</h3>
+
+<hr />
+<h4 class="text-danger mb-4">Are you sure you want to delete this director?</h4>
+
 <div>
-    <h4>Director</h4>
-    <hr />
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.FirstName)
@@ -36,10 +36,13 @@
             @Html.DisplayFor(model => model.Email)
         </dd>
     </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="ID" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to Directors</a>
+
+    <form asp-action="Delete" class="form-group">
+		<input type="hidden" asp-for="ID" />
+        <input type="submit" value="Delete" class="btn btn-danger" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     </form>
+    <div>
+        <partial name="_BackToList" />
+    </div>
 </div>

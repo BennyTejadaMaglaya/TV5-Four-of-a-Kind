@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using TV5_VolunteerEventMgmtApp.CustomControllers;
 using TV5_VolunteerEventMgmtApp.Data;
 using TV5_VolunteerEventMgmtApp.Models;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
-    public class LocationController : Controller
-    {
+    public class LocationController : ElephantController
+	{
         private List<string> DefaultColors = new List<string> { "#4CAF50", "#2196F3", "#9C27B0", "#00BCD4", "#8BC34A", "#607D8B" };
 
         private readonly VolunteerEventMgmtAppDbContext _context;
