@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using TV5_VolunteerEventMgmtApp.Data;
 using TV5_VolunteerEventMgmtApp.Models;
 using TV5_VolunteerEventMgmtApp.Utilities;
+using TV5_VolunteerEventMgmtApp.ViewModels;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
@@ -69,7 +70,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // GET: Director/Create
         public IActionResult Create()
         {
-            ViewBag.availableLocations = LocationSelectList(true);
+            Director director = new Director();
+            PopulateAssignedLocations(director);
             return View();
         }
 
@@ -78,20 +80,25 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FirstName,LastName,PhoneNumber,Email")] Director director, int location =-1)
+        public async Task<IActionResult> Create([Bind("FirstName,LastName,PhoneNumber,Email")] Director director, string[] selectedLocations)
         {
             try
             {
-                if (ModelState.IsValid)
+                if (selectedLocations != null)
                 {
-                    Console.WriteLine("ms");
-                    if(location > -1)
+                    foreach (var location in selectedLocations)
                     {
-                        director.DirectorLocations.Add(new DirectorLocation { LocationID = location });
-                    }
+                        var locationToAdd = new DirectorLocation { DirectorID = director.ID, LocationID = int.Parse(location) };
+                        director.DirectorLocations.Add(locationToAdd);
+                    };
+                }
+
+                
+                if (ModelState.IsValid)
+                {   
                     _context.Add(director);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Details", new {director.ID});
                 }
             }
             catch
@@ -99,6 +106,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 // todo update when we get to concurrency
                 ModelState.AddModelError("", "Error when creating this director");
             }
+            PopulateAssignedLocations(director);
             return View(director);
         }
 
@@ -118,12 +126,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             {
                 return NotFound();
             }
-            Console.WriteLine(director.DirectorLocations.Count);
-
-            
-            
-            ViewBag.availableLocations = director.DirectorLocations.Count > 0 ?
-                LocationSelectList(true, director.DirectorLocations.First().LocationID) : LocationSelectList(true);
+            PopulateAssignedLocations(director);
             return View(director);
         }
 
@@ -132,7 +135,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, int location =-1)
+        public async Task<IActionResult> Edit(int id, string[] selectedLocations)
         {
             var director = await _context.Directors
                 .Include(d => d.DirectorLocations).ThenInclude(dl => dl.Location)
@@ -142,13 +145,22 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 return NotFound();
             }
 
-            if (await TryUpdateModelAsync(director, "", d => d.FirstName, d=> d.LastName, d=> d.Email, d=> d.PhoneNumber))
+            if(selectedLocations.Length == 0)
+            {
+                ModelState.AddModelError("DirectorLocations", "A director requires at least 1 location.");
+                PopulateAssignedLocations(director);
+                return View(director);
+            }
+            ModelState.Remove("DirectorLocations");
+            UpdateDirectorLocation(selectedLocations, director);
+
+
+            if (await TryUpdateModelAsync<Director>(director, "", d => d.FirstName, d=> d.LastName, d=> d.Email, d=> d.PhoneNumber))
             {
                 try
                 {
-                    UpdateDirectorLocation(location, director);
-                  
                     await _context.SaveChangesAsync();
+                    return RedirectToAction("Details", new {director.ID});
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -161,9 +173,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                
             }
-
+            PopulateAssignedLocations(director);
             return View(director);
         }
 
@@ -218,36 +230,60 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             return _context.Directors.Any(e => e.ID == id);
         }
 
-        private SelectList LocationSelectList(bool availableOnly, int selected =-1)
+        private void PopulateAssignedLocations(Director director)
         {
-            return new SelectList(availableOnly ? 
-                _context.Locations.Where(l => l.IsActive) : _context.Locations, "ID", "City", selected); 
+            var allOptions = _context.Locations.Where(d => d.IsActive);
+            var currentLocations = new HashSet<int>(director.DirectorLocations.Select(d => d.LocationID));
+            var checkboxes = new List<CheckOptionVM>();
+            foreach (var item in allOptions)
+            {
+                checkboxes.Add(new CheckOptionVM
+                {
+                    ID = item.ID,
+                    DisplayText = item.City,
+                    Assigned = currentLocations.Contains(item.ID)
+                });
+            }
+            ViewData["AvailableLocations"] = checkboxes;
+      
         }
 
-        private void UpdateDirectorLocation(int location, Director director)
+        private SelectList LocationSelectList(bool availableOnly)
         {
-            if (location == -1)
-            { // if we have multiple directors in the future we just need to change this to filter out the ids
-                // this is messy for now but if the issue arises its in place already.
-                Console.WriteLine("Dir = 0");
-                director.DirectorLocations = new List<DirectorLocation>();
-            }
-            else
+            return new SelectList(availableOnly ? 
+                _context.Locations.Where(l => l.IsActive) : _context.Locations, "ID", "City"); 
+        }
+
+        private void UpdateDirectorLocation(string[] selectedLocations, Director director)
+        {
+                      
+            if(selectedLocations == null)
             {
-                var l = director.DirectorLocations.FirstOrDefault();
-                if (l?.DirectorID != location)
-                {
-                    if (l != null)
-                    {
-                        _context.DirectorLocations.Remove(director.DirectorLocations.First());
-                    }
-
-                    
-                }
-                director.DirectorLocations =
-                        new List<DirectorLocation>() { new DirectorLocation { DirectorID = director.ID, LocationID = location } };
-
+                director.DirectorLocations = new List<DirectorLocation>();
+                return;
             }
+
+            var selectedOptionsHS = new HashSet<string>(selectedLocations);
+            var directorLocations = new HashSet<int>(director.DirectorLocations.Select(d => d.LocationID));
+            foreach(var item in _context.Locations.Where(d => d.IsActive))
+            {
+                if (selectedOptionsHS.Contains(item.ID.ToString()))
+                {
+                    if (!directorLocations.Contains(item.ID))
+                    {
+                        director.DirectorLocations.Add(new DirectorLocation { DirectorID = director.ID, LocationID = item.ID });
+                    }
+                }
+                else
+                {
+                    if (directorLocations.Contains(item.ID))
+                    {
+                        DirectorLocation locationToRemove = director.DirectorLocations.SingleOrDefault(d => d.LocationID == item.ID);
+                        _context.Remove(locationToRemove);
+                    }
+                }
+            }
+            
         }
 
         private void SortDirectors(ref IQueryable<Director> sheets, string sortField, string sortDirection)
