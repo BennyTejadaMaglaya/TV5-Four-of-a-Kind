@@ -174,3 +174,66 @@
 		text-decoration: none !important;
 	}
 </style>
+
+@section Scripts {
+	<script src="~/js/dashboard.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script>
+		$(document).ready(function () {
+			$('.open-modal').click(function (e) {
+				e.preventDefault();
+
+				var partialViewName = $(this).data('partial');
+				var modalTitle = $(this).data('title');
+				var modalId = 'dynamicModal';
+
+				$('#' + modalId + ' .modal-title').text(modalTitle);
+
+				// Use AJAX to load the partial view into the modal body
+				$.ajax({
+					url: '@Url.Action("LoadPartial", "Home")',
+					type: 'GET',
+					data: { partialViewName: partialViewName },
+					success: function (data) {
+						$('#' + modalId + ' .modal-body').html(data);
+
+						$('#' + modalId).modal('show');
+					},
+					error: function () {
+						alert('Failed to load content. Please try again.');
+					}
+				});
+			});
+
+			// Handle form submission within the modal via event delegation
+			$(document).on('submit', 'form', function (e) {
+				e.preventDefault();
+
+				var $form = $(this);
+				var url = $form.attr('action');
+				var method = $form.attr('method') || 'POST';
+
+				$.ajax({
+					url: url,
+					type: method,
+					data: $form.serialize(),
+					success: function (response) {
+						if (response.success) {
+							$('#dynamicModal').modal('hide');
+							alert(response.message);
+						} else {
+							var errorMessages = response.errors.join('\n');
+							alert('Errors:\n' + errorMessages);
+						}
+					},
+					error: function () {
+						alert('An error occurred while submitting the form. Please try again.');
+					}
+				});
+			});
+		});
+	</script>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+}
