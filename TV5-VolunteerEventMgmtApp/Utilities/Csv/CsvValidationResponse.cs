@@ -2,8 +2,8 @@
 {
     public class CsvValidationResponse
     {
-        public List<string> Errors { get; set; } // List of errors that the ( singer is too old, no first/last given )
+        public List<string> Errors { get; set; } = []; // List of errors that the ( singer is too old, no first/last given )
         public int LineOfRecord { get; set; } // line of the record in the file
-        public bool IsValid { get; set; } // is this record's values valid
+        public bool IsValid { get; set; } = true; // is this record's values valid 
     }
 }

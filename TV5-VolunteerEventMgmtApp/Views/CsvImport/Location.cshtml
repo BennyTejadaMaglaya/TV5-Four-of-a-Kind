@@ -1,0 +1,50 @@
+﻿@model IEnumerable<TV5_VolunteerEventMgmtApp.Models.LocationCsvUpload>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV File Upload</title>
+    <link rel="stylesheet" href="~/css/site.css">
+</head>
+<body>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="container">
+        <h1>Upload Director Data</h1>
+        <form asp-controller="CsvImport" asp-action="Location" method="post" enctype="multipart/form-data">
+           
+            <div class="form-group">
+                <input type="file" name="csvFile" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+        @if (Model != null && Model.Any())
+        {
+            <h2>Data Preview</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Chapter</th>
+                        <th>Director First</th>
+                        <th>Director Last</th>
+                        <th>Director Email</th>
+                        <th>Director Phone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.City</td>
+                            <td>@user.DirectorFirstName</td>
+                            <td>@user.DirectorLastName</td>
+                            <td>@user.DirectorEmail</td>
+                            <td>@user.DirectorPhone</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</body>
+</html>
