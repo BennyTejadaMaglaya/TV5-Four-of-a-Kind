@@ -143,7 +143,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		// GET: Singer/Create
 		public IActionResult Create()
 		{
-			PopulateLocationSelect();
+			Singer singer = new Singer();
+			PopulateAssignedLocations(singer);
+			
 			return View();
 		}
 
@@ -152,33 +154,37 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("FirstName,LastName,DOB,Email,Phone")] Singer singer, int locationID =-1)
+		public async Task<IActionResult> Create([Bind("FirstName,LastName,DOB,Email,Phone")] Singer singer, string[] selectedLocations)
 		{
 			try
 			{
-				if (ModelState.IsValid)
+
+                if (selectedLocations != null)
+                {
+                    foreach (var location in selectedLocations)
+                    {
+                        var locationToAdd = new SingerLocation { SingerId = singer.Id, LocationId = int.Parse(location) };
+                        singer.SingerLocation.Add(locationToAdd);
+                    };
+                }
+
+
+                if (ModelState.IsValid)
 				{
 					_context.Add(singer);
-					if (locationID > -1)
-					{ 
-						var location = await _context.Locations.FirstOrDefaultAsync(x => x.ID == locationID);
-						if(location != null)
-						{
-                            _context.Add(new SingerLocation { Location = location, Singer=singer });
-                        }
-                        
-                    }
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Details", new { singer.Id });
+                }
 					
-					await _context.SaveChangesAsync();
-					return RedirectToAction(nameof(Index));
-				}
+				
+            
 			}
 			catch
 			{ // todo whenever we add concurrency controls update this
 				ModelState.AddModelError("", "There was an error with your request ");
 			}
-			PopulateLocationSelect();
-			return View(singer);
+            PopulateAssignedLocations(singer);
+            return View(singer);
 		}
 
 		// GET: Singer/Edit/5
@@ -196,8 +202,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			{
 				return NotFound();
 			}
-			PopulateLocationSelect(selected:singer.SingerLocation.Count() > 0 ? singer.SingerLocation.First().LocationId : -1 );
-			return View(singer);
+            PopulateAssignedLocations(singer);
+            return View(singer);
 		}
 
 		// POST: Singer/Edit/5
@@ -205,22 +211,32 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, int locationID = -1)
+		public async Task<IActionResult> Edit(int id, string[] selectedLocations)
 		{
-			var singer = await _context.Singers.Include(s => s.SingerLocation).FirstOrDefaultAsync(s => s.Id == id);
+			var singer = await _context.Singers.Include(s => s.SingerLocation).ThenInclude(d => d.Location).FirstOrDefaultAsync(s => s.Id == id);
 			if (singer == null)
 			{
 				return NotFound();
 			}
 
-			if (await TryUpdateModelAsync<Singer>(singer, "", c => c.FirstName, c => c.LastName, c => c.Email, c => c.Phone))
+            if (selectedLocations.Length == 0)
+            {
+                ModelState.AddModelError("SingerLocation", "A director requires at least 1 location.");
+                PopulateAssignedLocations(singer);
+                return View(singer);
+            }
+
+            UpdateSingerLocation(selectedLocations, singer);
+
+            if (await TryUpdateModelAsync<Singer>(singer, "", c => c.FirstName, c => c.LastName, c => c.Email, c => c.Phone))
 			{
 				try
 				{
-					UpdateSingerLocation(singer, locationID);
+					
 
 					await _context.SaveChangesAsync();
-				}
+                    return RedirectToAction("Details", new { singer.Id });
+                }
 				catch (DbUpdateConcurrencyException)
 				{
 					if (!SingerExists(singer.Id))
@@ -232,10 +248,10 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 						throw;
 					}
 				}
-				return RedirectToAction(nameof(Index));
+				
 			}
-			PopulateLocationSelect(selected:locationID);
-			return View(singer);
+            PopulateAssignedLocations(singer);
+            return View(singer);
 		}
 
 		// GET: Singer/Delete/5
@@ -291,28 +307,55 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 _context.Locations.Where(l => l.IsActive) : _context.Locations, "ID", "City", selected);
         }
 
-
-		private void UpdateSingerLocation(Singer singer, int locationID)
-		{
-			if(locationID == -1) 
-			{
-				singer.SingerLocation = new List<SingerLocation>();
-			}
-            else
-			{
-                var l = singer.SingerLocation.FirstOrDefault();
-                if (l?.LocationId != locationID)
+        private void PopulateAssignedLocations(Singer singer)
+        {
+            var allOptions = _context.Locations.Where(d => d.IsActive);
+            var currentLocations = new HashSet<int>(singer.SingerLocation.Select(d => d.LocationId));
+            var checkboxes = new List<CheckOptionVM>();
+            foreach (var item in allOptions)
+            {
+                checkboxes.Add(new CheckOptionVM
                 {
-                    if (l != null)
-                    {
-                        _context.Remove(singer.SingerLocation.First());
-                    }
-
-
-                }
-                singer.SingerLocation =
-                        new List<SingerLocation>() { new SingerLocation { Singer = singer, LocationId = locationID } };
+                    ID = item.ID,
+                    DisplayText = item.City,
+                    Assigned = currentLocations.Contains(item.ID)
+                });
             }
-		}
-	}
+            ViewData["AvailableLocations"] = checkboxes;
+
+        }
+
+
+        private void UpdateSingerLocation(string[] selectedLocations, Singer singer)
+        {
+
+            if (selectedLocations == null)
+            {
+                singer.SingerLocation = new List<SingerLocation>();
+                return;
+            }
+
+            var selectedOptionsHS = new HashSet<string>(selectedLocations);
+            var singerLocations = new HashSet<int>(singer.SingerLocation.Select(d => d.LocationId));
+            foreach (var item in _context.Locations.Where(d => d.IsActive))
+            {
+                if (selectedOptionsHS.Contains(item.ID.ToString()))
+                {
+                    if (!singerLocations.Contains(item.ID))
+                    {
+                        singer.SingerLocation.Add(new SingerLocation { SingerId = singer.Id, LocationId = item.ID });
+                    }
+                }
+                else
+                {
+                    if (singerLocations.Contains(item.ID))
+                    {
+                        SingerLocation locationToRemove = singer.SingerLocation.SingleOrDefault(d => d.LocationId == item.ID);
+                        _context.Remove(locationToRemove);
+                    }
+                }
+            }
+
+        }
+    }
 }
