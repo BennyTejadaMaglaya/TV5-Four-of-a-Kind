@@ -1,4 +1,6 @@
-﻿using TV5_VolunteerEventMgmtApp.Utilities;
+﻿using Azure;
+using System.Net.Mail;
+using TV5_VolunteerEventMgmtApp.Utilities;
 using TV5_VolunteerEventMgmtApp.Utilities.Csv;
 
 namespace TV5_VolunteerEventMgmtApp.Models
@@ -42,6 +44,18 @@ namespace TV5_VolunteerEventMgmtApp.Models
         public CsvValidationResponse IsValid()
         {
             var res = new CsvValidationResponse() { Errors = new List<String>(), IsValid=true };
+
+            if (string.IsNullOrEmpty(FirstName))
+            {
+                res.Errors.Add($"You've entered a singer without a first name");
+                res.IsValid = false;
+            }
+
+            if (string.IsNullOrEmpty(LastName))
+            {
+                res.Errors.Add($"You've entered a singer without a last name");
+                res.IsValid = false;
+            }
             if (!DobIsValid())
             {
                 res.Errors.Add($"DOB for singer {FirstName} {LastName} is invalid (use format 08/19/2012)");
@@ -55,17 +69,21 @@ namespace TV5_VolunteerEventMgmtApp.Models
                     res.IsValid = false;
                 }
             }
-            if (string.IsNullOrEmpty(FirstName))
-            {
-                res.Errors.Add($"You've entered a singer without a first name");
-                res.IsValid = false;
-            }
 
-            if (string.IsNullOrEmpty(LastName))
+            if (!string.IsNullOrEmpty(Email))
             {
-                res.Errors.Add($"You've entered a singer without a last name");
-                res.IsValid = false;
+                try
+                {
+                    var m = new MailAddress(Email);
+                }
+                catch
+                {
+                    res.Errors.Add("The email provided is invalid");
+                    res.IsValid = false;
+                }
             }
+            
+           
 
             if (!SingerMeetsAgeRequirement())
             {
