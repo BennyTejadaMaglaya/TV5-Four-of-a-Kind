@@ -41,6 +41,23 @@
 
 			// these are from Location Controller...
 			var DefaultColors = ["#4CAF50", "#2196F3", "#9C27B0", "#00BCD4", "#8BC34A", "#607D8B"];
+			// 4CAF50 with fff WCAG AAA:Fail
+			// 4CAF50 with 000 WCAG AAA:Pass
+
+			// 2196F3 with fff WCAG AAA:Fail
+			// 2196F3 with 000 WCAG AAA:Fail
+
+			// 9C27B0 with fff WCAG AAA:Fail
+			// 9C27B0 with 000 WCAG AAA:Fail
+
+			// 00BCD4 with fff WCAG AAA:Fail
+			// 00BCD4 with 000 WCAG AAA:Pass
+
+			// 8BC34A with fff WCAG AAA:Fail
+			// 8BC34A with 000 WCAG AAA:Pass
+
+			// 607D8B with fff WCAG AAA:Fail
+			// 607D8B with 000 WCAG AAA:Fail
 
 			var locationId = info.event.extendedProps.locationId;
 
