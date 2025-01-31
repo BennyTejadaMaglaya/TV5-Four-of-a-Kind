@@ -105,8 +105,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                         var locationToAdd = new DirectorLocation { DirectorID = director.ID, LocationID = int.Parse(location) };
                         director.DirectorLocations.Add(locationToAdd);
                     };
+                    ModelState.Remove("DirectorLocations");
                 }
-
+                
                 
                 if (ModelState.IsValid)
                 {   
