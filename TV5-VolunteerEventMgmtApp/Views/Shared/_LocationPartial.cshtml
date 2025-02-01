@@ -2,7 +2,7 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form id="locationForm" asp-controller="Location" asp-action="Create" onsubmit="event.preventDefault(); submitForm();">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <span class="text-danger fw-bold">*</span>
@@ -24,6 +24,32 @@
         </form>
     </div>
 </div>
+
+<script>
+    // I put this outside the scripts section coz otherwise submitForm does not get recognized.
+    async function submitForm() {
+        const form = document.getElementById('locationForm');
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch('/Location/Create', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                console.log('Form submitted successfully');
+
+                // window.location.href = '/Location/Index';
+                window.location.href = '/AttendanceSheet/Dashboard';
+            } else {
+                console.error('Form submission failed');
+            }
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+        }
+    }
+</script>
 
 @section Scripts {
     @{
