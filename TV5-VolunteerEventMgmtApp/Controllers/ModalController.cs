@@ -27,7 +27,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 return new BadRequestResult();
             }
 
-            if (partialViewName == "_DirectorPartial")
+            if (partialViewName == "_SingerPartial" || partialViewName == "_DirectorPartial")
             {
                 ViewBag.AvailableLocations = _context.Locations
                     .Where(l => l.IsActive)
