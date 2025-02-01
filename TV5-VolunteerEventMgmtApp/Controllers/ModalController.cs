@@ -43,6 +43,11 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 ViewBag.AvailableLocations = new SelectList(_context.Locations.Where(l => l.IsActive), "ID", "City");
             }
 
+            if (partialViewName == "_LocationPartial")
+            {
+                ViewBag.availableDirectors = new SelectList(_context.Directors.Where(d => d.IsActive), "ID", "FullName");
+            }
+
             return PartialView($"~/Views/Shared/{partialViewName}.cshtml");
         }
 
