@@ -195,7 +195,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				{
 					_context.Add(attendanceSheet);
 					await _context.SaveChangesAsync();
-					return RedirectToAction(nameof(Index));
+					return RedirectToAction("Details", new { id = attendanceSheet.Id });
 				}
 				//else
 				//{
