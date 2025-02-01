@@ -9,6 +9,8 @@
 <hr />
 <partial name="_addLocationModal" />
 <partial name="_addSingerModal" />
+<partial name="_addDirectorModal" />
+<partial name="_addAttendanceSheetModal" />
 
 
 <link href="~/css/dashboard.css" rel="stylesheet" />
@@ -55,14 +57,14 @@
 				</a>*@
 
 				<!--Modal Test starts here-->
-				<a href="#" class="open-modal" data-partial="_AttendanceSheetPartial" data-title="Create Attendance Sheet">
+				<button data-bs-toggle="modal" data-bs-target="#addAttendanceSheetModal" type="button">
 					<div class="big-link background-image-1">
 						<div class="link-box">
 							<span style="font-size: .6em;">Create</span>
 							<span class="emp-text">Attendance Sheet</span>
 						</div>
 					</div>
-				</a>
+				</button>
 
 				<button data-bs-toggle="modal" data-bs-target="#addSingerModal" type="button">
 					<div class="big-link background-image-2">
@@ -73,20 +75,20 @@
 					</div>
 				</button>
 
-				<a href="#" class="open-modal" data-partial="_DirectorPartial" data-title="Create a New Director">
+				<button data-bs-toggle="modal" data-bs-target="#addDirectorModal" type="button">
 					<div class="big-link background-image-3">
 						<div class="link-box">
 							<span style="font-size: .6em;">Create</span>
-							<span class="emp-text">Director</span>
+							<span class="emp-text">Director(s)</span>
 						</div>
 					</div>
-				</a>
+				</button>
 
 				<button data-bs-toggle="modal" data-bs-target="#addLocationModal" type="button">
 					<div class="big-link background-image-4">
 						<div class="link-box">
 							<span style="font-size: .6em;">Create</span>
-							<span class="emp-text">Location</span>
+							<span class="emp-text">Location(s)</span>
 						</div>
 					</div>
 				</button>
@@ -177,6 +179,7 @@
 @* 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> *@
+	<script src="~/js/multiselect.js"></script>
 	<script src="~/js/dashboard.js"></script>
 	<script src="~/js/refreshDDL.js"></script>
 	<script src="~/js/RefreshChecks.js"></script>
@@ -229,7 +232,113 @@
 
 		
 
-		function setTab(tabName) {
+
+
+		// $('#single-location-tab').click(function (event) {
+		// 	event.preventDefault();
+		// 	ClearErrors();
+		// 	setSingerTab("single");
+		// })
+
+		// $('#bulk-location-tab').click(function (event) {
+		// 	event.preventDefault();
+		// 	ClearErrors();
+		// 	setSingerTab("bulk")
+		// })
+
+		// 	$('#single-location-tab').click(function (event) {
+		// 	event.preventDefault();
+		// 	ClearErrors();
+		// 	setSingerTab("single");
+		// })
+
+		// $('#bulk-location-tab').click(function (event) {
+		// 	event.preventDefault();
+		// 	ClearErrors();
+		// 	setSingerTab("bulk")
+		// })
+
+		// $('#single-location-tab').click(function (event) {
+		// 	event.preventDefault();
+		// 	ClearErrors();
+		// 	setSingerTab("single");
+		// })
+
+		// $('#bulk-location-tab').click(function (event) {
+		// 	event.preventDefault();
+		// 	ClearErrors();
+		// 	setSingerTab("bulk")
+		// })
+
+		$('#LocationId').change(function (event) {
+			console.log("drop down change has happened");
+			event.preventDefault();
+			let locationId = event.value;
+			fetch('@Url.Action("GetSingersByLocation")?locationId=' + locationId)
+				.then(response => {
+					if(!response.ok){
+						throw new Error('Network response was not ok ' + response.statusText);
+					}
+					return response.json();
+				})
+			.then(data => {
+							let selectedOptions = document.getElementById('selectedOptions');
+								let availableOptions = document.getElementById('availableOptions');
+								if (locationId === "") {
+									selectedOptions.disabled = true;
+									availableOptions.disabled = true;
+								}
+								else {
+									selectedOptions.disabled = false;
+									availableOptions.disabled = false;
+								}
+								selectedOptions.innerHTML = '';
+								availableOptions.innerHTML = '';
+								data.forEach(singer => {
+									let option = document.createElement('option');
+									option.value = singer.id;
+									option.text = singer.firstName + ' ' + singer.lastName;
+									availableOptions.appendChild(option);
+																	});
+							})
+							.catch(error => {
+								console.error("Fetch Error: ", error); // Debugging line
+							});
+						// Get directors from seleted location
+						fetch('@Url.Action("GetDirectorsByLocation")?locationId=' + locationId)
+							.then(response => {
+								if (!response.ok) {
+									throw new Error('Network response was not ok ' + response.statusText);
+								}
+								return response.json();
+							})
+							.then(data => {
+								let selectDirector = document.getElementById('directors');
+								if (locationId === "") {
+									selectDirector.disabled = true;
+								}
+								else selectDirector.disabled = false;
+								selectDirector.innerHTML = '';
+								let label = document.createElement('option');
+								label.value = '';
+								label.text = 'Select Director';
+								selectDirector.appendChild(label);
+								data.forEach(dir => {
+									let option = document.createElement('option');
+									option.value = dir.id;
+									option.text = dir.firstName + ' ' + dir.lastName;
+									selectDirector.appendChild(option);
+								});
+							})
+							.catch(error => {
+								console.error("Fetch Error: ", error); // Debugging line
+							});
+					});
+					
+	
+
+		function setSingerTab(tabName) {
+			ClearErrors();
 			$('#singerCreateTabs .nav-link').removeClass('active');
 			$('#singersCreateTabsContent .tab-pane').removeClass('show active');
 
@@ -242,19 +351,33 @@
 			}
 		}
 
-		$('#single-tab').click(function (event) {
-			event.preventDefault();
+		function setLocationTab(tabName) {
 			ClearErrors();
-			setTab("single");
-		})
+			$('#locationCreateTabs .nav-link').removeClass('active');
+			$('#locationsCreateTabsContent .tab-pane').removeClass('show active');
 
-		$('#bulk-tab').click(function (event) {
-			event.preventDefault();
+			if (tabName === 'single') {
+				$('#single-location-tab').addClass('active');
+				$('#single-location').addClass('show active');
+			} else if (tabName === 'bulk') {
+				$('#bulk-location-tab').addClass('active');
+				$('#bulk-location').addClass('show active');
+			}
+		}
+
+		function setDirectorTab(tabName) {
 			ClearErrors();
-			setTab("bulk")
-		})
+			$('#directorCreateTabs .nav-link').removeClass('active');
+			$('#directorsCreateTabsContent .tab-pane').removeClass('show active');
 
-		
+			if (tabName === 'single') {
+				$('#single-director-tab').addClass('active');
+				$('#single-director').addClass('show active');
+			} else if (tabName === 'bulk') {
+				$('#bulk-director-tab').addClass('active');
+				$('#bulk-director').addClass('show active');
+			}
+		}
 
 		$('#addSingerModal').on('show.bs.modal', function () {
 			var selectedOption = $('#SingerLocations').val();//Return to the current selected value
@@ -265,13 +388,6 @@
 			var selectedOption = $('#DirectorLocations').val();//Return to the current selected value
 			refreshDDL('DirectorLocations', '/Location/GetDirectors/' + selectedOption, false, null, true, 'None', true);
 		})
-
-		$('#addLocationModal').on('hide.bs.modal', function () {
-			document.getElementById("createLocationForm").reset();//to clear the data in the popup form
-			ClearErrors();
-			
-			
-		});
 
 		function ClearErrors() {
 			//Empty out the list of validation errors if there are any

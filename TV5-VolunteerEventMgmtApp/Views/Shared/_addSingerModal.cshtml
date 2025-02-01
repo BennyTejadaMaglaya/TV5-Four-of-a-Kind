@@ -20,7 +20,7 @@
 							   role="tab"
 							   aria-controls="single"
 							   aria-selected="true"
-							   onclick="setTab('single')">Add Single</a>
+							   onclick="setSingerTab('single')">Add Single</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link fw-bold text-purple"
@@ -30,7 +30,7 @@
 							   role="tab"
 							   aria-controls="bulk"
 							   aria-selected="false"
-							   onclick="setTab('bulk')">Add Many</a>
+							   onclick="setSingerTab('bulk')">Add Many</a>
 						</li>
 					</ul>
 					<div class="tab-content" id="singersCreateTabsContent">
@@ -38,7 +38,7 @@
 						<partial name="_SingerPartial" model="singer" />
 						</div>
 						<div class="tab-pane fade" id="bulk" role="tabpanel" aria-labelledby="bulk-tab">
-						<partial name="_CsvImportPartial" model="singerCsv" />
+						<partial name="_singerCsvImportPartial" model="singerCsv" />
 						</div>
 					</div>
                 }

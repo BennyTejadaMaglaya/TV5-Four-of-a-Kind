@@ -1,0 +1,50 @@
+﻿@model IEnumerable<TV5_VolunteerEventMgmtApp.Models.SingerCsvUpload>
+@* 
+<form onsubmit="(e) => e.PreventDefault()">
+    <select asp-items="@ViewBag.availableLocations">
+        <option value="-1">Select a Location</option>
+
+    </select>
+    <input type="file" name="csvFile" required/>
+    <input type="submit" onclick="(e)=> e.PreventDefault()"/>
+</form> *@
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container">
+    <h1>Upload Singer Data</h1>
+    <form asp-controller="CsvImport" asp-action="Singer" method="post" enctype="multipart/form-data">
+        <div class="text-danger validation-summary-errors"><ul id="ErrorList"></ul> </div>
+        <select asp-items="@ViewBag.AllLocations" name="locationId">
+            <option>Select a Location</option>
+        </select>
+        <div class="form-group">
+            <input type="file" name="csvFile" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+    @if (Model != null && Model.Any())
+    {
+        <h2>Singers Uploaded</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.FirstName</td>
+                        <td>@user.LastName</td>
+                        <td>@user.Email</td>
+                        <td>@user.PhoneNumber</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

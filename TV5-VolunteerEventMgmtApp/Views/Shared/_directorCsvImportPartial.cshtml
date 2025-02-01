@@ -1,30 +1,24 @@
-﻿@model IEnumerable<TV5_VolunteerEventMgmtApp.Models.SingerCsvUpload>
-@* 
-<form onsubmit="(e) => e.PreventDefault()">
-    <select asp-items="@ViewBag.availableLocations">
-        <option value="-1">Select a Location</option>
-
-    </select>
-    <input type="file" name="csvFile" required/>
-    <input type="submit" onclick="(e)=> e.PreventDefault()"/>
-</form> *@
+﻿@model TV5_VolunteerEventMgmtApp.ViewModels.CsvUploadVM<List<DirectorCsvUpload>>
 
 
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <div class="container">
-    <h1>Upload Singer Data</h1>
-    <form asp-controller="CsvImport" asp-action="Index" method="post" enctype="multipart/form-data">
+    <h1 class="text-purple">Upload Director Data</h1>
+    <div>
+        <h2 class="text-purple">Example Header</h2>
+        <span class="fw-bold pb-3 d-block">FirstName,LastName,Email,PhoneNumber,LocationName</span>
+    </div>
+    <form asp-controller="CsvImport" asp-action="Director" method="post" enctype="multipart/form-data">
         <div class="text-danger validation-summary-errors"><ul id="ErrorList"></ul> </div>
-        <select asp-items="@ViewBag.AllLocations" name="locationId">
-            <option>Select a Location</option>
-        </select>
         <div class="form-group">
             <input type="file" name="csvFile" class="form-control" required>
         </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
+        <button type="submit" class="btn btn-purple">Upload</button>
     </form>
-    @if (Model != null && Model.Any())
+    @if (Model != null && Model.Data.Any())
     {
-        <h2>Singers Uploaded</h2>
+        <h2>Data Preview (@Model.SuccessCount successfully created)</h2>
         <table class="table">
             <thead>
                 <tr>
@@ -32,16 +26,18 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Phone Number</th>
+                    <th>Location Name</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in Model)
+                @foreach (var user in Model.Data)
                 {
                     <tr>
                         <td>@user.FirstName</td>
                         <td>@user.LastName</td>
                         <td>@user.Email</td>
                         <td>@user.PhoneNumber</td>
+                        <td>@user.LocationName</td>
                     </tr>
                 }
             </tbody>

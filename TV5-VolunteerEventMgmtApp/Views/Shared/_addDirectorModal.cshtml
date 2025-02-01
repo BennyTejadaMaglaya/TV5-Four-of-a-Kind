@@ -1,0 +1,55 @@
+﻿<!-- Modal-->
+<div class="modal fade" id="addDirectorModal" tabindex="-1" role="dialog" aria-labelledby="DirectorModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="DirectorModalLabel">Add New Director</h4>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				@{
+
+					var director = new TV5_VolunteerEventMgmtApp.Models.Director();
+					var directorCsv = new TV5_VolunteerEventMgmtApp.ViewModels.CsvUploadVM<List<TV5_VolunteerEventMgmtApp.Models.DirectorCsvUpload>>()
+			{
+				Data = new List<TV5_VolunteerEventMgmtApp.Models.DirectorCsvUpload>()
+			};
+					<ul class="nav nav-tabs mb-3" id="directorCreateTabs" role="tablist">
+						<li class="nav-item">
+							<a class="nav-link fw-bold text-purple active"
+							   id="single-director-tab"
+							   data-toggle="tab"
+							   href="#single"
+							   role="tab"
+							   aria-controls="single"
+							   aria-selected="true"
+							   onclick="setDirectorTab('single')">Add Single</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link fw-bold text-purple"
+							   id="bulk-director-tab"
+							   data-toggle="tab"
+							   href="#bulk"
+							   role="tab"
+							   aria-controls="bulk"
+							   aria-selected="false"
+							   onclick="setDirectorTab('bulk')">Add Many</a>
+						</li>
+					</ul>
+					<div class="tab-content" id="directorsCreateTabsContent">
+						<div class="tab-pane fade show active" id="single-director" role="tabpanel" aria-labelledby="single-tab">
+							<partial name="_DirectorPartial" model="director" />
+						</div>
+						<div class="tab-pane fade" id="bulk-director" role="tabpanel" aria-labelledby="bulk-tab">
+							<partial name="_directorCsvImportPartial" model="directorCsv" />
+						</div>
+					</div>
+				}
+
+
+
+
+			</div>
+		</div>
+	</div>
+</div>

@@ -84,34 +84,3 @@
     </div>
 </form>
 
-@* <script>
-    // I put this outside the scripts section coz otherwise submitForm does not get recognized.
-    async function submitForm() {
-        const form = document.getElementById('singerForm');
-        const formData = new FormData(form);
-
-        try {
-            const response = await fetch('/Singer/Create', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                console.log('Form submitted successfully');
-
-                // window.location.href = '/Singer/Index';
-                window.location.href = '/AttendanceSheet/Dashboard';
-            } else {
-                console.error('Form submission failed');
-            }
-        } catch (error) {
-            console.error('There was a problem with the fetch operation:', error);
-        }
-    }
-</script>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-} *@
