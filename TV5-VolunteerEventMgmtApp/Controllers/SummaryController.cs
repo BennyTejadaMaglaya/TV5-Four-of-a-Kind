@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -68,6 +69,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 : $"Attendance Summary {SummaryUtilities.DateRangeMessage(startWeek, endWeek)}";
             ViewData["sortField"] = sortField;
             ViewData["sortDirection"] = sortDirection;
+            LocationSelectList(searchCity);
             ViewData["searchCity"] = searchCity;
             ViewData["searchDirector"] = searchDirector;
             ViewData["exportLink"] = Request.QueryString.ToString();
@@ -139,10 +141,10 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         public IActionResult ExportToExcel(DateTime? startWeek,
                                     DateTime? endWeek,
                                     string? actionButton,
-                                    string? searchCity,
                                     string? searchDirector,
                                     string sortDirection = "asc",
-                                    string sortField = "City")
+                                    string sortField = "City",
+                                    string? searchCity = "All")
         {
             var sheets = _context.AttendeesSheets
                 .Include(s => s.Director)
@@ -325,7 +327,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 sheets = sheets.Where(s => s.Director.FirstName.ToLower().Contains(searchDirector.ToLower()) || s.Director.LastName.ToLower().Contains(searchDirector.ToLower()));
             }
 
-            if (!string.IsNullOrEmpty(searchCity))
+            if (!string.IsNullOrEmpty(searchCity) && searchCity != "All")
             {
                 sheets = sheets.Where(s => s.Location.City.ToLower().Contains(searchCity.ToLower()));
             }
@@ -380,6 +382,29 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
 
             return summaryVM;
+        }
+
+
+        private void LocationSelectList(string current)
+        {
+            
+            var locations = _context.Locations.ToList();
+            if (!string.IsNullOrEmpty(current) && current != "All")
+            {
+                Console.WriteLine("pssing");
+                for (int i = 0; i < locations.Count; i++)
+                {
+                    if(locations[i].City == current)
+                    {
+                        Console.WriteLine("pssiffng");
+                        ViewBag.AvailableLocations = new SelectList(locations, "City", "City", locations[i].City);
+                        return;
+                    }
+                }
+            }
+
+
+            ViewBag.AvailableLocations = new SelectList(locations, "City", "City");
         }
 
 

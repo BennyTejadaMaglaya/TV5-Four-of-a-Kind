@@ -36,7 +36,10 @@
 
                 <div>
                     <label class="d-block" for="searchCity">City</label>
-                    <input class="form-control p-1" id="searchCity" type="text" name="searchCity" value="@ViewData["searchCity"]" />
+                    
+                    <select name="searchCity" class="form-control p-1" id="searchCity" asp-items="@ViewBag.availableLocations">
+                        <option value="All">All</option>
+                    </select>
                 </div>
     
                 <div>
