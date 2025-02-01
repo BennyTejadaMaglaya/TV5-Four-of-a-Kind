@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TV5_VolunteerEventMgmtApp.Data;
@@ -6,6 +7,7 @@ using TV5_VolunteerEventMgmtApp.Models;
 using TV5_VolunteerEventMgmtApp.Services;
 using TV5_VolunteerEventMgmtApp.Utilities;
 using TV5_VolunteerEventMgmtApp.Utilities.Csv;
+using TV5_VolunteerEventMgmtApp.ViewModels;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
@@ -21,23 +23,28 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             _context = ctx;
         }
 
-        [HttpGet]
+        [HttpGet, Route("Singer")]
         public IActionResult Singer()
         {
 
             ViewBag.Locations = LocationSelectList();
-            return View(new List<SingerCsvUpload>());
+            return View();
         }
 
-        [HttpPost]
+        [HttpPost, Route("Singer")]
 
         public async Task<IActionResult> Singer(int locationId, IFormFile csvFile)
         { // if json is returned at least some of the records were created 
             // bad request means something went wrong (most likely invalid CSV)
+            ViewBag.Locations = LocationSelectList();
             var location = await _context.Locations.FirstOrDefaultAsync(c => c.ID == locationId);
             if (location == null)
             {
-                return BadRequest("There is no location with the ID " + locationId);
+                ModelState.AddModelError("", "There is no location with the ID " + locationId);
+                return View(new CsvUploadVM<List<SingerCsvUpload>>
+                {
+                    Data = new List<SingerCsvUpload>()
+                });
             }
 
             ViewBag.Locations = LocationSelectList(selected: locationId);
@@ -50,55 +57,70 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                     //var csvErrors = ValidateAndAddSingers(newSingers, location, out var dbErrors, out var successCount);
                     var csvErrors = ValidateSingers(newSingers);
 
-                    if(!csvErrors.All(s => s.IsValid))
+                    if (!csvErrors.All(s => s.IsValid))
                     {
-                        return Json(new
+                        MapModelStateErrors(csvErrors);
+                        return View(new CsvUploadVM<List<SingerCsvUpload>>
                         {
-                            csvErrors
+                            Data = new List<SingerCsvUpload>()
                         });
+                        
+                        //return Json(new
+                        //{
+                        //    csvErrors
+                        //});
                     }
-                    
-                        var dbErrors = await AddSingersToDb(newSingers, location);
-                  
-                    return Json(new
-                    {
-                        csvErrors,
-                        dbErrors
-                    });
 
-                    //return View(newSingers);
+                    var dbErrors = await AddSingersToDb(newSingers, location);
+
+                    MapModelStateErrors(csvErrors);
+                    MapModelStateErrors(dbErrors.Errors);
+                    //return Json(new
+                    //{
+                    //    csvErrors,
+                    //    dbErrors
+                    //});
+
+                    return View(new CsvUploadVM<List<SingerCsvUpload>>
+                    {
+                        Data = newSingers,
+                        SuccessCount = dbErrors.SuccessCount
+                    });
                 }
                 catch (ApplicationException ex)
                 { // invalid csv errors
                     Console.WriteLine(ex.Message);
-                    return BadRequest(ex.Message);
+                    ModelState.AddModelError("", ex.Message);
                 }
                 catch (Exception ex)
                 {
-                    return BadRequest(StaticMessages.UnknownError);
-                    //ModelState.AddModelError(string.Empty, ex.Message);
+                    //return BadRequest(StaticMessages.UnknownError);
+                   ModelState.AddModelError("", ex.Message);
                 }
 
             }
             else
             {
-                return BadRequest(StaticMessages.InvalidCSV);
-                ModelState.AddModelError(string.Empty, "Please select a valid CSV file.");
+                //return BadRequest(StaticMessages.InvalidCSV);
+                ModelState.AddModelError("", "Please select a valid CSV file.");
             }
-            //return View(new List<SingerCsvUpload>());
+            return View(new CsvUploadVM<List<SingerCsvUpload>>
+            {
+                Data = new List<SingerCsvUpload>()
+            });
         }
 
         [HttpGet, Route("Director")]
         public IActionResult Director()
         {
-            return View(); 
+            return View();
         }
 
 
-        [HttpPost,Route("Director")]
+        [HttpPost, Route("Director")]
         public async Task<IActionResult> Director(IFormFile csvFile)
         {
-            
+
             if (csvFile != null && csvFile.Length > 0)
             {
                 //List<DirectorCsvUpload> newLocations = null;
@@ -110,38 +132,55 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                     if (!csvErrors.All(s => s.IsValid))
                     {
 
-                        return Json(new
+                        //return Json(new
+                        //{
+                        //    csvErrors,
+                        //});
+                        MapModelStateErrors(csvErrors);
+                        return View(new CsvUploadVM<List<DirectorCsvUpload>>
                         {
-                            csvErrors,
+                            Data = new List<DirectorCsvUpload>()
                         });
                     }
 
                     var dbErrors = await AddDirectorsToDb(newDirectors);
 
+                    MapModelStateErrors(csvErrors);
+                    MapModelStateErrors(dbErrors.Errors);
 
-                    return Json(new
+                    //return Json(new
+                    //{
+                    //    csvErrors,
+                    //    dbErrors
+                    //});
+                    return View(new CsvUploadVM<List<DirectorCsvUpload>>
                     {
-                        csvErrors,
-                        dbErrors
+                        Data = newDirectors,
+                        SuccessCount = dbErrors.SuccessCount
                     });
                 }
                 catch (ApplicationException ex)
                 { // invalid csv errors
                     Console.WriteLine(ex.Message);
-                    return BadRequest(StaticMessages.UnknownError);
+                    ModelState.AddModelError("",ex.Message);
+                    //return BadRequest(StaticMessages.UnknownError);
                 }
                 catch (Exception ex)
                 {
-                    return BadRequest(StaticMessages.UnknownError);
+                    ModelState.AddModelError("", StaticMessages.UnknownError);
                 }
-              
+
 
             }
             else
             {
-                return BadRequest(StaticMessages.UnknownError);
+                ModelState.AddModelError("", StaticMessages.InvalidCSV);
             }
-            
+            return View(new CsvUploadVM<List<DirectorCsvUpload>>
+            {
+                Data = new List<DirectorCsvUpload>()
+            });
+
         }
 
 
@@ -164,49 +203,54 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                     var csvErrors = ValidateLocations(newLocations);
                     if (!csvErrors.All(s => s.IsValid))
                     {
-                        // then we they should fix the errors in the file before we upload anything to the DB
-                        //foreach (var error in csvErrors)
-                        //{
-                        //    foreach (var e in error.Errors)
-                        //    {
-                        //        ModelState.AddModelError("", e + " on line " + error.LineOfRecord);
-                        //    }
-
-                        //}
-                        return Json(new
+                        MapModelStateErrors(csvErrors);
+                        return View(new CsvUploadVM<List<LocationCsvUpload>>
                         {
-                            csvErrors
+                            Data = new List<LocationCsvUpload>()
                         });
+                        //return Json(new
+                        //{
+                        //    csvErrors
+                        //});
                     }
 
                     var dbErrors = await AddLocationsToDb(newLocations);
+                    MapModelStateErrors(csvErrors);
+                    MapModelStateErrors(dbErrors.Errors);
 
-                    return Json(new
+                    //return Json(new
+                    //{
+                    //    dbErrors,
+                    //    csvErrors,
+                    //});
+                    return View(new CsvUploadVM<List<LocationCsvUpload>>
                     {
-                        dbErrors,
-                        csvErrors,
+                        Data = newLocations,
+                        SuccessCount = dbErrors.SuccessCount
                     });
-                    //return View(newLocations);
                 }
                 catch (ApplicationException ex)
                 { // invalid csv errors
                     Console.WriteLine(ex.Message);
-                    //ModelState.AddModelError("", ex.Message);
-                    return Json(new
-                    {
-                        ex.Message,
-                    });
+                    ModelState.AddModelError("", ex.Message);
+                    //return Json(new
+                    //{
+                    //    ex.Message,
+                    //});
                 }
             }
             else
             {
-                return Json(new
-                {
-                    Message = "Please submit a valid CSV file"
-                });
-               // ModelState.AddModelError("", "Please select a valid CSV file.");
+                //return Json(new
+                //{
+                //    Message = "Please submit a valid CSV file"
+                //});
+                 ModelState.AddModelError("", "Please select a valid CSV file.");
             }
-            //return View(new List<DirectorCsvUpload>());
+             return View(new CsvUploadVM<List<LocationCsvUpload>>
+            {
+                Data = new List<LocationCsvUpload>()
+            });
         }
 
         private List<CsvValidationResponse> ValidateLocations(List<LocationCsvUpload> locations)
@@ -244,22 +288,22 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 var locationObj = new Location
                 {
                     City = location.City,
-                    Color= newColor,
+                    Color = newColor,
                 };
-                
+
 
                 try
                 {
                     _context.Add(locationObj);
                     await _context.SaveChangesAsync();
-  
+
                     if (location.IsAddingNewDirector())
                     {
                         var dir = new Director {
-                            FirstName=location.DirectorFirstName, 
-                            LastName=location.DirectorLastName,
-                            PhoneNumber=location.DirectorPhone,
-                            Email=location.DirectorEmail,
+                            FirstName = location.DirectorFirstName,
+                            LastName = location.DirectorLastName,
+                            PhoneNumber = location.DirectorPhone,
+                            Email = location.DirectorEmail,
                         };
                         var result = await TryAddNewDirector(dir, locationObj);
                         if (!string.IsNullOrEmpty(result))
@@ -301,11 +345,11 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             try
             {
                 _context.Add(d);
-               await _context.SaveChangesAsync();
-                _context.Add(new DirectorLocation { Location = l, Director=d });
+                await _context.SaveChangesAsync();
+                _context.Add(new DirectorLocation { Location = l, Director = d });
                 await _context.SaveChangesAsync();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 if (e.Message.Contains("UNIQUE"))
                 {
@@ -330,7 +374,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             }
             else
             {
-                _context.Add(new DirectorLocation { Location=location, Director=dir });
+                _context.Add(new DirectorLocation { Location = location, Director = dir });
                 await _context.SaveChangesAsync();
             }
             return "";
@@ -385,7 +429,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                     Email = director.Email,
                     IsActive = true
                 };
-                
+
                 var lo = new DirectorLocation { Location = location, Director = directorObj };
                 try
                 {
@@ -405,7 +449,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                     }
                     else
                     {
-                        collection.Errors.Add("There was an unexpected error when trying to add the location " + director.FirstName + " " + director.LastName +".");
+                        collection.Errors.Add("There was an unexpected error when trying to add the location " + director.FirstName + " " + director.LastName + ".");
                     }
                     _context.Remove(directorObj);
                     //_context.Remove(lo);
@@ -459,14 +503,15 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                     FirstName = singer.FirstName,
                     Email = singer.Email,
                     Phone = singer.PhoneNumber,
-                    DOB = singer.DateOfBirth()
+                    DOB = singer.DateOfBirth(),
+                    EmergencyContactName=singer.ContactName
                 };
                 var lo = new SingerLocation { Location = location, Singer = singerObj };
                 try
                 {
                     _context.Add(singerObj);
                     _context.Add(lo);
-                    await  _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                     collection.SuccessCount++;
 
 
@@ -525,6 +570,28 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 }
             }
             return [];
+        }
+
+
+        private void MapModelStateErrors(List<string> errors)
+        {
+            foreach (var error in errors)
+            {
+                ModelState.AddModelError("", error);
+            }
+
+        }
+
+        private void MapModelStateErrors(List<CsvValidationResponse> errors)
+        {
+            foreach (var error in errors)
+            {
+                foreach(var e in error.Errors)
+                {
+                    ModelState.AddModelError("", e);
+                }
+            }
+
         }
     }
 }
