@@ -25,15 +25,26 @@
 		<div class="filter-box collapse mb-2 @ViewData["ShowFilter"]" id="collapseFilter">
 
 			<div class="row">
-				<div class="form-group col-md-4">
-					<label class="d-block" for="searchName">Filter by Name</label>
-					<input class="form-control p-1" id="searchName" type="text" name="searchName" value="@ViewData["searchName"]" />
+				<div class="flex-row d-flex gap-3">
+					<div class="form-group col-md-4">
+						<label class="d-block" for="searchName">Filter by Name</label>
+						<input class="form-control p-1" id="searchName" type="text" name="searchName" value="@ViewData["searchName"]" />
+					
+					</div>
+					<div>
+						<label for="searchCity">Search City</label>
+						<select id="searchCity" class="form-control" name="searchCity" asp-items="@ViewBag.AvailableLocations">
+							<option value="All">All</option>
+						</select>
+					</div>
 				</div>
+				
 
 				<div class="form-group col-md-4 align-self-end">
 					<input class="btn btn-purple py-1 mt-2" type="submit" value="Apply" />
 					<a class="btn btn-outline-dark mt-2 py-1" asp-action="Index">Clear</a>
 				</div>
+
 			</div>
 
 		</div>

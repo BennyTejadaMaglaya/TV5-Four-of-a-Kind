@@ -26,6 +26,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // GET: Director
         public async Task<IActionResult> Index(string? actionButton,
                                     string? searchName,
+                                    string searchCity = "All",
                                     string sortDirection = "asc",
                                     string sortField = "First Name")
         {
@@ -46,6 +47,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 directors = directors.Where(s => s.FirstName.ToLower().Contains(searchName.ToLower()) || s.LastName.ToLower().Contains(searchName.ToLower()));
 				numberFilters++;
 			}
+            if (!string.IsNullOrEmpty(searchCity) && searchCity != "All")
+            {
+                directors = directors.Where(s => s.DirectorLocations.Any(s => s.Location.City == searchCity));
+                numberFilters++;
+            }
+
 			if (numberFilters != 0)
 			{
 				ViewData["BtnBg"] = "btn-dark";
@@ -56,6 +63,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			SortUtilities.SwapSortDirection(ref sortField, ref sortDirection, ["First Name", "Last Name", "Location"], actionButton);
             SortDirectors(ref directors, sortField, sortDirection);
             PopulateSortFields(sortDirection, sortField);
+            LocationSelectList(searchCity);
             ViewData["searchName"] = searchName;
 
             return View(await directors.ToListAsync());
@@ -325,6 +333,29 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         {
             ViewData["sortDirection"] = sortDirection;
             ViewData["sortField"] = sortField;
+        }
+
+
+        private void LocationSelectList(string current)
+        {
+
+            var locations = _context.Locations.ToList();
+            if (!string.IsNullOrEmpty(current) && current != "All")
+            {
+                Console.WriteLine("pssing");
+                for (int i = 0; i < locations.Count; i++)
+                {
+                    if (locations[i].City == current)
+                    {
+                        Console.WriteLine("pssiffng");
+                        ViewBag.AvailableLocations = new SelectList(locations, "City", "City", locations[i].City);
+                        return;
+                    }
+                }
+            }
+
+
+            ViewBag.AvailableLocations = new SelectList(locations, "City", "City");
         }
     }
 }
