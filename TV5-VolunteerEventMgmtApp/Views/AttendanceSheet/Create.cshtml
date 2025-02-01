@@ -1,163 +1,177 @@
 ﻿@model TV5_VolunteerEventMgmtApp.Models.AttendanceSheet
 
 @{
-    ViewData["Title"] = "New Attendance";
+	ViewData["Title"] = "New Attendance";
 }
 
 <h1>Create a New Attendance Sheet</h1>
 
 <hr />
 <form asp-action="Create">
-    <div class="row">
-        <div class="col-md-4">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <span class="text-danger fw-bold">*</span> <label asp-for="LocationId" class="control-label"></label>
-                <select asp-for="LocationId" class="form-control" asp-items="ViewBag.LocationID" id="LocationId">
-                    <option value="">Select Location</option>
-                </select>
-                <span asp-validation-for="LocationId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DirectorId" class="control-label"></label>
-                <select asp-for="DirectorId" disabled id="directors" class="form-control" asp-items="ViewBag.DirectorId">
-                    <option value="">Select Director</option>
-                </select>
-                <span asp-validation-for="DirectorId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <span class="text-danger fw-bold">*</span> <label asp-for="StartTime" class="control-label"></label>
-                <input asp-for="StartTime" class="form-control" />
-                <span asp-validation-for="StartTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <span class="text-danger fw-bold">*</span> <label asp-for="EndTime" class="control-label"></label>
-                <input asp-for="EndTime" class="form-control" />
-                <span asp-validation-for="EndTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Notes" class="control-label"></label>
-                <textarea asp-for="Notes" class="form-control"></textarea>
-                <span asp-validation-for="Notes" class="text-danger"></span>
-            </div>
-        </div>
+	<div class="row">
+		<div class="col-lg-4">
+			<div class="form-group">
+				<span class="text-danger fw-bold">*</span> <label asp-for="LocationId" class="control-label"></label>
+				<select asp-for="LocationId" class="form-control" asp-items="ViewBag.LocationID" id="LocationId">
+					<option value="">Select Location</option>
+				</select>
+				<span asp-validation-for="LocationId" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="DirectorId" class="control-label"></label>
+				<select asp-for="DirectorId" disabled id="directors" class="form-control" asp-items="ViewBag.DirectorId">
+					<option value="">Select Director</option>
+				</select>
+				<span asp-validation-for="DirectorId" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<span class="text-danger fw-bold">*</span> <label class="control-label">Date and Time</label>
+				<input asp-for="StartTime" class="form-control" />
+				<span asp-validation-for="StartTime" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				@{
+					// Make end time default to 11:59 PM of the same day for validation
+					// It will be set to the correct value in the controller
+					DateTime now = DateTime.Now;
+					DateTime todayAtMidnight = new DateTime(now.Year, now.Month, now.Day, 23, 59, 0);
+				}
+				<input type="hidden" id="EndTime" name="EndTime" value="@todayAtMidnight" />
 
-        <div class="col-md-8">
-            <div class="row">
-                <div class="form-group col-md-6">
-                    <label class="control-label d-block">Attending Singers (<span id="count"></span>)</label>
-                    @Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.SelectedSingers,
-                        new { @size = 12, @class = "form-control", id = "selectedOptions", @disabled = "disabled" })
-                    <button id="btnRemove" class="btn btn-secondary py-1 px-2 my-2">
-                        Remove singer/s
+				<span class="text-danger fw-bold">*</span> <label class="control-label">Duration (Minutes)</label>
+				<select id="Duration" name="Duration" class="form-control" asp-items="ViewBag.Duration"></select>
+				<span asp-validation-for="EndTime" class="text-danger"></span>
+			</div>
+		</div>
+
+		<div class="col-lg-8">
+			<div class="row">
+				<div class="form-group col-md-6">
+					<label class="control-label d-block">Attending Singers (<span id="count"></span>)</label>
+					@Html.ListBox("selectedOptions", (MultiSelectList)ViewBag.SelectedSingers,
+											new { @size = 12, @class = "form-control", id = "selectedOptions", @disabled = "disabled" })
+					<button id="btnRemove" class="btn btn-secondary py-1 px-2 my-2">
+						Remove singer/s
 					</button>
-                </div>
+				</div>
 
-                <div class="form-group col-md-6">
-                    <label class="control-label d-block">Add Attending Singers</label>
-                    @Html.ListBox("availableOptions", (MultiSelectList)ViewBag.AvailableSingers,
-                        new { @size = 12, @class = "form-control", id = "availableOptions", @disabled = "disabled" })
-                    
-                    <button id="btnAdd" class="btn btn-purple py-1 px-3 my-2">
-                        Add singer/s
-                    </button>
+				<div class="form-group col-md-6">
+					<label class="control-label d-block">Add Attending Singers</label>
+					@Html.ListBox("availableOptions", (MultiSelectList)ViewBag.AvailableSingers,
+											new { @size = 12, @class = "form-control", id = "availableOptions", @disabled = "disabled" })
 
-                    <button class="btn btn-outline-dark py-1 px-3 my-2"
-                            id="nowAddSinger"
-                            data-bs-toggle="modal"
-                            data-bs-target="#addSingerModal"
-                            type="button">
-                        Create New
-                    </button>
-                </div>
-            </div>
-        </div>
+					<button id="btnAdd" class="btn btn-purple py-1 px-3 my-2">
+						Add singer/s
+					</button>
 
-        <div class="form-group">
-            <input type="submit" id="btnSubmit" value="Create" class="btn btn-purple" />
-            <button type="button" class="btn btn-outline-dark"
-                    onclick="document.getElementById('backToListLink').click()">
-                Cancel
-            </button>
-        </div>
-    </div>
+					<button class="btn btn-outline-dark py-1 px-3 my-2"
+							id="nowAddSinger"
+							data-bs-toggle="modal"
+							data-bs-target="#addSingerModal"
+							type="button">
+						Create New
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="form-group col-md-12">
+				<label asp-for="Notes" class="control-label"></label>
+				<textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+				<span asp-validation-for="Notes" class="text-danger"></span>
+			</div>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+		<input type="submit" id="btnSubmit" value="Create" class="btn btn-purple" />
+		<button type="button" class="btn btn-outline-dark"
+				onclick="document.getElementById('backToListLink').click()">
+			Cancel
+		</button>
+	</div>
+
 </form>
 
 <div>
-    <partial name="_BackToList" />
+	<partial name="_BackToList" />
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
 	<script src="~/js/multiselect.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // When location is selected
-            document.getElementById('LocationId').addEventListener('change', function () {
-                var locationId = this.value;
-                // Get singers from selected location
-                fetch('@Url.Action("GetSingersByLocation")?locationId=' + locationId)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok ' + response.statusText);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        var selectedOptions = document.getElementById('selectedOptions');
-                        var availableOptions = document.getElementById('availableOptions');
-                        if (locationId === "") {
-                            selectedOptions.disabled = true;
-                            availableOptions.disabled = true;
-                        }
-                        else {
-                            selectedOptions.disabled = false;
-                            availableOptions.disabled = false;
-                        }
-                        selectedOptions.innerHTML = '';
-                        availableOptions.innerHTML = '';
-                        data.forEach(singer => {
-                            var option = document.createElement('option');
-                            option.value = singer.id;
-                            option.text = singer.firstName + ' ' + singer.lastName;
-                            availableOptions.appendChild(option);
-                        });
-                    })
-                    .catch(error => {
-                        console.error("Fetch Error: ", error); // Debugging line
-                });
-                // Get directors from seleted location
-                fetch('@Url.Action("GetDirectorsByLocation")?locationId=' + locationId)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok ' + response.statusText);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        var selectDirector = document.getElementById('directors');
-                        if (locationId === "") {
-                            selectDirector.disabled = true;
-                        }
-                        else selectDirector.disabled = false;
-                        selectDirector.innerHTML = '';
-                        var label = document.createElement('option');
-                        label.value = '';
-                        label.text = 'Select Director';
-                        selectDirector.appendChild(label);
-                        data.forEach(dir => {
-                            var option = document.createElement('option');
-                            option.value = dir.id;
-                            option.text = dir.firstName + ' ' + dir.lastName;
-                            selectDirector.appendChild(option);
-                        });
-                    })
-                    .catch(error => {
-                        console.error("Fetch Error: ", error); // Debugging line
-                });
-            });
-        });
-    </script>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			// When location is selected
+			document.getElementById('LocationId').addEventListener('change', function () {
+				var locationId = this.value;
+				// Get singers from selected location
+				fetch('@Url.Action("GetSingersByLocation")?locationId=' + locationId)
+					.then(response => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok ' + response.statusText);
+						}
+						return response.json();
+					})
+					.then(data => {
+						var selectedOptions = document.getElementById('selectedOptions');
+						var availableOptions = document.getElementById('availableOptions');
+						if (locationId === "") {
+							selectedOptions.disabled = true;
+							availableOptions.disabled = true;
+						}
+						else {
+							selectedOptions.disabled = false;
+							availableOptions.disabled = false;
+						}
+						selectedOptions.innerHTML = '';
+						availableOptions.innerHTML = '';
+						data.forEach(singer => {
+							var option = document.createElement('option');
+							option.value = singer.id;
+							option.text = singer.firstName + ' ' + singer.lastName;
+							availableOptions.appendChild(option);
+						});
+					})
+					.catch(error => {
+						console.error("Fetch Error: ", error); // Debugging line
+				});
+				// Get directors from seleted location
+				fetch('@Url.Action("GetDirectorsByLocation")?locationId=' + locationId)
+					.then(response => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok ' + response.statusText);
+						}
+						return response.json();
+					})
+					.then(data => {
+						var selectDirector = document.getElementById('directors');
+						if (locationId === "") {
+							selectDirector.disabled = true;
+						}
+						else selectDirector.disabled = false;
+						selectDirector.innerHTML = '';
+						var label = document.createElement('option');
+						label.value = '';
+						label.text = 'Select Director';
+						selectDirector.appendChild(label);
+						data.forEach(dir => {
+							var option = document.createElement('option');
+							option.value = dir.id;
+							option.text = dir.firstName + ' ' + dir.lastName;
+							selectDirector.appendChild(option);
+						});
+					})
+					.catch(error => {
+						console.error("Fetch Error: ", error); // Debugging line
+				});
+			});
+		});
+	</script>
 }
