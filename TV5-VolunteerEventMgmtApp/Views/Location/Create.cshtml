@@ -19,7 +19,7 @@
 
 			<div class="form-group">
 				<label>Director</label>
-				<select name="director" class="form-control" asp-items="ViewBag.availableDirectors">
+				<select name="director" class="form-control" asp-items="ViewBag.availableDirectors" asp-for="DirectorLocations">
 					<option value="">Select a Director</option>
 				</select>
 			</div>
@@ -39,4 +39,5 @@
 	@{
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
+
 }

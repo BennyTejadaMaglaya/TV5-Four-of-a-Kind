@@ -300,8 +300,20 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			return _context.Singers.Any(e => e.Id == id);
 		}
 
+		[HttpGet]
+		public JsonResult GetLocations(int? id)
+		{
+			return Json(LocationSelectList(id));
+		}
 
-		private void PopulateLocationSelect(bool availableOnly = true, int selected=-1)
+		private SelectList LocationSelectList(int? selected = -1)
+		{
+			var d = _context.Locations.Select(d => new { d.ID, City = d.City });
+
+			return new SelectList(d, "ID", "City", selected);
+		}
+
+		private void PopulateLocationSelect(bool availableOnly = true, int? selected=-1)
 		{
             ViewBag.AvailableLocations = new SelectList(availableOnly ?
                 _context.Locations.Where(l => l.IsActive) : _context.Locations, "ID", "City", selected);
