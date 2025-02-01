@@ -214,7 +214,13 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             return _context.Locations.Any(e => e.ID == id);
         }
 
-        private SelectList DirectorSelectList(int selected = -1)
+        [HttpGet]
+        public JsonResult GetDirectors(int? id)
+        {
+            return Json(DirectorSelectList(id));
+        }
+
+        private SelectList DirectorSelectList(int? selected = -1)
         { // Reminder that if theres a placeholder option in the select list
           // (which there is for this one) you should pass the id + 1 for the
           // selected index as 0 will always be the placeholder option

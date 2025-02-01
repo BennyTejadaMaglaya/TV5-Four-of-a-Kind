@@ -1,5 +1,4 @@
-﻿@model TV5_VolunteerEventMgmtApp.ViewModels.DashboardVM
-@Html.Partial("_ModalPartial")
+﻿@model TV5_VolunteerEventMgmtApp.ViewModels.DashboardVM;
 
 @{
 	ViewData["Title"] = "Dashboard";
@@ -8,6 +7,9 @@
 <h1>@ViewData["Title"]</h1>
 
 <hr />
+<partial name="_addLocationModal" />
+<partial name="_addSingerModal" />
+
 
 <link href="~/css/dashboard.css" rel="stylesheet" />
 
@@ -62,23 +64,14 @@
 					</div>
 				</a>
 
-				<a href="#" class="open-modal" data-partial="_SingerPartial" data-title="Create a New Singer">
+				<button data-bs-toggle="modal" data-bs-target="#addSingerModal" type="button">
 					<div class="big-link background-image-2">
 						<div class="link-box">
 							<span style="font-size: .6em;">Create</span>
-							<span class="emp-text">Singer</span>
+							<span class="emp-text">Singer(s)</span>
 						</div>
 					</div>
-				</a>
-
-				<a href="#" class="open-modal" data-partial="_CsvImportPartial" data-title="Upload Singer Data">
-					<div class="big-link background-image-2">
-						<div class="link-box">
-							<span style="font-size: .6em;">Upload</span>
-							<span class="emp-text">Singer Data</span>
-						</div>
-					</div>
-				</a>
+				</button>
 
 				<a href="#" class="open-modal" data-partial="_DirectorPartial" data-title="Create a New Director">
 					<div class="big-link background-image-3">
@@ -89,14 +82,14 @@
 					</div>
 				</a>
 
-				<a href="#" class="open-modal" data-partial="_LocationPartial" data-title="Create a New Location">
+				<button data-bs-toggle="modal" data-bs-target="#addLocationModal" type="button">
 					<div class="big-link background-image-4">
 						<div class="link-box">
 							<span style="font-size: .6em;">Create</span>
 							<span class="emp-text">Location</span>
 						</div>
 					</div>
-				</a>
+				</button>
 				<!--Modal Test ends here-->
 			</div>
 		</div>
@@ -175,65 +168,119 @@
 	}
 </style>
 
+
 @section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+
+@* 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> *@
 	<script src="~/js/dashboard.js"></script>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="~/js/refreshDDL.js"></script>
+	<script src="~/js/RefreshChecks.js"></script>
 
 	<script>
-		$(document).ready(function () {
-			$('.open-modal').click(function (e) {
-				e.preventDefault();
 
-				var partialViewName = $(this).data('partial');
-				var modalTitle = $(this).data('title');
-				var modalId = 'dynamicModal';
-
-				$('#' + modalId + ' .modal-title').text(modalTitle);
-
-				// Use AJAX to load the partial view into the modal body
+		$('#submitLocationCreate').click(function (event) {
+			event.preventDefault();
+			ClearErrors();
+			var form = $('#createLocationForm');
+			if (form.valid()) {
 				$.ajax({
-					url: '@Url.Action("LoadPartial", "Modal")',
-					type: 'GET',
-					data: { partialViewName: partialViewName },
-					success: function (data) {
-						$('#' + modalId + ' .modal-body').html(data);
-
-						$('#' + modalId).modal('show');
+					type: "POST",
+					url: form.attr('action'),
+					data: form.serialize(),
+					success: function () {
+						$('#addLocationModal').modal('hide');
 					},
-					error: function () {
-						alert('Failed to load content. Please try again.');
-					}
-				});
-			});
-
-			// Handle form submission within the modal via event delegation
-			$(document).on('submit', 'form', function (e) {
-				e.preventDefault();
-
-				var $form = $(this);
-				var url = $form.attr('action');
-				var method = $form.attr('method') || 'POST';
-
-				$.ajax({
-					url: url,
-					type: method,
-					data: $form.serialize(),
-					success: function (response) {
-						if (response.success) {
-							$('#dynamicModal').modal('hide');
-							alert(response.message);
-						} else {
-							var errorMessages = response.errors.join('\n');
-							alert('Errors:\n' + errorMessages);
+					error: function (xhr) {
+						var errorMessages = [];
+						switch (xhr.status) {
+							case 401:
+								errorMessages.push("You must be logged in first.");
+								break;
+							case 403:
+								errorMessages.push("You are not authorized for this action.");
+								break;
+							default:
+								// place model state errors here
+								errorMessages = xhr.responseText.split("|").slice(0, -1);
 						}
-					},
-					error: function () {
-						alert('An error occurred while submitting the form. Please try again.');
+
+						if (!errorMessages.some((str) => str !== "")) {
+							errorMessages.push("Error: unable to complete operation");
+						}
+
+						var ul = document.getElementById("ErrorList");
+						for (var i = 0; i < errorMessages.length; i++) {
+							var errorMessage = errorMessages[i];
+							var li = document.createElement("li");
+							li.innerHTML = errorMessage;
+							ul.appendChild(li);
+						}
 					}
 				});
-			});
+			}
+			return false;
+
+		})
+
+		
+
+		function setTab(tabName) {
+			$('#singerCreateTabs .nav-link').removeClass('active');
+			$('#singersCreateTabsContent .tab-pane').removeClass('show active');
+
+			if (tabName === 'single') {
+				$('#single-tab').addClass('active');
+				$('#single').addClass('show active');
+			} else if (tabName === 'bulk') {
+				$('#bulk-tab').addClass('active');
+				$('#bulk').addClass('show active');
+			}
+		}
+
+		$('#single-tab').click(function (event) {
+			event.preventDefault();
+			ClearErrors();
+			setTab("single");
+		})
+
+		$('#bulk-tab').click(function (event) {
+			event.preventDefault();
+			ClearErrors();
+			setTab("bulk")
+		})
+
+		
+
+		$('#addSingerModal').on('show.bs.modal', function () {
+			var selectedOption = $('#SingerLocations').val();//Return to the current selected value
+			RefreshChecks('SingerLocations', '/Singer/GetLocations', false, null, true);
+		})
+
+		$('#addLocationModal').on('show.bs.modal', function () {
+			var selectedOption = $('#DirectorLocations').val();//Return to the current selected value
+			refreshDDL('DirectorLocations', '/Location/GetDirectors/' + selectedOption, false, null, true, 'None', true);
+		})
+
+		$('#addLocationModal').on('hide.bs.modal', function () {
+			document.getElementById("createLocationForm").reset();//to clear the data in the popup form
+			ClearErrors();
+			
+			
 		});
+
+		function ClearErrors() {
+			//Empty out the list of validation errors if there are any
+			var ul = document.getElementById("ErrorList");
+			while (ul.firstChild) {
+				ul.removeChild(ul.firstChild);
+			}
+		}
 	</script>
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	
 }

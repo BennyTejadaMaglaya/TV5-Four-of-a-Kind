@@ -1,9 +1,10 @@
 ﻿@model TV5_VolunteerEventMgmtApp.Models.Singer
 
-<form id="singerForm" asp-controller="Singer" asp-action="Create" onsubmit="event.preventDefault(); submitForm();">
+
+<form id="createSingerForm" asp-controller="Singer" asp-action="Create">
+    <div class="text-danger validation-summary-errors"><ul id="ErrorList"></ul> </div>
     <div class="row">
         <div class="col-md-4">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <span class="text-danger fw-bold">*</span> 
                 <label asp-for="FirstName" class="control-label"></label>
@@ -40,7 +41,7 @@
             <div class="form-group">
                 <span class="text-danger fw-bold">*</span> 
                 <label class="control-label" for="locationSelect">Location</label>
-                <div class="m-2">
+                <div class="m-2" id="SingerLocations">
                     <table>
                         <tr>
                             @{
@@ -77,13 +78,13 @@
             </div>
 
             <div class="form-group">
-                <input type="submit" id="btnSubmit" value="Create" class="btn btn-purple" />
+                <input type="submit" id="submitSingerCreate" value="Create" class="btn btn-purple" />
             </div>
         </div>
     </div>
 </form>
 
-<script>
+@* <script>
     // I put this outside the scripts section coz otherwise submitForm does not get recognized.
     async function submitForm() {
         const form = document.getElementById('singerForm');
@@ -113,4 +114,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-}
+} *@

@@ -548,7 +548,43 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				Locations = _context.Locations.ToList()
 			};
 
+			Singer singer = new Singer();
+			PopulateAssignedLocations(singer);
+			GetAllLocations();
+			AttendanceSheet sheet = new AttendanceSheet();
+			PopulateSingerListBoxes(sheet);
+
+			
+
 			return View(viewModel);
+		}
+
+		private void PopulateAssignedLocations(Singer singer)
+		{
+			var allOptions = _context.Locations.Where(d => d.IsActive);
+			var currentLocations = new HashSet<int>(singer.SingerLocation.Select(d => d.LocationId));
+			var checkboxes = new List<CheckOptionVM>();
+			foreach (var item in allOptions)
+			{
+				checkboxes.Add(new CheckOptionVM
+				{
+					ID = item.ID,
+					DisplayText = item.City,
+					Assigned = currentLocations.Contains(item.ID)
+				});
+			}
+			ViewData["AvailableLocations"] = checkboxes;
+
+		}
+		private void GetAllLocations()
+		{
+
+			ViewData["AllLocations"] = GetLocationSelectList();
+		}
+		private SelectList GetLocationSelectList(bool activeOnly = true, int selected = -1)
+		{
+			return new SelectList(activeOnly ? _context.Locations.Where(s => s.IsActive) :
+				_context.Locations, "ID", "City", selected);
 		}
 
 		public async Task<IActionResult> ShowData(int? year, int locationId = 1)
