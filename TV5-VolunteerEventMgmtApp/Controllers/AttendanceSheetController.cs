@@ -6,6 +6,8 @@ using TV5_VolunteerEventMgmtApp.Models;
 using TV5_VolunteerEventMgmtApp.Utilities;
 using TV5_VolunteerEventMgmtApp.ViewModels;
 using TV5_VolunteerEventMgmtApp.CustomControllers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using String = System.String;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
@@ -18,6 +20,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		{
 			_context = context;
 		}
+
+		private static readonly string[] DurationItems = ["30", "60", "90", "120", "150", "180"];
 
 		// GET: AttendanceSheet
 		public async Task<IActionResult> Index(int? LocationId, int? page, int? pageSizeID,
@@ -138,7 +142,6 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			var attendanceSheet = await _context.AttendeesSheets
 				.Include(a => a.Director)
 				.Include(a => a.Location)
-
 				.Include(a => a.Attendees).ThenInclude(a => a.Singer)
 				.FirstOrDefaultAsync(m => m.Id == id);
 			if (attendanceSheet == null)
@@ -154,11 +157,11 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		{
 			DateTime now = DateTime.Now;
 			DateTime thisHour = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0);
-
+			
+			ViewData["Duration"] = new SelectList(DurationItems, "60");
 			AttendanceSheet attendanceSheet = new AttendanceSheet()
 			{
-				StartTime = thisHour,
-				EndTime = thisHour.AddHours(1) // End time is one hour after start time
+				StartTime = thisHour
 			};
 
 			ViewData["LocationID"] = new SelectList(_context.Locations.Where(d => d.IsActive).OrderBy(l => l.City), "ID", "City");
@@ -180,19 +183,37 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Id,DirectorId,Notes,StartTime,EndTime,LocationId,VenueId")] AttendanceSheet attendanceSheet,
-			string[] selectedOptions)
+		public async Task<IActionResult> Create([Bind("Id,DirectorId,Notes,StartTime,EndTime,LocationId," +
+			"VenueId")] AttendanceSheet attendanceSheet, string[] selectedOptions, int Duration)
 		{
-			UpdateAttendees(selectedOptions, attendanceSheet);
-			if (ModelState.IsValid)
+			try
 			{
-				_context.Add(attendanceSheet);
-				await _context.SaveChangesAsync();
-				return RedirectToAction(nameof(Index));
-			}
-			ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName", attendanceSheet.DirectorId);
-			ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", attendanceSheet.LocationId);
+				attendanceSheet.EndTime = attendanceSheet.StartTime.AddMinutes(Duration);
+				UpdateAttendees(selectedOptions, attendanceSheet);
 
+				if (ModelState.IsValid)
+				{
+					_context.Add(attendanceSheet);
+					await _context.SaveChangesAsync();
+					return RedirectToAction(nameof(Index));
+				}
+				//else
+				//{
+				//	var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+				//	foreach (var error in errors)
+				//	{
+				//		ModelState.AddModelError("", error);
+				//	}
+				//}
+			}
+			catch
+			{
+				ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+			}
+
+			ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName", attendanceSheet.DirectorId);
+			ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", attendanceSheet.LocationId); 
+			ViewData["Duration"] = new SelectList(DurationItems, Duration);
 			PopulateSingerListBoxes(attendanceSheet);
 			return View(attendanceSheet);
 		}
@@ -208,11 +229,15 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			var attendanceSheet = await _context.AttendeesSheets
 				.Include(a => a.Attendees).ThenInclude(a => a.Singer)
 				.FirstOrDefaultAsync(a => a.Id == id);
+
 			if (attendanceSheet == null)
 			{
 				return NotFound();
 			}
 			// 
+			var duration = attendanceSheet.EndTime - attendanceSheet.StartTime;
+			var durationInMinutes = duration.TotalMinutes;
+			ViewData["Duration"] = new SelectList(DurationItems, durationInMinutes.ToString());
 			ViewData["LocationId"] = new SelectList(_context.Locations
 				.OrderBy(l => l.City), "ID", "City", attendanceSheet.LocationId);
 			var locationId = attendanceSheet.LocationId;
@@ -230,7 +255,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, string[] selectedOptions)
+		public async Task<IActionResult> Edit(int id, string[] selectedOptions, int Duration)
 		{
 			var attendanceSheetToUpdate = await _context.AttendeesSheets
 				.Include(a => a.Attendees).ThenInclude(a => a.Singer)
@@ -241,6 +266,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				return NotFound();
 			}
 
+			attendanceSheetToUpdate.EndTime = attendanceSheetToUpdate.StartTime.AddMinutes(Duration);
 			UpdateAttendees(selectedOptions, attendanceSheetToUpdate);
 
 			if (await TryUpdateModelAsync<AttendanceSheet>(attendanceSheetToUpdate, "",
@@ -267,7 +293,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
 			ViewData["DirectorId"] = new SelectList(_context.Directors, "ID", "FullName", attendanceSheetToUpdate.DirectorId);
 			ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", attendanceSheetToUpdate.LocationId);
-
+			ViewData["Duration"] = new SelectList(DurationItems, Duration);
 			PopulateSingerListBoxes(attendanceSheetToUpdate);
 			return View(attendanceSheetToUpdate);
 		}
@@ -283,7 +309,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			var attendanceSheet = await _context.AttendeesSheets
 				.Include(a => a.Director)
 				.Include(a => a.Location)
-
+				.Include(a => a.Attendees).ThenInclude(a => a.Singer)
 				.FirstOrDefaultAsync(m => m.Id == id);
 			if (attendanceSheet == null)
 			{

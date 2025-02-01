@@ -40,11 +40,11 @@ namespace TV5_VolunteerEventMgmtApp.Models
         {
             if (EndTime < StartTime)
             {
-                yield return new ValidationResult("End time cannot be earlier than the start Time.", ["EndTime"]);
+                yield return new ValidationResult("End Time cannot be earlier than the start Time.", ["EndTime"]);
             }
             else if (EndTime.Day != StartTime.Day)
             {
-                yield return new ValidationResult("End time cannont be a differnt day than Start Time.", ["EndTime"]);
+                yield return new ValidationResult("End Time cannont be a differnt day than Start Time.", ["EndTime"]);
             }
 
             if(StartTime > DateTime.Now.AddDays(1))
@@ -52,7 +52,5 @@ namespace TV5_VolunteerEventMgmtApp.Models
                 yield return new ValidationResult("Cannot create attendance sheets for the future." , ["StartTime"]);
             }
         }
-       
-  
 	}
 }
