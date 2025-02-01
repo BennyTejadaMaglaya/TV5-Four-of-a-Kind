@@ -26,9 +26,25 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             {
                 return new BadRequestResult();
             }
-            ViewBag.AvailableLocations = new SelectList(_context.Locations.Where(l => l.IsActive), "ID", "City");
+
+            if (partialViewName == "_DirectorPartial")
+            {
+                ViewBag.AvailableLocations = _context.Locations
+                    .Where(l => l.IsActive)
+                    .Select(l => new TV5_VolunteerEventMgmtApp.ViewModels.CheckOptionVM
+                    {
+                        ID = l.ID,
+                        DisplayText = l.City,
+                        Assigned = false
+                    }).ToList();
+            }
+            else if (partialViewName == "_CsvImportPartial")
+            {
+                ViewBag.AvailableLocations = new SelectList(_context.Locations.Where(l => l.IsActive), "ID", "City");
+            }
 
             return PartialView($"~/Views/Shared/{partialViewName}.cshtml");
         }
+
     }
 }
