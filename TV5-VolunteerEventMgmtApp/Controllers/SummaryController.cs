@@ -64,9 +64,13 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             }).ToListAsync();
             SortSummarizedAttendanceSheet(ref summaryValue, sortField, sortDirection);
 
-
-            ViewData["summaryTitle"] = (!startWeek.HasValue && !endWeek.HasValue) ? "This Weeks Attendance Summary" 
-                : $"Attendance Summary {SummaryUtilities.DateRangeMessage(startWeek, endWeek)}";
+            var filters = AnyFilters(startWeek, endWeek, actionButton, searchCity, searchDirector, sortDirection, sortField);
+            ViewData["summaryTitle"] = filters
+                ? "Attendance Summary" : "This Weeks Attendance Summary";
+            if (filters)
+            {
+                ViewData["ShowFilter"] = " show";
+            }
             ViewData["sortField"] = sortField;
             ViewData["sortDirection"] = sortDirection;
             LocationSelectList(searchCity);
@@ -407,6 +411,28 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             ViewBag.AvailableLocations = new SelectList(locations, "City", "City");
         }
 
+        private bool AnyFilters(DateTime? startWeek,
+                                    DateTime? endWeek,
+                                    string? actionButton,
+                                    string? searchCity,
+                                    string? searchDirector,
+                                    string sortDirection = "asc",
+                                    string sortField = "City")
+
+        {
+            if (startWeek.HasValue || endWeek.HasValue) 
+            {
+                return true;
+            }
+
+            if (!string.IsNullOrEmpty(searchCity) || !string.IsNullOrEmpty(searchDirector))
+            {
+                return true;
+            }
+
+
+            return false;
+        }
 
 
     }
