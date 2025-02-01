@@ -19,38 +19,38 @@
 			<div class="action-buttons my-4 d-flex justify-content-center gap-5 flex-wrap"
 				 style="max-width: 100%">
 
-				@* <a asp-area="" asp-controller="AttendanceSheet" asp-action="Create" class=""> *@
-				@* 	<div class="big-link background-image-1"> *@
-				@* 		<div class="link-box"> *@
-				@* 			<span style="font-size: .6em;">Create</span> *@
-				@* 			<span class="emp-text">Attendance Sheet</span> *@
-				@* 		</div> *@
-				@* 	</div> *@
-				@* </a> *@
-				@* <a asp-area="" asp-controller="CsvImport" asp-action="Index" class=""> *@
-				@* 	<div class="big-link background-image-2"> *@
-				@* 		<div class="link-box"> *@
-				@* 			<span style="font-size: .6em;">Upload</span> *@
-				@* 			<span class="emp-text">Singer Data</span> *@
-				@* 		</div> *@
-				@* 	</div> *@
-				@* </a> *@
-				@* <a asp-area="" asp-controller="Director" asp-action="Create" class=""> *@
-				@* 	<div class="big-link background-image-3"> *@
-				@* 		<div class="link-box"> *@
-				@* 			<span style="font-size: .6em;">Create</span> *@
-				@* 			<span class="emp-text">Director</span> *@
-				@* 		</div> *@
-				@* 	</div> *@
-				@* </a> *@
-				@* <a asp-area="" asp-controller="Location" asp-action="Create" class=""> *@
-				@* 	<div class="big-link background-image-4"> *@
-				@* 		<div class="link-box"> *@
-				@* 			<span style="font-size: .6em;">Create</span> *@
-				@* 			<span class="emp-text">Location</span> *@
-				@* 		</div> *@
-				@* 	</div> *@
-				@* </a> *@
+				@*<a asp-area="" asp-controller="AttendanceSheet" asp-action="Create" class="">
+					<div class="big-link background-image-1">
+						<div class="link-box">
+							<span style="font-size: .6em;">Create</span>
+							<span class="emp-text">Attendance Sheet</span>
+						</div>
+					</div>
+				</a>
+				<a asp-area="" asp-controller="CsvImport" asp-action="Index" class="">
+					<div class="big-link background-image-2">
+						<div class="link-box">
+							<span style="font-size: .6em;">Upload</span>
+							<span class="emp-text">Singer Data</span>
+						</div>
+					</div>
+				</a>
+				<a asp-area="" asp-controller="Director" asp-action="Create" class="">
+					<div class="big-link background-image-3">
+						<div class="link-box">
+							<span style="font-size: .6em;">Create</span>
+							<span class="emp-text">Director</span>
+						</div>
+					</div>
+				</a>
+				<a asp-area="" asp-controller="Location" asp-action="Create" class="">
+					<div class="big-link background-image-4">
+						<div class="link-box">
+							<span style="font-size: .6em;">Create</span>
+							<span class="emp-text">Location</span>
+						</div>
+					</div>
+				</a>*@
 
 				<!--Modal Test starts here-->
 				<a href="#" class="open-modal" data-partial="_AttendanceSheetPartial" data-title="Create Attendance Sheet">
@@ -62,25 +62,25 @@
 					</div>
 				</a>
 
-				<a href="#" class="open-modal" data-partial="_SingerPartial" data-title="Upload Singer">
+				<a href="#" class="open-modal" data-partial="_SingerPartial" data-title="Create a New Singer">
 					<div class="big-link background-image-2">
 						<div class="link-box">
-							<span style="font-size: .6em;">Upload</span>
+							<span style="font-size: .6em;">Create</span>
 							<span class="emp-text">Singer</span>
 						</div>
 					</div>
 				</a>
 
-				@* <a href="#" class="open-modal" data-partial="_CsvImportPartial" data-title="Upload Singer Data"> *@
-				@* 	<div class="big-link background-image-2"> *@
-				@* 		<div class="link-box"> *@
-				@* 			<span style="font-size: .6em;">Upload</span> *@
-				@* 			<span class="emp-text">Singer Data</span> *@
-				@* 		</div> *@
-				@* 	</div> *@
-				@* </a> *@
+				<a href="#" class="open-modal" data-partial="_CsvImportPartial" data-title="Upload Singer Data">
+					<div class="big-link background-image-2">
+						<div class="link-box">
+							<span style="font-size: .6em;">Upload</span>
+							<span class="emp-text">Singer Data</span>
+						</div>
+					</div>
+				</a>
 
-				<a href="#" class="open-modal" data-partial="_DirectorPartial" data-title="Create Director">
+				<a href="#" class="open-modal" data-partial="_DirectorPartial" data-title="Create a New Director">
 					<div class="big-link background-image-3">
 						<div class="link-box">
 							<span style="font-size: .6em;">Create</span>
@@ -89,7 +89,7 @@
 					</div>
 				</a>
 
-				<a href="#" class="open-modal" data-partial="_LocationPartial" data-title="Create Location">
+				<a href="#" class="open-modal" data-partial="_LocationPartial" data-title="Create a New Location">
 					<div class="big-link background-image-4">
 						<div class="link-box">
 							<span style="font-size: .6em;">Create</span>
@@ -192,7 +192,7 @@
 
 				// Use AJAX to load the partial view into the modal body
 				$.ajax({
-					url: '@Url.Action("LoadPartial", "Home")',
+					url: '@Url.Action("LoadPartial", "Modal")',
 					type: 'GET',
 					data: { partialViewName: partialViewName },
 					success: function (data) {
