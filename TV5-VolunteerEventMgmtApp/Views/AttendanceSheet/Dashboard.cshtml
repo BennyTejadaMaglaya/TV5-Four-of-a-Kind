@@ -192,7 +192,7 @@
 
 				// Use AJAX to load the partial view into the modal body
 				$.ajax({
-					url: '@Url.Action("LoadPartial", "Home")',
+					url: '@Url.Action("LoadPartial", "Modal")',
 					type: 'GET',
 					data: { partialViewName: partialViewName },
 					success: function (data) {
