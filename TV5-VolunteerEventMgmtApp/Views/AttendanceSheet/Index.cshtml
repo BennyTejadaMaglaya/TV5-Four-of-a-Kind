@@ -28,10 +28,27 @@
 		<!-- FILTER BOX -->
 		<div class="filter-box collapse mb-2 @ViewData["ShowFilter"]" id="collapseFilter">
 
-			<div class="row">
-				<div class="form-group col-md-4">
-					<label class="control-label">Filter by Location</label>
-					@Html.DropDownList("LocationId", null, "All", htmlAttributes: new { @class = "form-control p-1" })
+			<div>
+				<div class="d-inline-flex gap-3">
+					<div class="form-group col-md-4">
+						<label class="control-label">Filter by Location</label>
+						@Html.DropDownList("LocationId", null, "All", htmlAttributes: new { @class = "form-control p-1" })
+					</div>
+
+					<div class="form-group col-md-4">
+						<label for="searchDirector" class="control-label">Director Name</label>
+						<input name="searchDirector" value="@ViewData["searchDirector"]" />
+					</div>
+
+					<div>
+						<label class="d-block">Start Time</label>
+						<input class="form-control p-1" type="datetime-local" name="startTime" value="@ViewData["startTime"]" />
+					</div>
+
+					<div>
+						<label class="d-block">End Time</label>
+						<input class="form-control p-1" type="datetime-local" name="endTime" value="@ViewData["endTime"]" />
+					</div>
 				</div>
 
 				<div class="form-group col-md-4 align-self-end">
@@ -41,7 +58,6 @@
 			</div>
 
 		</div>
-	</div>
 
 	<!-- TABS -->
 	<ul class="nav nav-tabs mb-3" id="attendanceSheetTabs" role="tablist">
@@ -84,7 +100,10 @@
 							</button>
 						</th>
 						<th class="d-none d-md-table-cell">
-							@Html.DisplayNameFor(model => model.Director)
+								<button type="submit" name="actionButton" value="Director"
+										class="btn btn-toolbar p-0 fw-bold d-inline">
+									Director <span class="text-purple">&#11137</span>
+								</button>
 						</th>
 						<th>
 							<button type="submit" 

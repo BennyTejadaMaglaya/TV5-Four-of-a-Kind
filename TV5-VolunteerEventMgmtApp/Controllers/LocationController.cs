@@ -93,7 +93,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
                     _context.Add(location);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+					TempData["SuccessMessage"] = $"new location: {location.City} created!";
+					return RedirectToAction(nameof(Index));
                 }
             }
             catch
@@ -154,11 +155,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                     {
                         
                         await _context.SaveChangesAsync();
-                        
-                    }
+						TempData["SuccessMessage"] = $"location: {location.City} saved!";
+					}
                     catch (DbUpdateConcurrencyException)
                     {
-                        if (!LocationExists(location.ID))
+						TempData["FailMessage"] = $"location: {location.City} did not save.";
+						if (!LocationExists(location.ID))
                         {
                             return NotFound();
                         }
@@ -206,7 +208,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+			TempData["SuccessMessage"] = $"{location.City} deleted!";
+			return RedirectToAction(nameof(Index));
         }
 
         private bool LocationExists(int id)

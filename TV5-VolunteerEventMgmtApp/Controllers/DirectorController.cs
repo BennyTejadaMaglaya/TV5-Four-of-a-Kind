@@ -121,13 +121,15 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 {   
                     _context.Add(director);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("Details", new {director.ID});
+					TempData["SuccessMessage"] = $"{director.FirstName} {director.LastName} created!";
+					return RedirectToAction("Details", new {director.ID});
                 }
             }
             catch
             {
-                // todo update when we get to concurrency
-                ModelState.AddModelError("", "Error when creating this director");
+				// todo update when we get to concurrency
+				TempData["FailMessage"] = "Did not create new director.";
+				ModelState.AddModelError("", "Error when creating this director");
             }
             PopulateAssignedLocations(director);
             return View(director);
@@ -183,11 +185,13 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 try
                 {
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("Details", new {director.ID});
+					TempData["SuccessMessage"] = $"Director: {director.FirstName} {director.LastName} saved!";
+					return RedirectToAction("Details", new {director.ID});
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DirectorExists(director.ID))
+					TempData["FailMessage"] = "Did not save director.";
+					if (!DirectorExists(director.ID))
                     {
                         return NotFound();
                     }

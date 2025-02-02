@@ -13,6 +13,7 @@
 <partial name="_addAttendanceSheetModal" />
 
 
+
 <link href="~/css/dashboard.css" rel="stylesheet" />
 
 <div class="dashboard-container">
@@ -257,7 +258,7 @@
 		$('#LocationId').change(function (event) {
 			console.log("drop down change has happened");
 			event.preventDefault();
-			let locationId = event.value;
+			let locationId = event.target.value;
 			fetch('@Url.Action("GetSingersByLocation")?locationId=' + locationId)
 				.then(response => {
 					if(!response.ok){
@@ -372,6 +373,8 @@
 			var selectedOption = $('#DirectorLocations').val();//Return to the current selected value
 			refreshDDL('DirectorLocations', '/Location/GetDirectors/' + selectedOption, false, null, true, 'None', true);
 		})
+
+		
 
 		function ClearErrors() {
 			//Empty out the list of validation errors if there are any
