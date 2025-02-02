@@ -4,14 +4,6 @@ namespace TV5_VolunteerEventMgmtApp.Models
 {
     public class Singer : IValidatableObject
     {
-        public enum ContactRelation
-        {
-            Mother,
-            Father,
-            Sibling,
-            GrandParent,
-            SocialWorker
-        }
 
         public int Id { get; set; }
 

@@ -27,12 +27,6 @@
 				<span asp-validation-for="StartTime" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				@{
-					// Make end time default to 11:59 PM of the same day for validation
-					// It will be set to the correct value in the controller
-					DateTime now = DateTime.Now;
-					DateTime todayAtMidnight = new DateTime(now.Year, now.Month, now.Day, 23, 59, 0);
-				}
 				<span class="text-danger fw-bold">*</span> <label class="control-label">Duration (Minutes)</label>
 				<select id="Duration" name="Duration" class="form-control" asp-items="ViewBag.Duration"></select>
 				<span asp-validation-for="EndTime" class="text-danger"></span>

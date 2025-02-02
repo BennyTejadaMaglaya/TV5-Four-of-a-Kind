@@ -154,7 +154,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("FirstName,LastName,DOB,Email,Phone")] Singer singer, string[] selectedLocations)
+		public async Task<IActionResult> Create([Bind("FirstName,LastName,DOB,Email,Phone,EmergencyContactName,Relation,Notes")] Singer singer, string[] selectedLocations)
 		{
 			try
 			{
@@ -234,7 +234,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
             UpdateSingerLocation(selectedLocations, singer);
 
-            if (await TryUpdateModelAsync<Singer>(singer, "", c => c.FirstName, c => c.LastName, c => c.Email, c => c.Phone))
+            if (await TryUpdateModelAsync<Singer>(singer, "", 
+				c => c.FirstName, c => c.LastName, c => c.Email, c => c.Phone, 
+				c => c.EmergencyContactName, c => c.Relation, c => c.Notes))
 			{
 				try
 				{
