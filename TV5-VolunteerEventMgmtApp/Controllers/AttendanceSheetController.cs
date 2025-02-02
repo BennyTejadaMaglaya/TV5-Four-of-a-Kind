@@ -548,15 +548,21 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
         public IActionResult Dashboard()
 		{
+			DateTime now = DateTime.Now;
+			DateTime thisHour = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0);
+			ViewData["StartTime"] = thisHour.ToString("MMMM d, yyyy");
 			var viewModel = new DashboardVM
 			{
 				Locations = _context.Locations.ToList()
 			};
-
+			ViewData["Duration"] = new SelectList(DurationItems, "60");
 			Singer singer = new Singer();
 			PopulateAssignedLocations(singer);
 			GetAllLocations();
-			AttendanceSheet sheet = new AttendanceSheet();
+			AttendanceSheet sheet = new AttendanceSheet()
+			{
+				StartTime = thisHour
+			};
 			PopulateSingerListBoxes(sheet);
 
 			
