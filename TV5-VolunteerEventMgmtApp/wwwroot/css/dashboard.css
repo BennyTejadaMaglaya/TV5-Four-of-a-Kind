@@ -14,6 +14,16 @@
     border-radius: 10px;
 }
 
+.action-buttons {
+    display: grid;
+    grid-gap: 8px;
+}
+
+.action-buttons button {
+    display: block;
+    width: 100%;
+}
+
 .right-panel {
     flex: 3 1 75%;
     padding: 10px;
@@ -41,37 +51,55 @@
 
 #calendar {
     max-width: 100%;
-    height: 450px; /*make the height adjust in relation with the left widget*/
+    height: fit-content;
+    max-height: 600px; /*make the height adjust in relation with the left widget*/
     margin: 0 auto;
 }
 
-.fc-button.fc-button-primary {
-    background: #871687 !important;
-    border: none !important;
-    border-radius: 4px !important;
-    margin: 3px;
+h2.fc-toolbar-title {
+    font-size: 1.4em !important;
 }
 
-    .fc-button.fc-button-primary.fc-button-active {
-        border: none !important;
-    }
+.fc-prev-button, .fc-next-button, .fc-today-button {
+    background: #9d2b9d !important;
+}
 
-    .fc-button.fc-button-primary:hover {
-        background: #871687 !important;
-    }
+.fc-dayGridWeek-button, .fc-listWeek-button {
+    background: #6c757d !important;
+    min-width: 60px;
+}
+
+.fc-prev-button, .fc-next-button, .fc-today-button,
+.fc-dayGridWeek-button, .fc-listWeek-button {
+    border: none !important;
+    border: none !important;
+    border-radius: 4px !important;
+    margin: 3px !important;
+}
+
+.fc-prev-button:hover, .fc-next-button:hover, .fc-today-button:hover {
+    background: #871687 !important;
+}
+
+.fc-dayGridWeek-button:hover, .fc-listWeek-button:hover {
+    background: #4c555d !important;
+}
 
 .fc {
     height: 100%;
 }
 
-/*today column*/
+.fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
+    padding: 10px 0 !important;
+}
 
-.fc-day-today .fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
+.fc-day-today .fc-daygrid-day-frame.fc-scrollgrid-sync-inner { /*today column*/
     background: #f8f9fa !important;
 }
 
 .fc-daygrid-event-harness a {
     padding: 5px;
+    margin: 10px 0;
 }
 
 .fc-event-title, .fc-event-time {
@@ -86,7 +114,7 @@
 .fc-daygrid-event-harness a:hover {
     transform: scale(1.1);
     z-index: 100;
-    box-shadow: 0 0 10px 1px #00000060;
+    box-shadow: 0 0 10px 1px #00000030;
 }
 
 .fc-event-time {
@@ -113,71 +141,35 @@
     display: none !important;
 }
 
+
+.fc-list-event:hover {
+    background-color: inherit !important;
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
 a {
     text-decoration: none;
 }
 
-.background-image-1 {
-    background-image: url('../images/Hue_Saturation-1.png');
-    background-position: center;
-    background-size: cover;
-}
 
-.background-image-2 {
-    background-image: url('../images/Hue_Saturation-6.png');
-    background-position: center;
-    background-size: cover;
-}
-
-.background-image-3 {
-    background-image: url('../images/Hue_Saturation-4.png');
-    background-position: center;
-    background-size: cover;
-}
-
-.background-image-4 {
-    background-image: url('../images/Hue_Saturation-3.png');
-    background-position: center;
-    background-size: cover;
-}
-
-.big-link {
-    color: #fff;
-    display: flex;
-    height: 80px;
-    justify-content: center;
-    margin: auto;
-    position: relative;
-    text-decoration: none;
-    width: 80px;
-    font-weight: bold;
-}
-
-.emp-text {
-    font-size: .7em;
-}
-
-.link-box {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    justify-content: center;
-    padding: 20px;
-    width: 100%;
-}
-
-.link-box span {
-    display: block;
-    text-align: center;
-}
-
-@media (min-width: 1100px) {
-    .dashboard-container {
-        flex-direction: row;
+@media (width > 600px) {
+    .action-buttons {
+        grid-template-columns: 1fr 1fr;
     }
 }
 
-@media (max-width: 768px) {
+@media (width > 1100px) {
+    .dashboard-container {
+        flex-direction: row;
+    }
+
+    .action-buttons {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (width < 768px) {
 
     .left-panel, .right-panel, .calendar-container {
         width: 100%;
@@ -190,23 +182,5 @@ a {
 
     .fc-event-time {
         font-size: 0.75em;
-    }
-
-    .action-buttons a {
-        flex-basis: calc(40% - 1rem);
-    }
-
-    .big-link {
-        height: 150px;
-        width: 150px;
-    }
-
-    .big-link img {
-        width: 100%;
-        height: auto;
-    }
-
-    .emp-text {
-        font-size: 1.15em;
     }
 }

@@ -23,6 +23,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
 		private static readonly string[] DurationItems = ["30", "60", "90", "120", "150", "180"];
 
+		private static readonly string[] DefaultColors = ["#FFCCD8", "#D4F6FF", "#D6FFD0", "#FFF0B0", "#FFD8AF", "#ECE0FF", "#ECE4CC", "#ECECEC"];
+
 		// GET: AttendanceSheet
 		public async Task<IActionResult> Index(int? LocationId, int? page, int? pageSizeID,
 			string? actionButton, string sortDirection = "desc", string sortField = "Date", 
@@ -122,6 +124,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			// Set sort for next time
 			ViewData["sortField"] = sortField;
 			ViewData["sortDirection"] = sortDirection;
+
+			// Colors
+			ViewData["Colors"] = DefaultColors;
 
 			// Handle Paging
 			int pageSize = PageSizeHelper.SetPageSize(HttpContext, pageSizeID, ControllerName());

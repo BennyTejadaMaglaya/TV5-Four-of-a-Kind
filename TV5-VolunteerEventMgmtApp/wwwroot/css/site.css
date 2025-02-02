@@ -82,13 +82,13 @@ select option:focus, select option:hover, select option:checked {
     color: var(--purple);
 }
 
-    .text-purple:hover { /* some things were blue on hover */
-        color: var(--purple) !important;
-    }
+.text-purple:hover { /* some things were blue on hover */
+    color: var(--purple) !important;
+}
 
-    a:hover {
-        color: var(--purple-hover);
-    }
+a:hover {
+    color: var(--purple-hover);
+}
 
 .text-gray {
     color: var(--text-gray);
@@ -171,6 +171,17 @@ select option:focus, select option:hover, select option:checked {
     z-index: -50;
 }
 /* -- */
+
+/* Modals */
+.modal-dialog {
+    width:95vw;
+    max-width: 1400px;
+    padding-top: 60px;
+}
+
+.modal-content {
+    padding: 20px;
+}
 
 .filter-box {
     background: #f7f7f7;
