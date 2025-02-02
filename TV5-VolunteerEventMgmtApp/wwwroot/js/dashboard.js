@@ -2,8 +2,8 @@
 	var calendarEl = document.getElementById('calendar');
 	var calendar = new FullCalendar.Calendar(calendarEl, {
 		headerToolbar: {
-			left: 'prev,next today',
-			center: 'title',
+			center: 'prev,next today',
+			left: 'title',
 			right: 'dayGridWeek,listWeek'
 		},
 		initialView: 'dayGridWeek',
@@ -40,7 +40,8 @@
 			// }
 
 			// these are from Location Controller...
-			var DefaultColors = ["#4CAF50", "#2196F3", "#9C27B0", "#00BCD4", "#8BC34A", "#607D8B"];
+			//var DefaultColors = ["#4CAF50", "#2196F3", "#9C27B0", "#00BCD4", "#8BC34A", "#607D8B"];
+			var DefaultColors = ["#FFCCD8", "#D4F6FF", "#D6FFD0", "#FFF0B0", "#FFD8AF", "#ECE0FF", "#ECE4CC", "#ECECEC"];
 			// 4CAF50 with fff WCAG AAA:Fail
 			// 4CAF50 with 000 WCAG AAA:Pass
 

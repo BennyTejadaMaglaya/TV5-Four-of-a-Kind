@@ -19,9 +19,10 @@
 
 	<!--Left-->
 	<div class="left-panel">
-		<div class="container my-5">
-			<div class="action-buttons my-4 d-flex justify-content-center gap-5 flex-wrap"
-				 style="max-width: 100%">
+
+		<div class="my-3 mx-0">
+
+			<div class="action-buttons">
 
 				@*<a asp-area="" asp-controller="AttendanceSheet" asp-action="Create" class="">
 					<div class="big-link background-image-1">
@@ -57,47 +58,42 @@
 				</a>*@
 
 				<!--Modal Test starts here-->
-				<button data-bs-toggle="modal" data-bs-target="#addAttendanceSheetModal" type="button">
-					<div class="big-link background-image-1">
-						<div class="link-box">
-							<span style="font-size: .6em;">Create</span>
-							<span class="emp-text">Attendance Sheet</span>
-						</div>
-					</div>
+
+				<button class="btn btn-purple"
+						data-bs-toggle="modal"
+						data-bs-target="#addAttendanceSheetModal"
+						type="button">
+					Create Attendance Sheet
 				</button>
 
-				<button data-bs-toggle="modal" data-bs-target="#addSingerModal" type="button">
-					<div class="big-link background-image-2">
-						<div class="link-box">
-							<span style="font-size: .6em;">Create</span>
-							<span class="emp-text">Singer(s)</span>
-						</div>
-					</div>
+				<button class="btn btn-purple"
+						data-bs-toggle="modal"
+						data-bs-target="#addSingerModal"
+						type="button">
+					Create Singer(s)
 				</button>
 
-				<button data-bs-toggle="modal" data-bs-target="#addDirectorModal" type="button">
-					<div class="big-link background-image-3">
-						<div class="link-box">
-							<span style="font-size: .6em;">Create</span>
-							<span class="emp-text">Director(s)</span>
-						</div>
-					</div>
+				<button class="btn btn-purple"
+						data-bs-toggle="modal"
+						data-bs-target="#addDirectorModal"
+						type="button">
+					Create Director
 				</button>
 
-				<button data-bs-toggle="modal" data-bs-target="#addLocationModal" type="button">
-					<div class="big-link background-image-4">
-						<div class="link-box">
-							<span style="font-size: .6em;">Create</span>
-							<span class="emp-text">Location(s)</span>
-						</div>
-					</div>
+				<button class="btn btn-purple"
+						data-bs-toggle="modal"
+						data-bs-target="#addAttendanceSheetModal"
+						type="button">
+					Create Location
 				</button>
+
 				<!--Modal Test ends here-->
+
 			</div>
 		</div>
 
-		<div class="dropdown mb-4">
-			<label for="locationDropdown">Select Location:</label>
+		<div class="dropdown my-4">
+			<label for="locationDropdown">Select Location</label>
 			<select id="locationDropdown" class="form-control">
 				<option value="all" selected>All</option>
 				@foreach (var location in Model.Locations)
@@ -141,7 +137,7 @@
 			<div id="calendar" class="fc-calendar"></div>
 		</div>
 	</div>
-	
+
 </div>
 
 <!-- Event Details Modal -->
@@ -162,22 +158,13 @@
 	</div>
 </div>
 
-<style>
-	.fc-list-event:hover {
-		background-color: inherit !important;
-		color: inherit !important;
-		text-decoration: none !important;
-	}
-</style>
-
-
 @section Scripts {
 	@{
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
 
-@* 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	
+	@* 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> *@
 	<script src="~/js/multiselect.js"></script>
 	<script src="~/js/dashboard.js"></script>
@@ -229,9 +216,6 @@
 			return false;
 
 		})
-
-		
-
 
 
 		// $('#single-location-tab').click(function (event) {
@@ -334,8 +318,8 @@
 								console.error("Fetch Error: ", error); // Debugging line
 							});
 					});
-					
-	
+
+
 
 		function setSingerTab(tabName) {
 			ClearErrors();
@@ -398,5 +382,5 @@
 		}
 	</script>
 
-	
+
 }
