@@ -131,11 +131,13 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                     Byte[] theData = excel.GetAsByteArray();
                     string filename = $"Attendance-Summary-{DateUtilities.GetWeekStart().ToShortDateString()}.xlsx";
                     string mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    return File(theData, mimeType, filename);
+					TempData["SuccessMessage"] = $"downloading file";
+					return File(theData, mimeType, filename);
                 }
                 catch (Exception)
                 {
-                    return BadRequest("Could not build and download the file.");
+					TempData["FailMessage"] = $"Unable to create export.";
+					return BadRequest("Could not build and download the file.");
                 }
             }
             
@@ -191,12 +193,13 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             try
             {
                 var excel = CreateExcel($"Attendance Summary {SummaryUtilities.DateRangeMessage(startWeek, endWeek)}", finalized);
-                return File(excel.Data, excel.MimeType, excel.FileName);
+				TempData["SuccessMessage"] = $"downloading now.";
+				return File(excel.Data, excel.MimeType, excel.FileName);
             }
             catch
             {
-
-            }
+				TempData["FailMessage"] = $"Unable to download";
+			}
 
             return BadRequest(StaticMessages.UnableToCreateReport);
         }

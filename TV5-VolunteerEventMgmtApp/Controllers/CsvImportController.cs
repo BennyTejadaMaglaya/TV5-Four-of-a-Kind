@@ -75,13 +75,13 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
                     MapModelStateErrors(csvErrors);
                     MapModelStateErrors(dbErrors.Errors);
-                    //return Json(new
-                    //{
-                    //    csvErrors,
-                    //    dbErrors
-                    //});
-
-                    return View(new CsvUploadVM<List<SingerCsvUpload>>
+					//return Json(new
+					//{
+					//    csvErrors,
+					//    dbErrors
+					//});
+					TempData["SuccessMessage"] = $"Singers added.";
+					return View(new CsvUploadVM<List<SingerCsvUpload>>
                     {
                         Data = newSingers,
                         SuccessCount = dbErrors.SuccessCount
@@ -90,19 +90,22 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 catch (ApplicationException ex)
                 { // invalid csv errors
                     Console.WriteLine(ex.Message);
-                    ModelState.AddModelError("", ex.Message);
+					TempData["FailMessage"] = $"Unable to import singers.";
+					ModelState.AddModelError("", ex.Message);
                 }
                 catch (Exception ex)
                 {
-                    //return BadRequest(StaticMessages.UnknownError);
-                   ModelState.AddModelError("", ex.Message);
+					TempData["FailMessage"] = $"Unable to import singers.";
+					//return BadRequest(StaticMessages.UnknownError);
+					ModelState.AddModelError("", ex.Message);
                 }
 
             }
             else
             {
-                //return BadRequest(StaticMessages.InvalidCSV);
-                ModelState.AddModelError("", "Please select a valid CSV file.");
+				//return BadRequest(StaticMessages.InvalidCSV);
+				TempData["FailMessage"] = $"Unable to import singers.";
+				ModelState.AddModelError("", "Please select a valid CSV file.");
             }
             return View(new CsvUploadVM<List<SingerCsvUpload>>
             {
@@ -148,12 +151,13 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                     MapModelStateErrors(csvErrors);
                     MapModelStateErrors(dbErrors.Errors);
 
-                    //return Json(new
-                    //{
-                    //    csvErrors,
-                    //    dbErrors
-                    //});
-                    return View(new CsvUploadVM<List<DirectorCsvUpload>>
+					//return Json(new
+					//{
+					//    csvErrors,
+					//    dbErrors
+					//});
+					TempData["SuccessMessage"] = $"Directors added.";
+					return View(new CsvUploadVM<List<DirectorCsvUpload>>
                     {
                         Data = newDirectors,
                         SuccessCount = dbErrors.SuccessCount
@@ -162,19 +166,22 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 catch (ApplicationException ex)
                 { // invalid csv errors
                     Console.WriteLine(ex.Message);
-                    ModelState.AddModelError("",ex.Message);
+					TempData["FailMessage"] = $"Unable to import directors.";
+					ModelState.AddModelError("",ex.Message);
                     //return BadRequest(StaticMessages.UnknownError);
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", StaticMessages.UnknownError);
+					TempData["FailMessage"] = $"Unable to import directors.";
+					ModelState.AddModelError("", StaticMessages.UnknownError);
                 }
 
 
             }
             else
             {
-                ModelState.AddModelError("", StaticMessages.InvalidCSV);
+				TempData["FailMessage"] = $"Unable to import directors.";
+				ModelState.AddModelError("", StaticMessages.InvalidCSV);
             }
             return View(new CsvUploadVM<List<DirectorCsvUpload>>
             {
@@ -218,12 +225,14 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                     MapModelStateErrors(csvErrors);
                     MapModelStateErrors(dbErrors.Errors);
 
-                    //return Json(new
-                    //{
-                    //    dbErrors,
-                    //    csvErrors,
-                    //});
-                    return View(new CsvUploadVM<List<LocationCsvUpload>>
+					//return Json(new
+					//{
+					//    dbErrors,
+					//
+					//    csvErrors,
+					//});
+					TempData["SuccessMessage"] = $"Locations Added.";
+					return View(new CsvUploadVM<List<LocationCsvUpload>>
                     {
                         Data = newLocations,
                         SuccessCount = dbErrors.SuccessCount
@@ -232,7 +241,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 catch (ApplicationException ex)
                 { // invalid csv errors
                     Console.WriteLine(ex.Message);
-                    ModelState.AddModelError("", ex.Message);
+					TempData["FailMessage"] = $"Unable to import locations.";
+					ModelState.AddModelError("", ex.Message);
                     //return Json(new
                     //{
                     //    ex.Message,
@@ -241,11 +251,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             }
             else
             {
-                //return Json(new
-                //{
-                //    Message = "Please submit a valid CSV file"
-                //});
-                 ModelState.AddModelError("", "Please select a valid CSV file.");
+				//return Json(new
+				//{
+				//    Message = "Please submit a valid CSV file"
+				//});
+				TempData["FailMessage"] = $"Unable to import locations.";
+				ModelState.AddModelError("", "Please select a valid CSV file.");
             }
              return View(new CsvUploadVM<List<LocationCsvUpload>>
             {

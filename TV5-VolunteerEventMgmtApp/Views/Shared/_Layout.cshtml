@@ -78,9 +78,9 @@
 			{
 				<partial name="_SuccessAlertPartial" model="new TV5_VolunteerEventMgmtApp.ViewModels.SuccessVM { Message = successMessage }" />
 			}
-			@if (!string.IsNullOrEmpty(successMessage))
+			@if (!string.IsNullOrEmpty(failMessage))
 			{
-				<partial name="_FailAlertPartial" model="new TV5_VolunteerEventMgmtApp.ViewModels.FailVM { Message = failMessage }" />
+				<partial name="_FailureAlertPartial" model="new TV5_VolunteerEventMgmtApp.ViewModels.FailVM { Message = failMessage }" />
 			}
 
 		</div>
@@ -91,6 +91,15 @@
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
+	<script>
+		$(document).ready(function () {
+			window.setTimeout(function () {
+				$(".alert").fadeTo(500, 0).slideUp(500, function () {
+					$(this).remove();
+				});
+			}, 3000); // 3000 milliseconds = 3 seconds
+		});
+	</script>
 	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

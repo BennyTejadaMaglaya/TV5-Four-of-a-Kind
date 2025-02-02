@@ -171,9 +171,11 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
                 if (ModelState.IsValid)
 				{
+					
 					_context.Add(singer);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("Details", new { singer.Id });
+					TempData["SuccessMessage"] = $"{singer.FirstName} {singer.LastName} created!";
+					return RedirectToAction("Details", new { singer.Id });
                 }
 					
 				
@@ -181,6 +183,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			}
 			catch
 			{ // todo whenever we add concurrency controls update this
+
+				TempData["FailMessage"] = "Did not create new singer.";
+
 				ModelState.AddModelError("", "There was an error with your request ");
 
 			}
@@ -233,8 +238,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			{
 				try
 				{
-					
 
+					TempData["SuccessMessage"] = $"{singer.FirstName} {singer.LastName} edited!";
 					await _context.SaveChangesAsync();
                     return RedirectToAction("Details", new { singer.Id });
                 }
@@ -242,10 +247,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				{
 					if (!SingerExists(singer.Id))
 					{
+						TempData["FailMessage"] = "Singer not found.";
 						return NotFound();
 					}
 					else
 					{
+						TempData["FailMessage"] = "Singer was not edited.";
 						throw;
 					}
 				}
@@ -285,12 +292,13 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			}
 			try
 			{
-
+				TempData["SuccessMessage"] = $"{singer?.FirstName} {singer?.LastName} deleted!";
 				await _context.SaveChangesAsync();
 				return RedirectToAction(nameof(Index));
 			}
 			catch
 			{ // todo update when concurrency comes 
+				TempData["FailMessage"] = "Singer was not deleted.";
 				ModelState.AddModelError("", "Unable to delete this singer");
 				return View(singer);
 			}

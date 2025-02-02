@@ -8,6 +8,7 @@ using TV5_VolunteerEventMgmtApp.ViewModels;
 using TV5_VolunteerEventMgmtApp.CustomControllers;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using String = System.String;
+using Humanizer;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
@@ -28,7 +29,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		// GET: AttendanceSheet
 		public async Task<IActionResult> Index(int? LocationId, int? page, int? pageSizeID,
 			string? actionButton, string sortDirection = "desc", string sortField = "Date", 
-			string currentTab = "list")
+			string currentTab = "list",
+			string? searchDirector, DateTime? startTime, DateTime? endTime)
 		{
 			// Selected tab
 			ViewData["currentTab"] = currentTab;
@@ -62,6 +64,24 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				ViewData["BtnText"] = $"{numberFilters} Filter{(numberFilters > 1 ? "s" : "")} Applied";
 				ViewData["ShowFilter"] = " show";
 			}
+			if (!string.IsNullOrEmpty(searchDirector))
+			{
+				attendanceSheets = attendanceSheets.Where(s =>
+				s.Director.FirstName.ToLower().Contains(searchDirector.ToLower())
+				|| s.Director.LastName.ToLower().Contains(searchDirector.ToLower()));
+				numberFilters++;
+			}
+			if (startTime.HasValue)
+			{
+				attendanceSheets = attendanceSheets.Where(s => s.StartTime >= startTime.Value);
+				ViewData["startTime"] = startTime.Value.ToString("yyyy-MM-ddTHH:mm");
+			}
+			if (endTime.HasValue)
+			{
+				attendanceSheets = attendanceSheets.Where(sheets => sheets.StartTime <= endTime.Value);
+				ViewData["endTime"] = endTime.Value.ToString("yyyy-MM-ddTHH:mm");
+			}
+			
 
 			// Check if there is a call for a change of filtering or sorting
 			if (!String.IsNullOrEmpty(actionButton)) // Form Submitted
@@ -119,6 +139,16 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 						.OrderBy(a => a.StartTime)
 						.ThenByDescending(a => a.Location.City);
 				}
+			}
+			if (sortField == "Director")
+			{
+				attendanceSheets = sortDirection == "desc" ? attendanceSheets
+					.OrderByDescending(s => s.Director.FirstName).ThenByDescending(s => s.Director.LastName)
+					:
+					attendanceSheets
+					.OrderBy(s => s.Director.FirstName).ThenBy(s => s.Director.LastName);
+
+
 			}
 
 			// Set sort for next time
@@ -200,6 +230,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				{
 					_context.Add(attendanceSheet);
 					await _context.SaveChangesAsync();
+					TempData["SuccessMessage"] = $"Attendance sheet created on {attendanceSheet.StartTime.Date}!";
 					return RedirectToAction("Details", new { id = attendanceSheet.Id });
 				}
 				//else
@@ -213,6 +244,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			}
 			catch
 			{
+				TempData["FailMessage"] = "Unable to create new attendance sheet.";
 				ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
 			}
 
@@ -281,10 +313,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				try
 				{
 					await _context.SaveChangesAsync();
+					TempData["SuccessMessage"] = $"Attendance sheet saved!";
 					return RedirectToAction("Details", new { id = attendanceSheetToUpdate.Id });
 				}
 				catch (DbUpdateConcurrencyException)
 				{
+					TempData["FailMessage"] = "Unable to save.";
 					if (!AttendanceSheetExists(attendanceSheetToUpdate.Id))
 					{
 						return NotFound();
@@ -318,6 +352,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 				.FirstOrDefaultAsync(m => m.Id == id);
 			if (attendanceSheet == null)
 			{
+				TempData["FailMessage"] = "Unable to delete.";
 				return NotFound();
 			}
 
