@@ -174,14 +174,22 @@ a:hover {
 
 /* Modals */
 .modal-dialog {
-    width:95vw;
-    max-width: 1400px;
-    padding-top: 60px;
+    padding-top: 40px;
 }
 
 .modal-content {
+    padding: 10px;
+}
+
+.modal-width-1400 { /* 1400px wide modals */
+    width: 95vw;
+    max-width: 1400px;
+}
+
+.modal-width-1400 .modal-content {
     padding: 20px;
 }
+/* -- */
 
 .filter-box {
     background: #f7f7f7;
