@@ -36,7 +36,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			ViewData["currentTab"] = currentTab;
 
 			// List of sort options
-			string[] sortOptions = new[] { "Date", "Location", "Director" };
+			string[] sortOptions = new[] { "Date", "Location" };
 
 			// Filtering data
 			ViewData["BtnBg"] = "btn-outline-dark";
@@ -104,10 +104,6 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 						{
 							sortDirection = "asc";
 						}
-						if(actionButton == "Director")
-						{
-                            sortDirection = "asc";
-                        }
 					}
 					sortField = actionButton; // Sort by the button clicked
 				}
@@ -158,7 +154,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			// Set sort for next time
 			ViewData["sortField"] = sortField;
 			ViewData["sortDirection"] = sortDirection;
-			ViewData["searchDirector"] = searchDirector;
+
 			// Colors
 			ViewData["Colors"] = DefaultColors;
 
