@@ -182,6 +182,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 			catch
 			{ // todo whenever we add concurrency controls update this
 				ModelState.AddModelError("", "There was an error with your request ");
+
 			}
             PopulateAssignedLocations(singer);
             return View(singer);
