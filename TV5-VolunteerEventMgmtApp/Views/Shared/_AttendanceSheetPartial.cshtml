@@ -20,7 +20,7 @@
 			</div>
 			<div class="form-group">
 				<span class="text-danger fw-bold">*</span> <label class="control-label">Date and Time</label>
-				<input class="form-control" id="StartTime" value="@DateTime.Now.ToString("MMM d, yyyy")"/>
+				<input class="form-control" id="StartTime" name="StartTime" value="@DateTime.Now.ToString("MMM d,yyyy")"/>
 				<span asp-validation-for="StartTime" class="text-danger"></span>
 			</div>
 			<div class="form-group">
@@ -92,72 +92,4 @@
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
 	
-	<script>
-		// document.addEventListener('DOMContentLoaded', function () {
-		// 	// When location is selected
-		// 	document.getElementById('LocationId').addEventListener('change', function () {
-		// 		var locationId = this.value;
-		// 		// Get singers from selected location
-		// 		fetch('@Url.Action("GetSingersByLocation")?locationId=' + locationId)
-		// 			.then(response => {
-		// 				if (!response.ok) {
-		// 					throw new Error('Network response was not ok ' + response.statusText);
-		// 				}
-		// 				return response.json();
-		// 			})
-		// 			.then(data => {
-		// 				var selectedOptions = document.getElementById('selectedOptions');
-		// 				var availableOptions = document.getElementById('availableOptions');
-		// 				if (locationId === "") {
-		// 					selectedOptions.disabled = true;
-		// 					availableOptions.disabled = true;
-		// 				}
-		// 				else {
-		// 					selectedOptions.disabled = false;
-		// 					availableOptions.disabled = false;
-		// 				}
-		// 				selectedOptions.innerHTML = '';
-		// 				availableOptions.innerHTML = '';
-		// 				data.forEach(singer => {
-		// 					var option = document.createElement('option');
-		// 					option.value = singer.id;
-		// 					option.text = singer.firstName + ' ' + singer.lastName;
-		// 					availableOptions.appendChild(option);
-		// 				});
-		// 			})
-		// 			.catch(error => {
-		// 				console.error("Fetch Error: ", error); // Debugging line
-		// 			});
-		// 		// Get directors from seleted location
-		// 		fetch('@Url.Action("GetDirectorsByLocation")?locationId=' + locationId)
-		// 			.then(response => {
-		// 				if (!response.ok) {
-		// 					throw new Error('Network response was not ok ' + response.statusText);
-		// 				}
-		// 				return response.json();
-		// 			})
-		// 			.then(data => {
-		// 				var selectDirector = document.getElementById('directors');
-		// 				if (locationId === "") {
-		// 					selectDirector.disabled = true;
-		// 				}
-		// 				else selectDirector.disabled = false;
-		// 				selectDirector.innerHTML = '';
-		// 				var label = document.createElement('option');
-		// 				label.value = '';
-		// 				label.text = 'Select Director';
-		// 				selectDirector.appendChild(label);
-		// 				data.forEach(dir => {
-		// 					var option = document.createElement('option');
-		// 					option.value = dir.id;
-		// 					option.text = dir.firstName + ' ' + dir.lastName;
-		// 					selectDirector.appendChild(option);
-		// 				});
-		// 			})
-		// 			.catch(error => {
-		// 				console.error("Fetch Error: ", error); // Debugging line
-		// 			});
-		// 	});
-		// });
-	</script>
 }
