@@ -11,6 +11,11 @@ namespace TV5_VolunteerEventMgmtApp.Models
 		[StringLength(125, ErrorMessage = "Event title must be less than 125 characters.")]
 		public string Title { get; set; }
 
+		// this can be used for admins to create events ahead of time so they can be published at a later date.
+		// maybe in the view we just ask if they want to public the event immediately if not then ask to set a publish time?
+		[Display(Name ="Published")]
+		public bool IsActive { get; set; }	
+
 		[Display(Name = "Start Time")]
 		[Required(ErrorMessage = "Please enter a start time")]
 		public DateTime StartTime { get; set; }

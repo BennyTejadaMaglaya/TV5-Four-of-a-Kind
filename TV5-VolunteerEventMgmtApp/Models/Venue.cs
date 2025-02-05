@@ -24,10 +24,19 @@ namespace TV5_VolunteerEventMgmtApp.Models
         [DataType(DataType.EmailAddress)]
         public string? ContactEmail { get; set; }
 
+        public bool IsActive { get; set; }
 
         // do we need this? think so?
         public int LocationId { get; set; }
         public Location? Location { get; set; }
+
+        //This could be used to display the number of past events that have happened at this location.
+        [Display(Name ="Successful Events")]
+        public int NumPastEvents { get; set; }  
+
+        //Events at this Venue likely ony display current and future
+        [Display(Name ="Events")]
+        public ICollection<VolunteerEvent> EventVenues { get; set; }
 
       
     }

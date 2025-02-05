@@ -45,6 +45,11 @@ namespace TV5_VolunteerEventMgmtApp.Data
         public DbSet<UploadedFile> UploadedFiles { get; set; }
         public DbSet<DirectorPhoto> DirectorPhotos { get; set; }
         public DbSet<DirectorThumbnail> DirectorThumbnails { get; set; }
+        public DbSet<VolunteerSignup> VolunteerSignups { get; set; }
+        public DbSet<VolunteerTime> VolunteerTimes { get; set; }
+        public DbSet<VolunteerAttendee> VolunteerAttendees { get; set; }
+        public DbSet<VolunteerLocation> VolunteerLocations { get; set; }
+        public DbSet<Volunteer> Volunteers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
