@@ -1,9 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Build.ObjectModelRemoting;
+using System.ComponentModel.DataAnnotations;
 
 namespace TV5_VolunteerEventMgmtApp.Models
 {
 	public class VolunteerSignup : IValidatableObject
 	{
+		
+		public int Id { get; set; }
+
 		[Display(Name ="Shift Start")]
 		public DateTime StartTime { get; set; }
 

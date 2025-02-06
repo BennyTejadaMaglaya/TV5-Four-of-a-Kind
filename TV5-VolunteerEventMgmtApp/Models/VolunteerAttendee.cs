@@ -5,9 +5,7 @@ namespace TV5_VolunteerEventMgmtApp.Models
 	public class VolunteerAttendee : IValidatableObject
 	{
 
-		public int EventId { get; set; }
-		public VolunteerEvent? Event { get; set; }
-
+	
 		public int VolunteerId { get; set;}
 		public Volunteer? Volunteer { get; set;}
 

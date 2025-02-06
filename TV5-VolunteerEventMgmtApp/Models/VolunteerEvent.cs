@@ -30,7 +30,9 @@ namespace TV5_VolunteerEventMgmtApp.Models
 		public string Description { get; set; }
 
 		[Display(Name ="Time Slots")]
-		public ICollection<VolunteerTime> TimeSlot { get; set; } = new HashSet<VolunteerTime>();
+		public ICollection<VolunteerSignup> TimeSlots { get; set; } = new HashSet<VolunteerSignup>();
+
+		
 
 		[Display(Name ="Location")]
 		public int LocationId { get; set; }
