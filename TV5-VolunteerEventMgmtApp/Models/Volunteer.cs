@@ -17,13 +17,13 @@ namespace TV5_VolunteerEventMgmtApp.Models
 		public string LastName { get; set; }
 
 		[Display(Name ="Phone number")]
-		[DataType(DataType.PhoneNumber)]
+		
 		[Phone(ErrorMessage ="plase enter a valid phone number")]
 		[Length(10,10,ErrorMessage ="A phone number is 10 digits long.")]
 		public string PhoneNumber { get; set; }
 
 		[Display(Name ="Email Address")]
-		[DataType(DataType.EmailAddress)]
+		
 		[EmailAddress(ErrorMessage ="please enter a valid Email adress")]
 		public string EmailAddress { get; set; }
 
