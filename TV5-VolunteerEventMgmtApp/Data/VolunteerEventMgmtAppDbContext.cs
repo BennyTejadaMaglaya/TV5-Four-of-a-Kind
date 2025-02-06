@@ -45,10 +45,19 @@ namespace TV5_VolunteerEventMgmtApp.Data
         public DbSet<UploadedFile> UploadedFiles { get; set; }
         public DbSet<DirectorPhoto> DirectorPhotos { get; set; }
         public DbSet<DirectorThumbnail> DirectorThumbnails { get; set; }
+        public DbSet<VolunteerSignup> VolunteerSignups { get; set; }
+        public DbSet<VolunteerAttendee> VolunteerAttendees { get; set; }
+        public DbSet<VolunteerLocation> VolunteerLocations { get; set; }
+        public DbSet<VolunteerEvent> VolunteerEvents { get; set; }
+        public DbSet<Volunteer> Volunteers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
+            modelBuilder.Entity<Location>()
+                .HasMany<VolunteerEvent>(d => d.VolunteerEvents)
+                .WithOne(d => d.Location)
+                .HasForeignKey(d => d.LocationId)
+                .OnDelete(DeleteBehavior.Restrict);
             
 
             //i believe this one will require cascade delete
@@ -63,9 +72,10 @@ namespace TV5_VolunteerEventMgmtApp.Data
                 .WithOne(d => d.Location)
                 .HasForeignKey(d => d.LocationId);
 
-           
-
-
+            modelBuilder.Entity<VolunteerEvent>()
+                .HasMany<VolunteerSignup>(d => d.TimeSlots)
+                .WithOne(d => d.VolunteerEvent)
+                .HasForeignKey(d => d.VolunteerEventId);
 
             // this might need cascade delete?
             modelBuilder.Entity<AttendanceSheet>()
@@ -74,12 +84,6 @@ namespace TV5_VolunteerEventMgmtApp.Data
                 .HasForeignKey(d => d.AttendenceSheetId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-          
-            //modelBuilder.Entity<Singer>()
-            //    .HasMany<SingerLocation>(d => d.SingerLocation)
-            //    .WithOne(d => d.Singer)
-            //    .HasForeignKey(d => d.SingerId)
-            //    .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Location>()
                 .HasMany<SingerLocation>(d => d.SingerLocations)
@@ -91,6 +95,18 @@ namespace TV5_VolunteerEventMgmtApp.Data
                 .HasMany<DirectorLocation>(d => d.DirectorLocations)
                 .WithOne(d => d.Location)
                 .HasForeignKey(d => d.LocationID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Location>()
+                .HasMany<VolunteerLocation>(d => d.VolunteerLocations)
+                .WithOne(d => d.Location)
+                .HasForeignKey(d => d.LocationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<VolunteerSignup>()
+                .HasMany(d => d.VolunteerAttendees)
+                .WithOne(d => d.VolunteerSignup)
+                .HasForeignKey(d => d.VolunteerSignupId) 
                 .OnDelete(DeleteBehavior.Restrict);
           
 
@@ -105,6 +121,10 @@ namespace TV5_VolunteerEventMgmtApp.Data
                 .HasKey(d => new { d.LocationID, d.DirectorID });
             modelBuilder.Entity<SingerLocation>()
                 .HasKey(d => new { d.SingerId, d.LocationId });
+            modelBuilder.Entity<VolunteerLocation>()
+                .HasKey(d => new { d.VolunteerId, d.LocationId });
+            modelBuilder.Entity<VolunteerAttendee>()
+                .HasKey(d => new { d.VolunteerSignupId, d.VolunteerId });
 
 
 
@@ -118,6 +138,12 @@ namespace TV5_VolunteerEventMgmtApp.Data
 
             modelBuilder.Entity<Location>()
                 .HasIndex(d => d.City)
+                .IsUnique();
+            modelBuilder.Entity<Volunteer>()
+                .HasIndex(d => d.EmailAddress)
+                .IsUnique();
+            modelBuilder.Entity<VolunteerAttendee>()
+                .HasIndex(d => new {d.VolunteerId, d.VolunteerSignupId})
                 .IsUnique();
                 
 
