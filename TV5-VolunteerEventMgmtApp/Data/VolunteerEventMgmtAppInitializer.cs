@@ -2,6 +2,8 @@
 using TV5_VolunteerEventMgmtApp.Models;
 using System.Diagnostics;
 using System;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Logical;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 
 namespace TV5_VolunteerEventMgmtApp.Data
 {
@@ -430,8 +432,234 @@ namespace TV5_VolunteerEventMgmtApp.Data
                             }
                         }
 
+                        if(!context.Volunteers.Any())
+                        {
+							string[] firstNames = new string[] { "Woodstock", "Violet", "Charlie", "Lucy", "Linus", "Franklin", "Marcie", "Schroeder", "Lyric", "Antoinette", "Kendal", "Vivian", "Ruth", "Jamison", "Emilia", "Natalee", "Yadiel", "Jakayla", "Lukas", "Moses", "Kyler", "Karla", "Chanel", "Tyler", "Camilla", "Quintin", "Braden", "Clarence", "Olivia", "Elliot", "Sophia", "Jackson", "Emma", "Lucas", "Amelia", "Henry", "Isabella", "Caden", "Ava", "James", "Zoe", "Owen", "Grace", "Matthew", "Leah", "Evan", "Ella", "Nathan", "Chloe", "Samuel", "Hannah", "Elijah", "Harper", "Caleb", "Sophie", "Isaac", "Lily", "Liam", "Mia", "Benjamin", "Abigail", "Noah", "Scarlett", "William", "Aria", "Joshua", "Charlotte", "Daniel", "Victoria", "Jacob", "Madison", "Gabriel", "Aiden", "Mackenzie", "Logan", "Sophia", "Jack", "Catherine", "Ethan", "Sadie", "Landon", "Addison", "Matthew", "Ella", "Dylan", "Lillian", "Carter", "Levi", "Samuel", "Hazel", "Jack", "Scarlett", "Lydia", "Avery", "Zachary", "Gracie", "Asher", "Nora", "Jameson", "Holly", "Jackson", "Megan", "Finn", "Cameron", "Delilah", "Ellie", "Aiden", "Skylar", "Connor", "Lydia", "Nicholas", "Paisley", "Samantha", "Mason", "Faith", "Leo", "Ivy", "Jaxon", "Ellis", "Benjamin", "Ruby", "Julian", "Mila", "Jackson" };
+							string[] lastNames = new string[] { "Hightower", "Broomspun", "Jones", "Bloggs", "Brown", "Smith", "Daniel", "Watts", "Randall", "Arias", "Weber", "Stone", "Carlson", "Robles", "Frederick", "Parker", "Morris", "Soto", "Bruce", "Orozco", "Boyer", "Burns", "Cobb", "Blankenship", "Houston", "Estes", "Atkins", "Miranda", "Zuniga", "Ward", "Mayo", "Costa", "Reeves", "Anthony", "Cook", "Krueger", "Crane", "Watts", "Little", "Henderson", "Bishop", "Mitchell", "Gilbert", "Bryant", "Langford", "West", "Nelson", "Chapman", "Lawrence", "Roberts", "Knight", "Walker", "King", "Adams", "Bailey", "Young", "Russell", "Simmons", "Gonzalez", "Miller", "Moore", "Richards", "Collins", "Perez", "Scott", "Bennett", "Torres", "Graham", "Ramirez", "Cooper", "Gomez", "Wright", "Green", "Reed", "Cooke", "Martin", "Robinson", "Turner", "Gray", "Evans", "James", "Morris", "Davis", "Martinez", "Anderson", "Williams", "Harris", "Baker", "Wood", "Long", "Jameson", "Freeman", "Guthrie", "Shaw", "Stewart", "Mason", "Elliott", "Hamilton", "Sullivan", "Cameron", "Black", "Douglas", "Baker", "Kelley", "Powell", "Riley", "Wallace", "Hayes", "Chapman", "Lawson", "Fox", "Murray", "Ross", "Rich", "Fox", "Dixon", "Chapman", "Lloyd", "Lambert", "Robinson", "Marshall", "Chang", "Foster", "Perry", "Hartman", "Murray" };
 
-                    }
+
+							//Choose a random HashSet of 5 first names
+							List<string> selectedFirstNames = new List<string>();
+							while (selectedFirstNames.Count() < 100)
+							{
+								selectedFirstNames.Add(firstNames[random.Next(firstNames.Length)]);
+							}
+
+							foreach (string firstName in selectedFirstNames)
+							{
+								//Construct some Singer details
+
+								Volunteer volunteer = new Volunteer()
+								{
+									FirstName = firstName,
+									LastName = lastNames[random.Next(0, lastNames.Length)],
+									EmailAddress = (firstName + random.Next(11, 111).ToString() + "@gmail.com").ToLower(),
+									JoinDate = DateTime.Today.AddDays(-random.Next(32, 975)).Date,
+									PhoneNumber = random.Next(2, 10).ToString() + random.Next(213214131, 989898989).ToString(),
+									IsActive = true,
+                                    IsConfirmed = true,
+
+								};
+								try
+								{
+									//Could be a duplicate Email
+									context.Volunteers.Add(volunteer);
+									context.SaveChanges();
+								}
+								catch (Exception)
+								{
+									//so skip it and go on to the next
+									context.Volunteers.Remove(volunteer);
+								}
+							}
+
+						}
+						if (!context.VolunteerLocations.Any())
+						{
+							int volunteerIndex = 0;
+							int[] volunteerIDs = context.Volunteers.Select(d => d.Id).ToArray();
+							int[] locationIds = context.Locations.Select(d => d.ID).ToArray();
+
+							foreach (var location in locationIds)
+							{
+								for (int j = 0; j < context.Volunteers.Count() / context.Locations.Count(); j++)
+								{
+									VolunteerLocation volunteerLocation = new VolunteerLocation()
+									{
+										VolunteerId = volunteerIDs[volunteerIndex],
+										LocationId = location
+									};
+									volunteerIndex++;
+									try
+									{
+										context.VolunteerLocations.Add(volunteerLocation);
+										context.SaveChanges();
+									}
+									catch (Exception ex)
+									{
+										context.VolunteerLocations.Remove(volunteerLocation);
+									}
+								}
+							}
+
+						}
+                        if(!context.VolunteerEvents.Any())
+                        {
+							string[] eventDescriptions = {
+	"Volunteer outreach to support at-risk youth through mentorship.",
+	"Charity run to fund educational programs for underserved communities.",
+	"Clothing drive to provide essentials for children in need.",
+	"Fundraising concert raising awareness for youth empowerment.",
+	"Community mentoring session to guide the next generation.",
+	"Back-to-school supply drive to support students in need.",
+	"Volunteer event to help renovate and improve local community centers.",
+	"Benefit auction with all proceeds supporting youth programs.",
+	"Charity bake sale to raise funds for educational scholarships.",
+	"Toy and book drive for children in underserved areas.",
+	"Donation collection to support youth leadership initiatives.",
+	"Health and wellness fair offering free services to youth in need.",
+	"Charity walkathon to raise funds for mentorship opportunities.",
+	"Holiday gift-giving event for children in need.",
+	"Fundraising dinner to support career development programs for youth.",
+	"Annual gala celebrating the achievements of youth participants.",
+	"Workshop for volunteers to get involved with mentoring efforts.",
+	"Volunteer gardening event to enhance community spaces.",
+	"Summer camp for kids to provide enriching experiences.",
+	"Volunteer-led career day for teens seeking career advice."
+};
+							string[] eventTitles = {
+	"Mentorship Matters",
+	"Run for Education",
+	"Dress for Success",
+	"Empowerment Encore",
+	"Guiding Stars",
+	"Back-to-School Boost",
+	"Community Renewal",
+	"Bid for the Future",
+	"Bake for Scholarships",
+	"Books & Toys Bonanza",
+	"Leaders in the Making",
+	"Youth Wellness Fair",
+	"Steps to Success",
+	"Holiday Hope",
+	"Dinner for Dreams",
+	"Youth Achievement Gala",
+	"Mentor Match",
+	"Green Community Day",
+	"Summer Discovery Camp",
+	"Career Connect"
+};
+                            
+							int locationIndex = 0;
+                            int[] locationIds = context.Locations.Select(d => d.ID).ToArray();
+                            foreach (var location in locationIds)
+                            {
+								int stringIndex = 0;
+								Random rand = new Random();
+								int[] venueIds = context.Venues.Where(d => d.LocationId == location).Select(d => d.ID).ToArray();
+                                
+                                for(int j = 0; j < 10; j++)
+                                {
+									DateTime startTime = DateTime.Now.AddDays(-new Random().Next(0, 60)).Date.AddHours(new Random().Next(10, 21));
+									DateTime endTime = startTime.AddHours(new Random().Next(4, 10));
+									
+									VolunteerEvent newEvent = new VolunteerEvent
+									{
+										Title = eventTitles[stringIndex],
+										IsActive = true,
+										StartTime = startTime,
+										EndTime = endTime,
+										Description = eventDescriptions[stringIndex],
+										LocationId = location,
+										VenueId = venueIds[rand.Next(0, venueIds.Length)]
+									};
+                                    if (stringIndex >= eventTitles.Length) { stringIndex = 0; } else { stringIndex++; }
+									try
+									{
+										context.VolunteerEvents.Add(newEvent);
+										context.SaveChanges();
+									}
+									catch (Exception ex)
+									{
+										context.VolunteerEvents.Remove(newEvent);
+									}
+								}
+							}
+                        }
+
+                        if (!context.VolunteerSignups.Any())
+                        {
+                            VolunteerEvent[] events = context.VolunteerEvents.ToArray();
+                            Random rand = new Random();
+                            foreach(VolunteerEvent volunteerEvent in events)
+                            {
+                                int[] volunteerIds = context.VolunteerLocations.Where(d => d.LocationId == volunteerEvent.LocationId).Select(d => d.VolunteerId).ToArray();
+                                
+                                DateTime endTime = volunteerEvent.EndTime;
+                                DateTime startTime = volunteerEvent.StartTime;
+
+								double eventLength = (endTime - startTime).TotalHours;
+								int minShifts = (int)Math.Ceiling(eventLength / 5.0);
+
+								int maxShifts = (int)Math.Floor(eventLength / 3.0);
+
+
+								int numberofShifts = random.Next(minShifts, maxShifts + 1);
+
+								double shiftDuration = eventLength / numberofShifts;
+
+								for (int i = 0; i < numberofShifts; i++)
+								{
+									DateTime slotStart = startTime.AddHours(i * shiftDuration);
+
+									DateTime slotEnd = (i == numberofShifts - 1) ? endTime : startTime.AddHours((i + 1) * shiftDuration);
+									int numTimeSlots = rand.Next(1, 4);
+
+									VolunteerSignup newSignup = new VolunteerSignup
+                                    {
+                                        StartTime = slotStart,
+                                        EndTime = slotEnd,
+                                        VolunteerEventId = volunteerEvent.Id,
+                                        TimeSlots = numTimeSlots
+                                    };
+									try
+									{
+										context.VolunteerSignups.Add(newSignup);
+										context.SaveChanges();
+									}
+									catch (Exception ex)
+									{
+										context.VolunteerSignups.Remove(newSignup);
+									}
+									for (int  j = 0; j < rand.Next(1,numTimeSlots); j++)
+                                    {
+                                        VolunteerAttendee newAttendee = new VolunteerAttendee
+                                        {
+                                            VolunteerSignupId = newSignup.Id,
+                                            VolunteerId = volunteerIds[rand.Next(1, volunteerIds.Length)],
+                                            ArrivalTime = rand.NextDouble() < 0.05 ? startTime.AddMinutes(rand.Next(1, 60)) : startTime,
+                                            DepartureTime = rand.NextDouble() < 0.05 ? endTime.AddMinutes(-rand.Next(1, 60)) : endTime
+                                        };
+										try
+										{
+											context.VolunteerAttendees.Add(newAttendee);
+											context.SaveChanges();
+										}
+										catch (Exception ex)
+										{
+											context.VolunteerAttendees.Remove(newAttendee);
+										}
+									}
+	
+								}
+							}
+
+							
+						}
+
+
+
+					}
                     catch (Exception ex)
                     {
 
