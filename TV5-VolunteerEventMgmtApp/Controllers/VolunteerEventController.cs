@@ -22,8 +22,34 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // GET: VolunteerEvent
         public async Task<IActionResult> Index()
         {
-            var volunteerEventMgmtAppDbContext = _context.VolunteerEvents.Include(v => v.Location).Include(v => v.Venue);
+            var volunteerEventMgmtAppDbContext = _context.VolunteerEvents
+                .Include(v => v.Location)
+                .Include(v => v.Venue)
+                .Include(d => d.TimeSlots).ThenInclude(d => d.VolunteerAttendees).ThenInclude(d => d.Volunteer);
             return View(await volunteerEventMgmtAppDbContext.ToListAsync());
+        }
+
+        public async Task<IActionResult> GetVolunteersByLocation(int locationId)
+        {
+            var volunteersByLoc = await _context.Volunteers
+                .Include(d => d.VolunteerLocations)
+                .Where(d => d.VolunteerLocations.Any(d1 => d1.LocationId == locationId) && d.IsActive && d.IsConfirmed)
+                .OrderByDescending(d => d.TimesLate).ThenBy(d => d.LastName).ThenBy(d => d.FirstName)
+                .ToListAsync();
+
+
+            return PartialView("_VolunteersList", volunteersByLoc);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTimeSlots(int eventId)
+        {
+            var TimeSlots = _context.VolunteerSignups
+                .Include(d => d.VolunteerAttendees).ThenInclude(d => d.Volunteer)
+                .Where(d => d.VolunteerEventId == eventId)
+                .ToListAsync();
+
+            return PartialView("_TimeSlots", TimeSlots);
         }
 
         // GET: VolunteerEvent/Details/5

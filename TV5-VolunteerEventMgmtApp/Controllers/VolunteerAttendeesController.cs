@@ -72,8 +72,42 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             return View(volunteerAttendee);
         }
 
-        // GET: VolunteerAttendees/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        [HttpPost]
+    
+        public async Task<IActionResult> quickCreate([FromBody] VolunteerAttendeeDTO dto)
+        {
+            VolunteerAttendee newAttendee = new VolunteerAttendee
+            {
+                VolunteerId = dto.volunteerId,
+                VolunteerSignupId = dto.volunteerSignupId
+            };
+
+            _context.VolunteerAttendees.Add(newAttendee);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+		[HttpPost]
+		public async Task<IActionResult> RemoveVolunteer([FromBody] VolunteerAttendeeDTO dto)
+		{
+			// e.g. remove from _context.VolunteerAttendees
+			var attendee = await _context.VolunteerAttendees
+				.FirstOrDefaultAsync(a => a.VolunteerSignupId == dto.volunteerSignupId
+									   && a.VolunteerId == dto.volunteerId);
+
+			if (attendee == null)
+			{
+				return NotFound();
+			}
+
+			_context.VolunteerAttendees.Remove(attendee);
+			await _context.SaveChangesAsync();
+
+			return NoContent();
+		}
+
+		// GET: VolunteerAttendees/Edit/5
+		public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {

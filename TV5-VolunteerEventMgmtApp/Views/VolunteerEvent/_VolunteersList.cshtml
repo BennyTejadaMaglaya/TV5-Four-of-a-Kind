@@ -1,0 +1,20 @@
+﻿@model IEnumerable<TV5_VolunteerEventMgmtApp.Models.Volunteer>
+
+<ul class="list-unstyled d-flex flex-wrap">
+    @foreach (var vol in Model)
+    {
+        var firstInitial = (vol.FirstName?.Substring(0, 1) ?? "").ToUpper();
+        var lastInitial = (vol.LastName?.Substring(0, 1) ?? "").ToUpper();
+
+        <li class="me-2 mb-2">
+            <div class="volunteer-circle"
+                 draggable="true"
+                 ondragstart="dragVolunteer(event, '@vol.Id')"
+                 data-bs-toggle="tooltip"
+                 data-bs-placement="top"
+                 data-bs-title="@($"{vol.FirstName} {vol.LastName}")">
+                @($"{firstInitial}{lastInitial}")
+            </div>
+        </li>
+    }
+</ul>
