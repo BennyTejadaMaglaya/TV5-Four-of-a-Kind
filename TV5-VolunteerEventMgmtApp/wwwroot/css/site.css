@@ -203,7 +203,7 @@ a:hover {
     grid-row-gap: 25px;
 }
 
-.attendance-card {
+.attendance-card, .event-card {
     display: grid;
     grid-template-columns: 3fr 1fr 1fr;
     grid-column-gap: 10px;
@@ -239,6 +239,74 @@ a:hover {
 .attendance-card:hover {
     box-shadow: 0 4px 16px #00000060;
     transform: translateY(-2px);
+}
+
+
+/* Event Index Items */
+.event-card {
+    grid-template-columns: 2fr 3fr;
+}
+.volunteer-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #6c757d;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+    cursor: move;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.empty-slot-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    color: #6f42c1; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer; 
+    border: 2px dashed #6f42c1; 
+}
+
+.dimmed-event {
+    opacity: 0.4;
+    
+    pointer-events: none;
+    user-select: none;
+}
+
+.custom-context-menu {
+    position: absolute;
+    z-index: 9999;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    min-width: 150px;
+    padding: 4px 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+    .custom-context-menu button.dropdown-item {
+        width: 100%;
+        background: none;
+        border: none;
+        text-align: left;
+        padding: 8px 16px;
+        cursor: pointer;
+    }
+
+        .custom-context-menu button.dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+.d-none {
+    display: none !important;
 }
 
 /* From 768px */

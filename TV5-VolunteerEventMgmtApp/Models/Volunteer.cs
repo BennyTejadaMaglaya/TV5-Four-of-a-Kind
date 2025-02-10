@@ -46,5 +46,7 @@ namespace TV5_VolunteerEventMgmtApp.Models
 		// this will allow them to be seen in the system but wont allow for the volunteer to sign up for events.
 		public bool IsConfirmed { get; set; }
 
+		public ICollection<VolunteerLocation> VolunteerLocations { get; set; } = new HashSet<VolunteerLocation>();
+
 	}
 }
