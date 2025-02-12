@@ -40,7 +40,7 @@
 								 onkeydown="volunteerKeyDown(event, @timeslot.Id, @vol.VolunteerId)"
 
 								 draggable="true"
-								 ondragstart="dragVolunteer(event, '@vol.VolunteerId')"
+								 ondragstart="dragVolunteer(event, '@vol.VolunteerId', @timeslot.Id)"
 								 data-bs-toggle="tooltip"
 								 data-bs-placement="top"
 								 data-bs-title="@(vol.Volunteer?.FirstName) @(vol.Volunteer?.LastName)">
