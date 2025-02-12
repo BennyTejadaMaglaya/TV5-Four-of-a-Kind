@@ -10,6 +10,7 @@ using TV5_VolunteerEventMgmtApp.Models;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
+    [Route("[controller]")]
     public class VolunteerController : Controller
     {
         private readonly VolunteerEventMgmtAppDbContext _context;
@@ -20,12 +21,14 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         }
 
         // GET: Volunteer
+        [HttpGet, Route("")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Volunteers.ToListAsync());
         }
 
         // GET: Volunteer/Details/5
+        [HttpPost, Route("details/{id}")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -44,6 +47,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         }
 
         // GET: Volunteer/Create
+        [HttpGet, Route("create")]
         public IActionResult Create()
         {
             return View();
@@ -54,7 +58,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,PhoneNumber,EmailAddress,JoinDate,TimesLate,numShifts,IsActive,IsConfirmed")] Volunteer volunteer)
+        [HttpPost, Route("create")]
+        public async Task<IActionResult> Create([Bind("FirstName,LastName,PhoneNumber,EmailAddress,JoinDate,TimesLate,numShifts,IsActive,IsConfirmed")] Volunteer volunteer)
         {
             if (ModelState.IsValid)
             {
@@ -66,6 +71,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         }
 
         // GET: Volunteer/Edit/5
+        [HttpGet, Route("edit/{id}")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -86,7 +92,8 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,PhoneNumber,EmailAddress,JoinDate,TimesLate,numShifts,IsActive,IsConfirmed")] Volunteer volunteer)
+        [HttpPost, Route("edit/{id}")]
+        public async Task<IActionResult> Edit(int id, [Bind("FirstName,LastName,PhoneNumber,EmailAddress,JoinDate,TimesLate,numShifts,IsActive,IsConfirmed")] Volunteer volunteer)
         {
             if (id != volunteer.Id)
             {
@@ -117,6 +124,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         }
 
         // GET: Volunteer/Delete/5
+        [HttpGet, Route("delete/{id}")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -147,6 +155,34 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost, Route("ConfirmVolunteer/{id}")]
+        public async Task<IActionResult> ConfirmVolunteer(int id)
+        {
+            var volunteer = await _context.Volunteers.FirstOrDefaultAsync(v => v.Id == id);
+            if(volunteer == null)
+            {
+                return NotFound("The volunteer with the id " + id + " doesn't exist. (Maybe deleted?)");
+            }
+
+
+
+            return Ok();
+        }
+
+        [HttpPost, Route("DenyVolunteer/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DenyVolunteer(int id)
+        {
+            var volunteer = await _context.Volunteers.FirstOrDefaultAsync(v => v.Id == id);
+
+            if (volunteer == null)
+            {
+                return NotFound("The volunteer with the id " + id + " doesn't exist. (Maybe deleted?)");
+            }
+
+            return Ok();
         }
 
         private bool VolunteerExists(int id)

@@ -1,0 +1,13 @@
+﻿.card-shadow {
+    box-shadow: 0 4px 12px 4px #00000020
+}
+
+
+.w-fit{
+    width:fit-content;
+
+}
+
+.h-fit{
+    height:fit-content;
+}
