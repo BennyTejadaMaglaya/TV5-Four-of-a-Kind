@@ -30,19 +30,20 @@
                 <span class="text-nowrap small">@shiftsAvailable</span>
                 <hr />
             </div>
-            <div class="time-slot-Volunteers-container">
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3"
-                     id="@Model.Id-time-slot-container">
-                @foreach(var timeslot in Model.TimeSlots)
-                {
-                    <partial name="_TimeSlotReadOnly"
-                             model="@timeslot"/>
-                }
-                
+            <div class="time-slot-Volunteers-container">              
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3" id="@Model.Id-time-slot-container">
+                    @await Html.PartialAsync("_TimeSlots", Model.TimeSlots, new ViewDataDictionary(ViewData) { { "EventId", Model.Id } })
+                    
+                </div>
+                    <div id="newTimeslotContainer-@Model.Id">
+                    </div>
+                <div id="timeslotButtonContainer-@Model.Id">
                     <div class="col-12 mt-2">
-                        <button class="btn btn-primary" onclick="createTimeslot(@Model.Id)">Add Timeslot</button>
+                        <button class="btn btn-primary" type="button" onclick="createTimeslot(@Model.Id)">Add Timeslot</button>
                     </div>
                 </div>
+                 
+                
                 <div id="volunteer-panel-@Model.Id"
                      class="volunteer-panel ms-auto h-100" >
                     <h5 class="text-purple">Available Volunteers</h5>

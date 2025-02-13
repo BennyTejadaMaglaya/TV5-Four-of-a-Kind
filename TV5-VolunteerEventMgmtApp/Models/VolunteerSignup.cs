@@ -36,23 +36,23 @@ namespace TV5_VolunteerEventMgmtApp.Models
 				yield return new ValidationResult("End Time cannont be a differnt day than Start Time.", ["EndTime"]);
 			}
 
-			if(StartTime < VolunteerEvent.StartTime && VolunteerEvent != null)
-			{
-				yield return new ValidationResult("A time slot must start either after or when an event is scheduled to start.", ["StartTime"]);
-			}
-			else if(StartTime > VolunteerEvent.EndTime && VolunteerEvent != null)
-			{
-				yield return new ValidationResult("A shift cannot start after the event has ended.", ["StartTime"]);
-			}
+			//if(StartTime < VolunteerEvent.StartTime && VolunteerEvent != null)
+			//{
+			//	yield return new ValidationResult("A time slot must start either after or when an event is scheduled to start.", ["StartTime"]);
+			//}
+			//else if(StartTime > VolunteerEvent.EndTime && VolunteerEvent != null)
+			//{
+			//	yield return new ValidationResult("A shift cannot start after the event has ended.", ["StartTime"]);
+			//}
 
-			if (EndTime < VolunteerEvent.StartTime && VolunteerEvent != null)
-			{
-				yield return new ValidationResult("A time slot must end after an event is scheduled to start.", ["EndTime"]);
-			}
-			else if (EndTime > VolunteerEvent.EndTime && VolunteerEvent != null)
-			{
-				yield return new ValidationResult("A shift cannot end after the event has ended.", ["EndTime"]);
-			}
+			//if (EndTime < VolunteerEvent.StartTime && VolunteerEvent != null)
+			//{
+			//	yield return new ValidationResult("A time slot must end after an event is scheduled to start.", ["EndTime"]);
+			//}
+			//else if (EndTime > VolunteerEvent.EndTime && VolunteerEvent != null)
+			//{
+			//	yield return new ValidationResult("A shift cannot end after the event has ended.", ["EndTime"]);
+			//}
 			
 
 

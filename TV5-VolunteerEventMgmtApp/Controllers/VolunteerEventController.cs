@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using TV5_VolunteerEventMgmtApp.Data;
 using TV5_VolunteerEventMgmtApp.Models;
+using TV5_VolunteerEventMgmtApp.ViewModels;
 
 namespace TV5_VolunteerEventMgmtApp.Controllers
 {
@@ -124,34 +127,59 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,IsActive,StartTime,EndTime,Description,LocationId,VenueId")] VolunteerEvent volunteerEvent)
+        public async Task<IActionResult> Edit(int id, VolunteerEvent volunteerEvent)
         {
-            if (id != volunteerEvent.Id)
+            var eventToUpdate = await _context.VolunteerEvents
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (eventToUpdate == null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if(await TryUpdateModelAsync<VolunteerEvent>(eventToUpdate, "",
+                d => d.Title, 
+                d => d.IsActive,
+                d => d.StartTime,
+                d => d.EndTime, 
+                d => d.Description,
+                d => d.VenueId,
+                d => d.LocationId))
             {
                 try
                 {
-                    _context.Update(volunteerEvent);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = $"Event: {volunteerEvent.Title} saved!";
+                    return RedirectToAction("Index");
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (RetryLimitExceededException /* dex */)//This is a Transaction in the Database!
                 {
-                    if (!VolunteerEventExists(volunteerEvent.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    TempData["FailMessage"] = "Unable to save event.";
+                    ModelState.AddModelError("", "Unable to save changes after multiple attempts. " +
+                        "Try again, and if the problem persists, see your system administrator.");
                 }
-                return RedirectToAction(nameof(Index));
+                catch (DbUpdateConcurrencyException ex)// Added for concurrency
+                {
+                    var exceptionEntry = ex.Entries.Single();
+                    var clientValues = (VolunteerEvent)exceptionEntry.Entity;
+                    var databaseEntry = exceptionEntry.GetDatabaseValues();
+                    if (databaseEntry == null)
+                    {
+                        TempData["FailMessage"] = "Unable to save event.";
+                        ModelState.AddModelError("",
+                            "Unable to save changes. The Event was deleted by another user.");
+                    }
+                 
+                }
+                catch (DbUpdateException dex)
+                {
+                    string message = dex.GetBaseException().Message;
+                    TempData["FailMessage"] = "Unable to save event.";
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+                    
+                }
             }
-            
+          
             ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", volunteerEvent.LocationId);
             ViewData["VenueId"] = new SelectList(_context.Venues.Where(d => d.LocationId == volunteerEvent.LocationId), "ID", "VenueName", volunteerEvent.VenueId);
             return View(volunteerEvent);

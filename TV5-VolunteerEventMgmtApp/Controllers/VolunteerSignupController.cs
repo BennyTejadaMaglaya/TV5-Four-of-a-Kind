@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using TV5_VolunteerEventMgmtApp.Data;
 using TV5_VolunteerEventMgmtApp.Models;
 
@@ -57,44 +58,73 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,StartTime,EndTime,TimeSlots,VolunteerEventId")] VolunteerSignup volunteerSignup)
+        public async Task<IActionResult> Create([Bind("StartTime,EndTime,TimeSlots,VolunteerEventId, VolunteerAttendees")] VolunteerSignup timeslot)
         {
+            var eventTimes = await _context.VolunteerEvents
+                                    .FindAsync(timeslot.VolunteerEventId);
+            if (eventTimes == null) return NotFound();
+
+
+            timeslot.StartTime = new DateTime(
+              eventTimes.StartTime.Year,
+              eventTimes.StartTime.Month,
+              eventTimes.StartTime.Day,
+              timeslot.StartTime.Hour,
+              timeslot.StartTime.Minute,
+              0
+          );
+            timeslot.EndTime = new DateTime(
+                eventTimes.EndTime.Year,
+                eventTimes.EndTime.Month,
+                eventTimes.EndTime.Day,
+                timeslot.EndTime.Hour,
+                timeslot.EndTime.Minute,
+                0
+            );
+
             if (ModelState.IsValid)
             {
-                _context.Add(volunteerSignup);
+                _context.VolunteerSignups.Add(timeslot);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+          
+                return NoContent();
             }
-            ViewData["VolunteerEventId"] = new SelectList(_context.VolunteerEvents, "Id", "Description", volunteerSignup.VolunteerEventId);
-            return View(volunteerSignup);
+            // If model invalid, re-render the create partial (with validation errors)
+            return PartialView("_TimeSlotCreate", timeslot);
         }
-
-        // GET: VolunteerSignup/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var volunteerSignup = await _context.VolunteerSignups.FindAsync(id);
-            if (volunteerSignup == null)
-            {
-                return NotFound();
-            }
-            ViewData["VolunteerEventId"] = new SelectList(_context.VolunteerEvents, "Id", "Description", volunteerSignup.VolunteerEventId);
-            return View(volunteerSignup);
-        }
-
         // POST: VolunteerSignup/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         // POST: TimeSlots/Edit/123
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("Id,ArrivalTime,DepartureTime")] VolunteerSignup volunteerSignup)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,StartTime,EndTime")] VolunteerSignup timeslot)
         {
-            if (id != volunteerSignup.Id)
+     
+            var originalTimeslot = await _context.VolunteerSignups.FindAsync(id);
+            if (originalTimeslot == null)
+            {
+                return NotFound();
+            }
+
+            timeslot.StartTime = new DateTime(
+                originalTimeslot.StartTime.Year,
+                originalTimeslot.StartTime.Month,
+                originalTimeslot.StartTime.Day,
+                timeslot.StartTime.Hour,
+                timeslot.StartTime.Minute,
+                0
+            );
+            timeslot.EndTime = new DateTime(
+                originalTimeslot.EndTime.Year,
+                originalTimeslot.EndTime.Month,
+                originalTimeslot.EndTime.Day,
+                timeslot.EndTime.Hour,
+                timeslot.EndTime.Minute,
+                0
+            );
+
+            if (id != timeslot.Id)
             {
                 return NotFound();
             }
@@ -103,12 +133,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             {
                 try
                 {
-                    _context.Update(volunteerSignup);
-                    _context.SaveChanges();
+                    _context.Update(timeslot);
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_context.VolunteerSignups.Any(ts => ts.Id == volunteerSignup.Id))
+                    if (!_context.VolunteerSignups.Any(ts => ts.Id == timeslot.Id))
                     {
                         return NotFound();
                     }
@@ -117,15 +147,10 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                         throw;
                     }
                 }
-
-                // Return the updated read-only partial view
-                var updatedTimeslot = _context.VolunteerSignups
-                    .Include(ts => ts.VolunteerAttendees)
-                    .ThenInclude(va => va.Volunteer)
-                    .FirstOrDefault(ts => ts.Id == volunteerSignup.Id);
-                return PartialView("_TimeslotReadOnly", updatedTimeslot);
+                
+                return PartialView("_TimeslotReadOnly", timeslot);
             }
-            return PartialView("_TimeslotEdit", volunteerSignup);
+            return PartialView("_TimeslotEdit", timeslot);
         }
 
         // GET: VolunteerSignup/Delete/5
@@ -181,6 +206,45 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                             .FirstOrDefaultAsync(d => d.Id == id);
           
             return PartialView("_TimeSlotEdit", timeslot);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreatePartial(int eventId)
+        {
+
+            var targetEvent = await _context.VolunteerEvents
+                              
+                                .FirstOrDefaultAsync(d => d.Id == eventId);
+
+       
+            if (targetEvent == null)
+            {
+                return NotFound();
+            }
+            var newTimeslot = new VolunteerSignup
+            {
+                VolunteerEventId = eventId,
+                VolunteerEvent = targetEvent,
+                StartTime = targetEvent.StartTime,
+                EndTime = targetEvent.EndTime,
+                TimeSlots = 0,
+                VolunteerAttendees = new HashSet<VolunteerAttendee>()
+        };
+
+            return PartialView("_TimeslotCreate", newTimeslot);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTimeslotsPartial(int eventId)
+        {
+            // Load timeslots for this event, including volunteer attendees if needed.
+            var timeslots = await _context.VolunteerSignups
+                                .Include(ts => ts.VolunteerAttendees)
+                                .ThenInclude(va => va.Volunteer)
+                                .Where(ts => ts.VolunteerEventId == eventId)
+                                .ToListAsync();
+            // Return a partial view that renders the timeslot list.
+            return PartialView("_TimeSlots", timeslots);
         }
 
         private bool VolunteerSignupExists(int id)

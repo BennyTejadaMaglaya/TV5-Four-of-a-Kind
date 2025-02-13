@@ -1,4 +1,4 @@
-﻿// Global variables (do NOT redeclare them inside DOMContentLoaded)
+﻿
 let currentOpenEventId = null;
 let contextTimeslotId = null;
 let contextVolunteerId = null;
@@ -45,21 +45,24 @@ function dragVolunteer(ev, volunteerId, fromTimeslotId = null) {
     ev.dataTransfer.setData("volunteerId", volunteerId);
     ev.dataTransfer.setData("fromTimeslotId", fromTimeslotId);
 
-    fetch('/VolunteerAttendees/RemoveVolunteer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ volunteerId: volunteerId, newTimeslotId: fromTimeslotId })
-    })
-        .then(response => {
-            if (!response.ok) {
-              
-                    
-                throw new Error("Failed to remove volunteer");
-            }
-        refreshTimeslot(fromTimeslotId);
-            
+    if (fromTimeslotId !== null) {
+        fetch('/VolunteerAttendees/RemoveVolunteer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ volunteerId: volunteerId, newTimeslotId: fromTimeslotId })
         })
-        .catch(error => console.error(error))
+            .then(response => {
+                if (!response.ok) {
+
+
+                    throw new Error("Failed to remove volunteer");
+                }
+                refreshTimeslot(fromTimeslotId);
+
+            })
+            .catch(error => console.error(error))
+    }
+   
 }
 
 function allowDrop(ev) {
@@ -76,6 +79,7 @@ function handleDrop(ev, toTimeslotId, openSlots, occupied) {
    
 
     console.log(`Dropping volunteer ${volunteerId} from timeslot ${fromTimeslotId} to ${toTimeslotId}`);
+    if (occupied && fromTimeslotId === "null") return;
 
     if (occupied && fromTimeslotId !== "null") {
         fetch('/VolunteerAttendees/quickCreate', {
@@ -91,11 +95,11 @@ function handleDrop(ev, toTimeslotId, openSlots, occupied) {
                    
                     throw new Error('Network response was not ok');
                 }
-                
+                refreshTimeslot(toTimeslotId);
+                refreshTimeslot(fromTimeslotId);
             })
             .catch(error => console.error('Error:', error));
-        refreshTimeslot(toTimeslotId);
-        refreshTimeslot(fromTimeslotId);
+     
        
     }
 
@@ -115,11 +119,11 @@ function handleDrop(ev, toTimeslotId, openSlots, occupied) {
                    
                     throw new Error('Network response was not ok');
                 }
-                
+                refreshTimeslot(fromTimeslotId);
+                refreshTimeslot(toTimeslotId);
             })
             .catch(error => console.error('Error:', error));
-        refreshTimeslot(fromTimeslotId);
-        refreshTimeslot(toTimeslotId);
+     
         return;
     }
 
@@ -140,11 +144,11 @@ function handleDrop(ev, toTimeslotId, openSlots, occupied) {
                   
                     throw new Error('Network response was not ok');
                 }
-                
+              
+                refreshTimeslot(fromTimeslotId);
             })
             .catch(error => console.error('Error:', error));
-        refreshTimeslot(toTimeslotId);
-        refreshTimeslot(fromTimeslotId);
+     
         return;
     }
 
@@ -164,12 +168,12 @@ function handleDrop(ev, toTimeslotId, openSlots, occupied) {
 
                     throw new Error('Network response was not ok');
                 }
+                refreshTimeslot(toTimeslotId);
 
+            
             })
             .catch(error => console.error('Error:', error));
-        refreshTimeslot(toTimeslotId);
-
-        refreshTimeslot(fromTimeslotId);
+      
     } else {
         
             // If fromTimeslotId is present, do a "move"
@@ -189,13 +193,13 @@ function handleDrop(ev, toTimeslotId, openSlots, occupied) {
                     }
 
 
-                
+                    refreshTimeslot(fromTimeslotId);
+                    refreshTimeslot(toTimeslotId);
                
             })
             .catch (error => console.error('Error:', error));
     
-        refreshTimeslot(fromTimeslotId);
-        refreshTimeslot(toTimeslotId);
+        
     }
 }
 
@@ -287,10 +291,11 @@ function removeVolunteer(timeslotId, volunteerId) {
             }
 
             // ==================  FIGURE OUT HOW TO ONLY RELOAD JUST THIS TIMESLOT TO PREVENT THE PANEL FROM CLOSING  ===========
-            location.reload();
+            refreshTimeslot(timeslotId);
         })
         .catch(error => console.error(error))
         .finally(() => {
+
             hideVolunteerMenu();
         });
 }
@@ -338,12 +343,13 @@ function addVolunteerDblClick(event, eventId) {
     // in here send the fetch with the timeslotId and check if the logged in user exsists within that location if they do then complete the add.
 }
 
-function cancelEdit(eventId) {
+function cancelEdit(eventId, locationId) {
     // Re-fetch the read-only partial
     $.ajax({
         url: '/VolunteerEvent/GetReadOnlyPartial?id=' + eventId,
         method: 'GET'
     }).done(function (html) {
+        toggleVolunteerPanel(eventId, locationId)
         $('#eventContainer-' + eventId).html(html);
     });
 }
@@ -401,9 +407,42 @@ function saveTimeslotEdit(timeslotId) {
         }
     });
 }
+function createTimeslot(eventId) {
+    console.log("Creating new timeslot for event:", eventId);
+    $('#timeslotButtonContainer-' + eventId).empty();
+    // AJAX call to fetch the create-timeslot partial
+    $.ajax({
+        url: '/VolunteerSignup/CreatePartial',
+        type: 'GET',
+        data: { eventId: eventId },
+        success: function (html) {
+            // Insert the returned HTML into a designated container within the event card.
+            // Ensure your event card has an element with id "newTimeslotContainer-{eventId}".
+            $('#newTimeslotContainer-' + eventId).html(html);
+            $('#timeslotButtonContainer-' + eventId).html(`<div class="col-12 mt-2">
+                        <button class="btn btn-primary" type="button" onclick="createTimeslot(@Model.Id)">Add Timeslot</button>
+                    </div>`);
+        },
+        error: function (err) {
+            console.error("Error loading create timeslot partial:", err);
+        }
+    });
+}
+
+function cancelCreateTimeslot(eventId) {
+    // Simply clear the container for new timeslot creation.
+    $('#newTimeslotContainer-' + eventId).empty();
+   
+}
 
 function refreshTimeslot(timeslotId) {
-    // Assumes you have a controller action that returns the updated timeslot partial view.
+    $(`#timeslot-${timeslotId} [data-bs-toggle="tooltip"]`).each(function () {
+        let tooltipInstance = bootstrap.Tooltip.getInstance(this);
+        if (tooltipInstance) {
+            tooltipInstance.dispose();
+        }
+    });
+
     $.ajax({
         url: '/volunteerSignup/GetReadOnlyPartial',
         type: 'GET',
@@ -411,12 +450,61 @@ function refreshTimeslot(timeslotId) {
         success: function (html) {
             // Replace the entire timeslot container (make sure your partial has an element with id "timeslot-{id}")
             $('#timeslot-' + timeslotId).replaceWith(html);
+            // Reinitialize tooltips on the new content.
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll(`#timeslot-${timeslotId} [data-bs-toggle="tooltip"]`));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
         },
         error: function (err) {
             console.error("Error refreshing timeslot:", err);
         }
     });
 }
+
+function refreshTimeslots(eventId) {
+   
+
+    $.ajax({
+        url: '/VolunteerSignup/GetTimeslotsPartial',
+        type: 'GET',
+        data: { eventId: eventId },
+        success: function (html) {
+            
+            $('#' + eventId + '-time-slot-container').html(html);
+           
+        },
+        error: function (err) {
+            console.error("Error refreshing timeslots:", err);
+        }
+    });
+}
+
+$(document).ready(function () {
+    console.log("Attaching delegated submit handler for createTimeslotForm");
+    $(document.body).on('submit', 'form[id^="createTimeslotForm-"]', function (e) {
+        e.preventDefault();
+
+        var $form = $(this);
+        var eventId = $form.find("input[name='VolunteerEventId']").val();
+        console.log("Intercepted createTimeslotForm submit for event:", eventId);
+        $.ajax({
+            url: $form.attr('action'),
+            type: $form.attr('method'),
+            data: $form.serialize(),
+            complete: function (jqXHR, textStatus) {
+                console.log("AJAX complete. Status:", textStatus);
+               
+                refreshTimeslots(eventId);
+               
+                $('#newTimeslotContainer-' + eventId).empty();
+            },
+            error: function (err) {
+                console.error("Error creating timeslot:", err);
+            }
+        });
+    });
+});
 
 function isDropAllowed(openSlots) {
     if (openSlots > 0) {

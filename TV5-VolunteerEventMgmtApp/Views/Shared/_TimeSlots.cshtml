@@ -1,0 +1,10 @@
+﻿@model IEnumerable<TV5_VolunteerEventMgmtApp.Models.VolunteerSignup>
+
+
+@foreach (var timeslot in Model)
+{
+    <partial name="_TimeSlotReadOnly"
+             model="@timeslot" />
+}
+
+
