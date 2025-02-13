@@ -1,0 +1,32 @@
+﻿@model IEnumerable<TV5_VolunteerEventMgmtApp.Models.Volunteer>
+<div id="pending-confirmations">
+    @foreach(var m in Model){
+        @if(m.IsConfirmed) // when switch to enum check if ConfirmationStatus.PENDING
+        {
+            <div id="v-edit-@m.Id" class="d-flex flex-row">
+                <div class="editable d-flex flex-row align-items-center p-2 gap-2">
+                    <div class="d-inline">
+                        <span class="d-inline" id="v-edit-first-@m.Id">@m.FirstName</span>
+                        <span class="d-inline" id="v-edit-last-@m.Id">@m.LastName</span>
+                    </div>
+
+                    <div>
+                        <span id="v-edit-email-@m.Id">@m.EmailAddress</span>
+                        <span id="v-edit-phone-@m.Id">@m.PhoneNumber</span>
+                    </div>
+                    <div>
+                        <!-- These aren't editable just keeping them for the sake of maintaining their state without refreshing -->
+                        <span id="v-edit-shifts-@m.Id">@m.numShifts</span>
+                        <span id="v-edit-late-@m.Id">@m.TimesLate</span>
+                        <span id="v-edit-join-@m.Id">@m.JoinDate</span>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <button class="v-btn-edit" data-volunteerid="@m.Id">Edit</button>
+                    </div>
+                </div>
+
+            </div>
+        }
+    }
+</div>
+

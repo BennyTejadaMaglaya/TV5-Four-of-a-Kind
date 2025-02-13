@@ -21,30 +21,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         }
 
         // GET: Volunteer
-        [HttpGet, Route("")]
+        [HttpGet, ActionName("Index")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Volunteers.ToListAsync());
         }
 
-        // GET: Volunteer/Details/5
-        [HttpPost, Route("details/{id}")]
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var volunteer = await _context.Volunteers
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (volunteer == null)
-            {
-                return NotFound();
-            }
-
-            return View(volunteer);
-        }
 
         // GET: Volunteer/Create
         [HttpGet, Route("create")]
@@ -59,14 +41,21 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [HttpPost, Route("create")]
-        public async Task<IActionResult> Create([Bind("FirstName,LastName,PhoneNumber,EmailAddress,JoinDate,TimesLate,numShifts,IsActive,IsConfirmed")] Volunteer volunteer)
+        public async Task<IActionResult> Create([Bind("FirstName,LastName,PhoneNumber,EmailAddress,IsActive,IsConfirmed")] Volunteer volunteer)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(volunteer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    _context.Add(volunteer);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
             }
+            catch (DbUpdateException e) 
+            { 
+            }
+
             return View(volunteer);
         }
 
@@ -90,15 +79,16 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // POST: Volunteer/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
         [ValidateAntiForgeryToken]
-        [HttpPost, Route("edit/{id}")]
-        public async Task<IActionResult> Edit(int id, [Bind("FirstName,LastName,PhoneNumber,EmailAddress,JoinDate,TimesLate,numShifts,IsActive,IsConfirmed")] Volunteer volunteer)
+        [HttpPost, Route("edit/{id}"), ActionName("Edit")]
+        public async Task<IActionResult> Edit(int id, [Bind("FirstName,LastName,PhoneNumber,EmailAddress,IsActive,IsConfirmed")] Volunteer volunteer)
         {
+            Console.WriteLine("WOW@!");
             if (id != volunteer.Id)
             {
                 return NotFound();
             }
+            Console.WriteLine(ModelState.IsValid);
 
             if (ModelState.IsValid)
             {
@@ -106,21 +96,61 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 {
                     _context.Update(volunteer);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!VolunteerExists(volunteer.Id))
                     {
-                        return NotFound();
+                        return View(volunteer);
                     }
                     else
                     {
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                catch(DbUpdateException e)
+                {
+
+                }
+             
             }
-            return View(volunteer);
+            return RedirectToPage("/volunteer");
+        }
+
+        [HttpPost, Route("update/{id}")]
+        public async Task<IActionResult> EditVolunteer(int id, [FromBody] UpdateVolunteer volunteer)
+        {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var v= await _context.Volunteers.FirstOrDefaultAsync(s => s.Id == id);
+            if(v == null)
+            {
+                return NotFound();
+            }
+            v.FirstName= volunteer.FirstName;
+            v.LastName= volunteer.LastName;
+            v.PhoneNumber= volunteer.PhoneNumber;
+            v.EmailAddress = volunteer.Email;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return BadRequest();
+            }
+            catch(DbUpdateException e)
+            {
+                return BadRequest();
+            }
+            Console.WriteLine(ModelState.IsValid);
+            Console.WriteLine(volunteer.FirstName);
+            Console.WriteLine("WOW@!");
+
+            return Ok();
         }
 
         // GET: Volunteer/Delete/5
@@ -150,13 +180,22 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             var volunteer = await _context.Volunteers.FindAsync(id);
             if (volunteer != null)
             {
-                _context.Volunteers.Remove(volunteer);
+                try
+                { 
+
+                    _context.Volunteers.Remove(volunteer);
+                }
+                catch(DbUpdateException e) 
+                {
+
+                }
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
+        // these endpoints just change the confirmation status of a volunteer and can be reused
         [HttpPost, Route("ConfirmVolunteer/{id}")]
         public async Task<IActionResult> ConfirmVolunteer(int id)
         {
@@ -166,21 +205,46 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 return NotFound("The volunteer with the id " + id + " doesn't exist. (Maybe deleted?)");
             }
 
+            try
+            {
+                volunteer.IsConfirmed = true;
+                await _context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
 
 
             return Ok();
         }
 
+        // these endpoints just change the confirmation status of a volunteer and can be reused
         [HttpPost, Route("DenyVolunteer/{id}")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DenyVolunteer(int id)
         {
             var volunteer = await _context.Volunteers.FirstOrDefaultAsync(v => v.Id == id);
+            Console.WriteLine("WOW");
 
             if (volunteer == null)
             {
                 return NotFound("The volunteer with the id " + id + " doesn't exist. (Maybe deleted?)");
             }
+
+            try
+            {
+                volunteer.IsConfirmed = false;
+                await _context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return BadRequest(ex.Message);
+            }
+
 
             return Ok();
         }

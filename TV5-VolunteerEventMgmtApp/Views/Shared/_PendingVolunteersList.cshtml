@@ -1,0 +1,21 @@
+﻿@model IEnumerable<TV5_VolunteerEventMgmtApp.Models.Volunteer>
+<div id="pending-confirmations">
+    @foreach (var m in Model)
+    {
+        @if (!m.IsConfirmed) // when switch to enum check if ConfirmationStatus.PENDING
+        { // todo convert this to a table
+            <div class="d-flex gap-3 card-shadow rounded w-fit p-2 align-items-center" id="confirmation-@m.Id">
+                <div>
+                    <span class="d-inline" id="v-confirm-first-@m.Id">@m.FirstName</span>
+                    <span class="d-inline" id="v-confirm-last-@m.Id">@m.LastName</span>
+                </div>
+                <span id="v-confirm-phone-@m.Id">@m.PhoneNumber</span>
+                <span id="v-confirm-email-@m.Id">@m.EmailAddress</span>
+                <div>
+                    <button class="v-btn-confirm" data-volunteerId="@m.Id">Confirm</button>
+                    <button class="v-btn-deny" data-volunteerId="@m.Id">Deny</button>
+                </div>
+            </div>
+        }
+    }
+</div>
