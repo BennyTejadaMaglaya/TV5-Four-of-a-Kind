@@ -257,7 +257,7 @@ a:hover {
 }
 .event-card{
    display: grid;
-
+   grid-template-columns: 1fr 1fr;
 }
 
 .gear-button {

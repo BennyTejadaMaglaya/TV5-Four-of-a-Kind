@@ -14,6 +14,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+	
 </head>
 <body>
 	<header>
@@ -92,9 +93,17 @@
 			&copy; 2025 - TV5_VolunteerEventMgmtApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
 		</div>
 	</footer>
-	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="/lib/jquery/dist/jquery.min.js"></script>
+	<script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+	<script src="/lib/jquery-unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
+
+
+
+	<!-- Your Site Scripts -->
+	<script src="/js/site.js" asp-append-version="true" defer></script>
+
 	<script>
 		$(document).ready(function () {
 			window.setTimeout(function () {

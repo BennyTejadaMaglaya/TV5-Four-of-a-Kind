@@ -44,12 +44,12 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTimeSlots(int eventId)
         {
-            var TimeSlots = _context.VolunteerSignups
+            var TimeSlots = await _context.VolunteerSignups
                 .Include(d => d.VolunteerAttendees).ThenInclude(d => d.Volunteer)
                 .Where(d => d.VolunteerEventId == eventId)
                 .ToListAsync();
 
-            return PartialView("_TimeSlots", TimeSlots);
+            return PartialView("_TimeSlotReadOnly", TimeSlots);
         }
 
         // GET: VolunteerEvent/Details/5
@@ -99,7 +99,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         }
 
         // GET: VolunteerEvent/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, bool isEdit = true)
         {
             if (id == null)
             {
@@ -111,8 +111,11 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.IsEditMode = isEdit;
+
             ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", volunteerEvent.LocationId);
-            ViewData["VenueId"] = new SelectList(_context.Venues, "ID", "Address", volunteerEvent.VenueId);
+            ViewData["VenueId"] = new SelectList(_context.Venues.Where(d => d.LocationId == volunteerEvent.LocationId), "ID", "VenueName", volunteerEvent.VenueId);
             return View(volunteerEvent);
         }
 
@@ -148,8 +151,9 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            
             ViewData["LocationId"] = new SelectList(_context.Locations, "ID", "City", volunteerEvent.LocationId);
-            ViewData["VenueId"] = new SelectList(_context.Venues, "ID", "Address", volunteerEvent.VenueId);
+            ViewData["VenueId"] = new SelectList(_context.Venues.Where(d => d.LocationId == volunteerEvent.LocationId), "ID", "VenueName", volunteerEvent.VenueId);
             return View(volunteerEvent);
         }
 
@@ -191,6 +195,40 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         private bool VolunteerEventExists(int id)
         {
             return _context.VolunteerEvents.Any(e => e.Id == id);
+        }
+
+        [HttpGet]
+        public IActionResult GetReadOnlyPartial(int id)
+        {
+            var volunteerEvent = _context.VolunteerEvents
+                .Include(e => e.Venue)
+                .Include(d => d.Location)                
+                .FirstOrDefault(e => e.Id == id);
+
+            if (volunteerEvent == null)
+                return NotFound();
+
+            return PartialView("_EventCardReadOnly", volunteerEvent);
+        }
+
+        [HttpGet]
+        public IActionResult GetEditPartial(int id)
+        {
+
+
+            /// using identity system check here what the user role is if its not admin return the read only partial.
+            /// this will allow for volunteers to signup to the evnt and keep the same functionality
+            var volunteerEvent = _context.VolunteerEvents
+                .Include(e => e.Venue)
+                .FirstOrDefault(e => e.Id == id);
+
+            if (volunteerEvent == null)
+                return NotFound();
+
+
+            ViewData["VenueList"] = new SelectList(_context.Venues.Where(d => d.LocationId == volunteerEvent.LocationId), "ID", "VenueName", volunteerEvent.VenueId);
+
+            return PartialView("_EventCardEdit", volunteerEvent);
         }
     }
 }

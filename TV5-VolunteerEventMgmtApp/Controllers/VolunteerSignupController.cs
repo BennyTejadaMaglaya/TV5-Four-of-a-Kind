@@ -89,9 +89,10 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
         // POST: VolunteerSignup/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: TimeSlots/Edit/123
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,StartTime,EndTime,TimeSlots,VolunteerEventId")] VolunteerSignup volunteerSignup)
+        public IActionResult Edit(int id, [Bind("Id,ArrivalTime,DepartureTime")] VolunteerSignup volunteerSignup)
         {
             if (id != volunteerSignup.Id)
             {
@@ -103,11 +104,11 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                 try
                 {
                     _context.Update(volunteerSignup);
-                    await _context.SaveChangesAsync();
+                    _context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!VolunteerSignupExists(volunteerSignup.Id))
+                    if (!_context.VolunteerSignups.Any(ts => ts.Id == volunteerSignup.Id))
                     {
                         return NotFound();
                     }
@@ -116,10 +117,15 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
+                // Return the updated read-only partial view
+                var updatedTimeslot = _context.VolunteerSignups
+                    .Include(ts => ts.VolunteerAttendees)
+                    .ThenInclude(va => va.Volunteer)
+                    .FirstOrDefault(ts => ts.Id == volunteerSignup.Id);
+                return PartialView("_TimeslotReadOnly", updatedTimeslot);
             }
-            ViewData["VolunteerEventId"] = new SelectList(_context.VolunteerEvents, "Id", "Description", volunteerSignup.VolunteerEventId);
-            return View(volunteerSignup);
+            return PartialView("_TimeslotEdit", volunteerSignup);
         }
 
         // GET: VolunteerSignup/Delete/5
@@ -154,6 +160,27 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+        public IActionResult GetReadOnlyPartial(int id)
+        {
+            var timeslot = _context.VolunteerSignups
+                           .Include(ts => ts.VolunteerAttendees)
+                           .ThenInclude(va => va.Volunteer)
+                           .FirstOrDefault(ts => ts.Id == id);
+            if (timeslot == null)
+                return NotFound();
+            return PartialView("_TimeSlotReadOnly", timeslot);
+        }
+
+        // GET: TimeSlots/GetEditPartial?id=123
+        public async Task<IActionResult> GetEditPartial(int id)
+        {
+            var timeslot = await _context.VolunteerSignups
+                            .Include(d => d.VolunteerAttendees)
+                            .ThenInclude(d => d.Volunteer)
+                            .FirstOrDefaultAsync(d => d.Id == id);
+          
+            return PartialView("_TimeSlotEdit", timeslot);
         }
 
         private bool VolunteerSignupExists(int id)

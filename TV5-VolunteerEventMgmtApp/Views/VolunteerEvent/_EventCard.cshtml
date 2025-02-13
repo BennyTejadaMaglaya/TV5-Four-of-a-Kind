@@ -4,34 +4,12 @@
      style="border-left: 25px solid @Model.Location?.Color;"
      data-eventid="@Model.Id">
 
-    <div class="event-card">
-
-        <div class="event-card-inner-grid">
-            <div class="fw-bold text-purple">
-                @Model.Title - @Model.Location.City
-            </div>
-            <div>
-                <span class="fw-bold text-purple">@Model.Venue.VenueName</span>
-                - @Model.Venue.Address
-            </div>
-            <div class="d-inline">
-                @{
-                    var startDate = Model.StartTime.ToString("ddd, MMMM dd, yyyy");
-                    var startTime = Model.StartTime.ToString("hh:mm tt");
-                    var endTime = Model.EndTime.ToString("hh:mm tt");
-                }
-                <div class="fw-bold">@startDate</div>
-                <div>@startTime - @endTime</div>
-            </div>
-            <div>
-                <button type="button"
-                        class="btn p-0 border-0 bg-transparent text-purple focus-ring"
-                        style="outline: none; box-shadow: none;"
-                        onclick="toggleVolunteerPanel(@Model.Id, @(Model.LocationId))">
-                    <i class="bi bi-gear"></i>
-                </button>
-            </div>
+   
+        <div id="eventContainer-@Model.Id">
+            @await Html.PartialAsync("_EventCardReadOnly", Model)
         </div>
+       
+        
 
         <div class="timeslots-area mt-2 collapse" id="timeslots-@Model.Id">
             <div>
@@ -46,7 +24,7 @@
                         }
                     }
                 }
-                <p>@Model.Description</p>
+                
                 <hr />
                 <span class="text-nowrap">Open Shifts: </span>
                 <span class="text-nowrap small">@shiftsAvailable</span>
@@ -55,9 +33,15 @@
             <div class="time-slot-Volunteers-container">
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3"
                      id="@Model.Id-time-slot-container">
-                    <partial name="_TimeSlots"
-                             model="@Model.TimeSlots"
-                             view-data='new ViewDataDictionary(ViewData) { { "EventId", Model.Id } }' />
+                @foreach(var timeslot in Model.TimeSlots)
+                {
+                    <partial name="_TimeSlotReadOnly"
+                             model="@timeslot"/>
+                }
+                
+                    <div class="col-12 mt-2">
+                        <button class="btn btn-primary" onclick="createTimeslot(@Model.Id)">Add Timeslot</button>
+                    </div>
                 </div>
                 <div id="volunteer-panel-@Model.Id"
                      class="volunteer-panel ms-auto h-100" >
@@ -73,6 +57,6 @@
 
        
 
-    </div> 
+ 
 
 </div> 

@@ -40,50 +40,116 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ==================== DRAG & DROP ====================
-function dragVolunteer(ev, volunteerId, fromTimeslotId) {
+function dragVolunteer(ev, volunteerId, fromTimeslotId = null) {
     ev.stopPropagation();
     ev.dataTransfer.setData("volunteerId", volunteerId);
     ev.dataTransfer.setData("fromTimeslotId", fromTimeslotId);
+
+    fetch('/VolunteerAttendees/RemoveVolunteer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ volunteerId: volunteerId, newTimeslotId: fromTimeslotId })
+    })
+        .then(response => {
+            if (!response.ok) {
+              
+                    
+                throw new Error("Failed to remove volunteer");
+            }
+        refreshTimeslot(fromTimeslotId);
+            
+        })
+        .catch(error => console.error(error))
 }
 
 function allowDrop(ev) {
     ev.preventDefault();
 }
 
-function handleDrop(ev, toTimeslotId) {
+function handleDrop(ev, toTimeslotId, openSlots, occupied) {
     ev.preventDefault();
 
     const volunteerId = ev.dataTransfer.getData("volunteerId");
-    const fromTimeslotId = ev.dataTransfer.getData("fromTimeslotId");
+   
+        const fromTimeslotId = ev.dataTransfer.getData("fromTimeslotId");
+    
+   
 
     console.log(`Dropping volunteer ${volunteerId} from timeslot ${fromTimeslotId} to ${toTimeslotId}`);
 
-    // If user drops onto the same timeslot, do nothing
-    if (fromTimeslotId === toTimeslotId) {
-        console.log("Same timeslot. No move needed.");
-        return;
-    }
-
-    // Move or Create logic
-    if (fromTimeslotId) {
-        // If fromTimeslotId is present, do a "move"
-        fetch('/VolunteerAttendees/quickMove', {
+    if (occupied && fromTimeslotId !== "null") {
+        fetch('/VolunteerAttendees/quickCreate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 volunteerId: volunteerId,
-                oldTimeslotId: parseInt(fromTimeslotId),
-                newTimeslotId: parseInt(toTimeslotId)
+                newTimeslotId: parseInt(fromTimeslotId)
             })
         })
             .then(response => {
                 if (!response.ok) {
+                   
                     throw new Error('Network response was not ok');
                 }
-                location.reload();
+                
             })
             .catch(error => console.error('Error:', error));
-    } else {
+        refreshTimeslot(toTimeslotId);
+        refreshTimeslot(fromTimeslotId);
+       
+    }
+
+    // If user drops onto the same timeslot, do nothing
+    if (fromTimeslotId === toTimeslotId) {
+        console.log("Same timeslot. No move needed.");
+        fetch('/VolunteerAttendees/quickCreate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                volunteerId: volunteerId,
+                newTimeslotId: parseInt(fromTimeslotId)
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                   
+                    throw new Error('Network response was not ok');
+                }
+                
+            })
+            .catch(error => console.error('Error:', error));
+        refreshTimeslot(fromTimeslotId);
+        refreshTimeslot(toTimeslotId);
+        return;
+    }
+
+    let allowed = isDropAllowed(openSlots);
+    if (!allowed) {
+        console.log("Drop not allowed. Returning volunteer to original timeslot." + openSlots);
+        // Refresh the original timeslot so that the volunteer returns
+        fetch('/VolunteerAttendees/quickCreate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                volunteerId: volunteerId,
+                newTimeslotId: parseInt(fromTimeslotId)
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                  
+                    throw new Error('Network response was not ok');
+                }
+                
+            })
+            .catch(error => console.error('Error:', error));
+        refreshTimeslot(toTimeslotId);
+        refreshTimeslot(fromTimeslotId);
+        return;
+    }
+
+    // Move or Create logic
+    if (fromTimeslotId === 'null') {
         // If fromTimeslotId is null/undefined, do a "create"
         fetch('/VolunteerAttendees/quickCreate', {
             method: 'POST',
@@ -95,16 +161,47 @@ function handleDrop(ev, toTimeslotId) {
         })
             .then(response => {
                 if (!response.ok) {
+
                     throw new Error('Network response was not ok');
                 }
-                location.reload();
+
             })
             .catch(error => console.error('Error:', error));
+        refreshTimeslot(toTimeslotId);
+
+        refreshTimeslot(fromTimeslotId);
+    } else {
+        
+            // If fromTimeslotId is present, do a "move"
+            fetch('/VolunteerAttendees/quickMove', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    volunteerId: volunteerId,
+                    oldTimeslotId: parseInt(fromTimeslotId),
+                    newTimeslotId: parseInt(toTimeslotId)
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+
+                        throw new Error('Network response was not ok');
+                    }
+
+
+                
+               
+            })
+            .catch (error => console.error('Error:', error));
+    
+        refreshTimeslot(fromTimeslotId);
+        refreshTimeslot(toTimeslotId);
     }
 }
 
 // ==================== VOLUNTEER PANEL TOGGLE ====================
 function toggleVolunteerPanel(eventId, locationId) {
+    console.log("testing");
     const panelEl = document.getElementById(`timeslots-${eventId}`);
     if (!panelEl) return;
 
@@ -113,6 +210,7 @@ function toggleVolunteerPanel(eventId, locationId) {
     if (panelEl.classList.contains("show")) {
         bsCollapse.hide();
     } else {
+        enableEditMode(eventId)
         loadVolunteers(eventId, locationId); 
         bsCollapse.show();
     }
@@ -199,7 +297,7 @@ function removeVolunteer(timeslotId, volunteerId) {
 
 // ==================== OPTIONAL: HIGHLIGHT EVENT ====================
 function highlightEvent(eventId) {
-    document.querySelectorAll('.event-card[data-eventid]').forEach(card => {
+    document.querySelectorAll(`.event-card`).forEach(card => {
         const thisEventId = parseInt(card.getAttribute('data-eventid'));
         if (thisEventId === eventId) {
             card.classList.remove('dimmed-event');
@@ -207,4 +305,122 @@ function highlightEvent(eventId) {
             card.classList.add('dimmed-event');
         }
     });
+}
+
+
+function enableEditMode(eventId) {
+
+    document.querySelectorAll('.event-card-container[data-eventid]').forEach(card => {
+        const thisId = card.getAttribute('data-eventid');
+        if (parseInt(thisId) !== eventId) {
+            card.classList.add('dimmed-event');
+            card.style.pointerEvents = 'none';
+        } else {
+            card.classList.remove('dimmed-event');
+            card.style.pointerEvents = 'auto';
+        }
+    });
+   
+}
+
+function cancelEditMode() {
+    window.location = window.location.pathname + "?isEditMode=false";
+}
+
+
+function createTimeslot(eventId) {
+    console.log("Creating new timeslot for event:", eventId);
+    // Possibly open a modal or inline form to specify start/end time, capacity, etc.
+}
+
+
+function addVolunteerDblClick(event, eventId) {
+    // in here send the fetch with the timeslotId and check if the logged in user exsists within that location if they do then complete the add.
+}
+
+function cancelEdit(eventId) {
+    // Re-fetch the read-only partial
+    $.ajax({
+        url: '/VolunteerEvent/GetReadOnlyPartial?id=' + eventId,
+        method: 'GET'
+    }).done(function (html) {
+        $('#eventContainer-' + eventId).html(html);
+    });
+}
+
+// Open the edit partial for a timeslot
+function editTimeslot(timeslotId) {
+    console.log(`editing the time slot at ${timeslotId}`)
+    $.ajax({
+        url: '/VolunteerSignup/GetEditPartial?id=' + timeslotId,
+        type: 'GET',
+        success: function (html) {
+            // Replace the entire timeslot row with the edit partial
+            $('#timeslot-' + timeslotId).replaceWith(html);
+        },
+        error: function (err) {
+            console.error('Error loading timeslot edit partial:', err);
+        }
+    });
+}
+
+// Cancel editing a timeslot by reloading the read-only partial
+function cancelTimeslotEdit(timeslotId) {
+    $.ajax({
+        url: '/VolunteerSignup/GetReadOnlyPartial?id=' + timeslotId,
+        type: 'GET',
+        success: function (html) {
+            $('#timeslot-' + timeslotId).replaceWith(html);
+        },
+        error: function (err) {
+            console.error('Error loading timeslot read-only partial:', err);
+        }
+    });
+}
+
+// Save the new start/end times for the timeslot
+function saveTimeslotEdit(timeslotId) {
+    var newStart = $('#ts-start-' + timeslotId).val();
+    var newEnd = $('#ts-end-' + timeslotId).val();
+
+    // Post the new times to the server; adjust the URL as needed
+    $.ajax({
+        url: '/VolunteerSignup/Edit/' + timeslotId,
+        type: 'POST',
+        data: {
+            // Assuming your model binds ArrivalTime and DepartureTime
+            StartTime: newStart,
+            EndTime: newEnd
+        },
+        success: function (html) {
+            // Replace the timeslot row with the updated read-only partial
+            $('#timeslot-' + timeslotId).replaceWith(html);
+        },
+        error: function (err) {
+            console.error('Error saving timeslot edit:', err);
+        }
+    });
+}
+
+function refreshTimeslot(timeslotId) {
+    // Assumes you have a controller action that returns the updated timeslot partial view.
+    $.ajax({
+        url: '/volunteerSignup/GetReadOnlyPartial',
+        type: 'GET',
+        data: { id: timeslotId },
+        success: function (html) {
+            // Replace the entire timeslot container (make sure your partial has an element with id "timeslot-{id}")
+            $('#timeslot-' + timeslotId).replaceWith(html);
+        },
+        error: function (err) {
+            console.error("Error refreshing timeslot:", err);
+        }
+    });
+}
+
+function isDropAllowed(openSlots) {
+    if (openSlots > 0) {
+        return true;
+    }
+    return false;
 }

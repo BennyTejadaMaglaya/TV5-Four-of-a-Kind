@@ -1,0 +1,40 @@
+﻿@model TV5_VolunteerEventMgmtApp.Models.VolunteerEvent
+
+<div style="display:flex;">
+    <div class="event-card">
+
+
+        <div class="fw-bold text-purple">
+            @Model.Title - @Model.Location.City <br />
+            <span class="fw-bold text-purple">@Model.Venue.VenueName</span>
+            - @Model.Venue.Address
+        </div>
+        <div class="d-inline">
+            @{
+                var startDate = Model.StartTime.ToString("ddd, MMMM dd, yyyy");
+                var startTime = Model.StartTime.ToString("hh:mm tt");
+                var endTime = Model.EndTime.ToString("hh:mm tt");
+            }
+            <div class="fw-bold">@startDate</div>
+            <div>@startTime - @endTime</div>
+        </div>
+        <div>
+            <span class="fw-bold">Description</span>
+            <p>@Model.Description</p>
+        </div>
+    </div>
+    <div class="end-0">
+        <a href="@Url.Action("GetEditPartial", "VolunteerEvent", new { id = Model.Id })"
+           data-ajax="true"
+           data-ajax-method="GET"
+           data-ajax-mode="replace"
+           data-ajax-update="#eventContainer-@Model.Id"
+           class="btn p-0 border-0 bg-transparent text-purple focus-ring"
+           onclick="toggleVolunteerPanel(@Model.Id, @Model.LocationId)">
+            <i class="bi bi-gear"></i>
+        </a>
+    </div>
+</div>
+
+
+
