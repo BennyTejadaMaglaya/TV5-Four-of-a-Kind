@@ -1,0 +1,63 @@
+﻿@model TV5_VolunteerEventMgmtApp.Models.VolunteerEvent
+
+<div class="event-card-container"
+     style="border-left: 25px solid @Model.Location?.Color;"
+     data-eventid="@Model.Id">
+
+   
+        <div id="eventContainer-@Model.Id">
+            @await Html.PartialAsync("_EventCardReadOnly", Model)
+        </div>
+       
+        
+
+        <div class="timeslots-area mt-2 collapse" id="timeslots-@Model.Id">
+            <div>
+                <h5 class="fw-bold mb-3">Sign Ups</h5>
+                @{
+                    string shiftsAvailable = "";
+                    foreach (var timeslot in Model.TimeSlots)
+                    {
+                        if (timeslot.VolunteerAttendees.Count() < timeslot.TimeSlots)
+                        {
+                            shiftsAvailable += $"{timeslot.StartTime:h tt} - {timeslot.EndTime:h tt}  ";
+                        }
+                    }
+                }
+                
+                <hr />
+                <span class="text-nowrap">Open Shifts: </span>
+                <span class="text-nowrap small">@shiftsAvailable</span>
+                <hr />
+            </div>
+            <div class="time-slot-Volunteers-container">              
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3" id="@Model.Id-time-slot-container">
+                    @await Html.PartialAsync("_TimeSlots", Model.TimeSlots, new ViewDataDictionary(ViewData) { { "EventId", Model.Id } })
+                    
+                </div>
+                    <div id="newTimeslotContainer-@Model.Id">
+                    </div>
+                <div id="timeslotButtonContainer-@Model.Id">
+                    <div class="col-12 mt-2">
+                        <button class="btn btn-primary" type="button" onclick="createTimeslot(@Model.Id)">Add Timeslot</button>
+                    </div>
+                </div>
+                 
+                
+                <div id="volunteer-panel-@Model.Id"
+                     class="volunteer-panel ms-auto h-100" >
+                    <h5 class="text-purple">Available Volunteers</h5>
+                    <div id="volunteersList-@Model.Id">
+                        <p>Select an event to load volunteers.</p>
+                    </div>
+                </div>
+            </div>
+           
+        </div>
+
+
+       
+
+ 
+
+</div> 

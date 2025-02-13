@@ -1,0 +1,29 @@
+﻿@model TV5_VolunteerEventMgmtApp.Models.VolunteerSignup
+
+@using (Html.BeginForm("Create", "VolunteerSignup", new { }, FormMethod.Post ,false, new { id = "createTimeslotForm-" + Model.VolunteerEventId }))
+{
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="VolunteerEventId" value="@Model.VolunteerEventId" />
+    <input type="hidden" name="VolunteerAttendees" value="@Model.VolunteerAttendees" />
+    <input type="hidden" name="VolunteerEvent" value="@Model.VolunteerEvent" />
+   
+    <div class="form-group">
+        <label for="StartTime" class="fw-bold">Start Time</label>
+        <input type="time" name="StartTime" class="form-control form-control-sm" required />
+    </div>
+    <div class="form-group">
+        <label for="EndTime" class="fw-bold">End Time</label>
+        <input type="time" name="EndTime" class="form-control form-control-sm" required />
+    </div>
+    <div class="form-group">
+        <label for="TimeSlots" class="fw-bold">Time Slots</label>
+        <input name="TimeSlots" type="number" class="form-control form-control-sm" />
+    </div>
+
+    <button type="submit" class="btn btn-sm btn-success mt-2">
+        <i class="bi bi-check"></i>
+    </button>
+    <button type="button" class="btn btn-sm btn-secondary mt-2" onclick="cancelCreateTimeslot(@Model.VolunteerEventId)">
+        <i class="bi bi-x-circle"></i>
+    </button>
+}

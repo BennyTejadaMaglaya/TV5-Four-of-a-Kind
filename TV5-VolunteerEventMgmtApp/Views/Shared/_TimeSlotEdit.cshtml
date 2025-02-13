@@ -1,0 +1,69 @@
+﻿@model TV5_VolunteerEventMgmtApp.Models.VolunteerSignup
+
+
+
+<div id="timeslot-@Model.Id" class="timeslot-row" data-timeslotid="@Model.Id">
+    <div class="timeslot-info">
+        <div>
+            <label class="fw-bold">Start Time</label>
+            <input type="time" id="ts-start-@Model.Id" class="form-control form-control-sm w-auto"
+                   value="@Model.StartTime.ToString("HH:mm")" />
+        </div>
+        <div>
+            <label class="fw-bold">End Time</label>
+            <input type="time" id="ts-end-@Model.Id" class="form-control form-control-sm w-auto"
+                   value="@Model.EndTime.ToString("HH:mm")" />
+        </div>
+        <button type="button" class="btn btn-sm btn-success" onclick="saveTimeslotEdit(@Model.Id)">Save</button>
+        <button type="button" class="btn btn-sm btn-secondary" onclick="cancelTimeslotEdit(@Model.Id)">Cancel</button>
+    </div>
+    <div class="volunteer-attendees">
+		<ul class="list-unstyled d-flex flex-wrap mb-0">
+			@{
+				foreach (var vol in Model.VolunteerAttendees)
+				{
+					var firstInitial = string.IsNullOrEmpty(vol.Volunteer?.FirstName)
+					? ""
+					: vol.Volunteer.FirstName.Substring(0, 1).ToUpper();
+					var lastInitial = string.IsNullOrEmpty(vol.Volunteer?.LastName)
+					? ""
+					: vol.Volunteer.LastName.Substring(0, 1).ToUpper();
+
+					<li class="me-1 mb-1">
+						<div class="volunteer-circle"
+							 tabindex="0"
+							 role="button"
+							 aria-label="Volunteer circle"
+							 oncontextmenu="showVolunteerMenu(event, @Model.Id, @vol.VolunteerId)"
+							 onkeydown="volunteerKeyDown(event, @Model.Id, @vol.VolunteerId)"
+							 draggable="true"
+							 ondragstart="dragVolunteer(event, '@vol.VolunteerId', @Model.Id)"
+							 data-bs-toggle="tooltip"
+							 data-bs-placement="top"
+							 data-bs-title="@(vol.Volunteer?.FirstName) @(vol.Volunteer?.LastName)">
+							@($"{firstInitial}{lastInitial}")
+						</div>
+					</li>
+				}
+
+				int capacity = Model.TimeSlots;
+				int currentCount = Model.VolunteerAttendees.Count();
+				int openSlots = capacity - currentCount;
+				for (int i = 0; i < openSlots; i++)
+				{
+					<li class="me-1 mb-1">
+						<div class="empty-slot-circle"
+							 ondragover="allowDrop(event)"
+							 ondrop="handleDrop(event, @Model.Id)"
+							 data-bs-toggle="tooltip"
+							 data-bs-title="Drag a volunteer here"
+							 ondblclick="addVolunteerDblClick(event, @Model.Id)">
+							<i class="bi bi-person-plus fs-5"></i>
+						</div>
+					</li>
+				}
+			}
+
+		</ul>
+    </div>
+</div>

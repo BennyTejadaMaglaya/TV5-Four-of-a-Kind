@@ -74,12 +74,22 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 
         [HttpPost]
     
-        public async Task<IActionResult> quickCreate([FromBody] VolunteerAttendeeDTO dto)
+        public async Task<IActionResult> quickMove([FromBody] VolunteerMoveDTO dto)
         {
-            VolunteerAttendee newAttendee = new VolunteerAttendee
+
+			var oldAttendee = await _context.VolunteerAttendees
+	        .FirstOrDefaultAsync(va => va.VolunteerId == dto.volunteerId
+		        && va.VolunteerSignupId == dto.oldTimeslotId);
+
+			if (oldAttendee != null)
+			{
+				_context.VolunteerAttendees.Remove(oldAttendee);
+			}
+
+			VolunteerAttendee newAttendee = new VolunteerAttendee
             {
                 VolunteerId = dto.volunteerId,
-                VolunteerSignupId = dto.volunteerSignupId
+                VolunteerSignupId = dto.newTimeslotId
             };
 
             _context.VolunteerAttendees.Add(newAttendee);
@@ -87,12 +97,27 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
             return NoContent();
         }
 
-		[HttpPost]
+        [HttpPost]
+        public async Task<IActionResult> quickCreate([FromBody] VolunteerAttendeeDTO dto)
+        {
+
+            VolunteerAttendee newAttendee = new VolunteerAttendee
+            {
+                VolunteerId = dto.volunteerId,
+                VolunteerSignupId = dto.newTimeslotId
+            };
+
+            _context.VolunteerAttendees.Add(newAttendee);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpPost]
 		public async Task<IActionResult> RemoveVolunteer([FromBody] VolunteerAttendeeDTO dto)
 		{
-			// e.g. remove from _context.VolunteerAttendees
+			
 			var attendee = await _context.VolunteerAttendees
-				.FirstOrDefaultAsync(a => a.VolunteerSignupId == dto.volunteerSignupId
+				.FirstOrDefaultAsync(a => a.VolunteerSignupId == dto.newTimeslotId
 									   && a.VolunteerId == dto.volunteerId);
 
 			if (attendee == null)

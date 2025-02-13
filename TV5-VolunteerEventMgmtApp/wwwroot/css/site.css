@@ -202,8 +202,13 @@ a:hover {
     display: grid;
     grid-row-gap: 25px;
 }
+.event-cards-grid {
+    grid-template-columns: 1fr;
+    display: grid;
+    grid-row-gap: 25px;
+}
 
-.attendance-card, .event-card {
+.attendance-card {
     display: grid;
     grid-template-columns: 3fr 1fr 1fr;
     grid-column-gap: 10px;
@@ -243,9 +248,52 @@ a:hover {
 
 
 /* Event Index Items */
-.event-card {
-    grid-template-columns: 2fr 3fr;
+.event-card-container {
+    position: relative;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px 4px #00000020;
 }
+.event-card{
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+}
+
+.gear-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.timeslots-area {
+    margin-top: 50px;
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+
+
+.time-slot-Volunteers-container{
+    display: flex
+}
+
+.event-card-inner-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr 0.25fr;
+    grid-row-gap: 4px;
+    grid-column-gap: 15px;
+}
+.volunteer-panel {
+    background: #f8f9fa;
+    padding: 10px;
+    border-left: 3px solid #6f42c1;
+    
+   
+    overflow-y: auto;
+    transition: max-height 0.3s ease-in-out;
+}
+
 .volunteer-circle {
     width: 35px;
     height: 35px;
@@ -292,22 +340,34 @@ a:hover {
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-    .custom-context-menu button.dropdown-item {
-        width: 100%;
-        background: none;
-        border: none;
-        text-align: left;
-        padding: 8px 16px;
-        cursor: pointer;
-    }
+.custom-context-menu button.dropdown-item {
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 8px 16px;
+    cursor: pointer;
+}
 
-        .custom-context-menu button.dropdown-item:hover {
-            background-color: #f8f9fa;
-        }
+.custom-context-menu button.dropdown-item:hover {
+    background-color: #f8f9fa;
+        
+}
 
 .d-none {
     display: none !important;
 }
+
+.chevron-container {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.rotate-chevron {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease-in-out;
+}
+
 
 /* From 768px */
 @media(width > 768px) {
