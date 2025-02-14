@@ -29,7 +29,7 @@ namespace TV5_VolunteerEventMgmtApp.Controllers
 		// GET: AttendanceSheet
 		public async Task<IActionResult> Index(int? LocationId, int? page, int? pageSizeID,
 			string? actionButton, string? searchDirector, DateTime? startTime, DateTime? endTime, string sortDirection = "desc", string sortField = "Date", 
-			string currentTab = "list"
+			string currentTab = "cards"
 			)
 		{
 			// Selected tab

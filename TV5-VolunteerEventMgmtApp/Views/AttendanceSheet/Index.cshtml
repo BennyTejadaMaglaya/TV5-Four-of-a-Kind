@@ -59,68 +59,126 @@
 
 		</div>
 
-	<!-- TABS -->
-	<ul class="nav nav-tabs mb-3" id="attendanceSheetTabs" role="tablist">
-		<li class="nav-item">
-			<a class="nav-link @((string)ViewData["currentTab"] == "list" ? "active" : "") fw-bold text-purple"
-			   id="list-tab"
-			   data-toggle="tab"
-			   href="#list"
-			   role="tab"
-			   aria-controls="list"
-			   aria-selected="true"
-			   onclick="setTab('list')">&#x2630;</a>
-		</li>
-		<li class="nav-item">
-			<a class="nav-link @((string)ViewData["currentTab"] == "cards" ? "active" : "") fw-bold text-purple"
-			   id="cards-tab"
-			   data-toggle="tab"
-			   href="#cards"
-			   role="tab"
-			   aria-controls="cards"
-			   aria-selected="false"
-			   onclick="setTab('cards')">&#x25AD;</a>
-		</li>
-	</ul>
+		<!-- TABS -->
+		<ul class="nav nav-tabs mb-3" id="attendanceSheetTabs" role="tablist">
+			<li class="nav-item">
+				<a class="nav-link @((string)ViewData["currentTab"] == "list" ? "active" : "") fw-bold text-purple"
+				   id="list-tab"
+				   data-toggle="tab"
+				   href="#list"
+				   role="tab"
+				   aria-controls="list"
+				   aria-selected="true"
+				   onclick="setTab('list')"><i class="fa-solid fa-list"></i></a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link @((string)ViewData["currentTab"] == "cards" ? "active" : "") fw-bold text-purple"
+				   id="cards-tab"
+				   data-toggle="tab"
+				   href="#cards"
+				   role="tab"
+				   aria-controls="cards"
+				   aria-selected="false"
+				   onclick="setTab('cards')"><i class="fa-solid fa-border-all"></i></a>
+			</li>
+		</ul>
 
-	<div class="tab-content" id="attendanceSheetTabsContent">
+		<div class="tab-content" id="attendanceSheetTabsContent">
 
-		<!-- LIST -->
-		<div class="tab-pane fade @((string)ViewData["currentTab"] == "list" ? "show active" : "")"
-			 id="list" role="tabpanel" aria-labelledby="list-tab">
-			<table class="table table-hover">
-				<thead>
-					<tr>
-						<th>
-							<button type="submit" 
-								name="actionButton" 
-								value="Location"
-								class="btn btn-toolbar p-0 fw-bold d-inline">
-								Location <span class="text-purple">&#11137</span>
-							</button>
-						</th>
-						<th class="d-none d-md-table-cell">
+			<!-- LIST -->
+			<div class="tab-pane fade @((string)ViewData["currentTab"] == "list" ? "show active" : "")"
+				 id="list" role="tabpanel" aria-labelledby="list-tab">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>
+								<button type="submit"
+										name="actionButton"
+										value="Location"
+										class="btn btn-toolbar p-0 fw-bold d-inline">
+									Location <span class="text-purple">&#11137</span>
+								</button>
+							</th>
+							<th class="d-none d-md-table-cell">
 								<button type="submit" name="actionButton" value="Director"
 										class="btn btn-toolbar p-0 fw-bold d-inline">
 									Director <span class="text-purple">&#11137</span>
 								</button>
-						</th>
-						<th>
-							<button type="submit" 
-								name="actionButton" 
-								value="Date"
-								class="btn btn-toolbar p-0 fw-bold d-inline">
-								Date <span class="text-purple">&#11137</span>
-							</button>
-						</th>
-						<th>
-							<span class="d-none d-md-block">Attendance</span>
-							<span class="d-block d-md-none">Att.</span>
-						</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
+							</th>
+							<th>
+								<button type="submit"
+										name="actionButton"
+										value="Date"
+										class="btn btn-toolbar p-0 fw-bold d-inline">
+									Date <span class="text-purple">&#11137</span>
+								</button>
+							</th>
+							<th>
+								<div class="list-att">
+									<i class="fa-solid fa-children" title="Attendance"></i>
+									<span class="me-3">Attendance</span>
+								</div>
+							</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var item in Model)
+						{
+							var colors = (string[])ViewData["Colors"];
+							var len = colors.Length;
+							var idx = (item.LocationId - 1) % len;
+							var color = colors[idx];
+
+							<tr>
+								<td class="fw-bold text-purple">
+									<i class="fa-solid fa-location-pin me-2"
+									   style="color: @color; text-shadow: -2px 0px #000000e0"></i>
+									@Html.DisplayFor(modelItem => item.Location.City)
+								</td>
+
+								<td class="d-none d-md-table-cell">
+									@Html.DisplayFor(modelItem => item.Director.FullName)
+								</td>
+								<td class="">
+									@{
+										var date = item.StartTime.ToString("MMM dd, yyyy");
+									}
+									@date
+								</td>
+								<td>
+									@Html.DisplayFor(modelItem => item.Attendees.Count)
+								</td>
+								<td>
+									<a asp-action="Edit" asp-route-id="@item.Id" class="text-purple text-decoration-none">Edit</a> |
+									<a asp-action="Details" asp-route-id="@item.Id" class="text-purple text-decoration-none">Details</a>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+
+			<!-- CARDS -->
+			<div class="tab-pane fade @((string)ViewData["currentTab"] == "cards" ? "show active" : "")"
+				 id="cards" role="tabpanel" aria-labelledby="cards-tab">
+
+				<div class="fw-bold my-4">
+					<span class="me-2">Sort by</span>
+					<button 
+						type="submit" 
+						name="actionButton" 
+						value="Location"
+							class="btn btn-toolbar p-0 ms-3 fw-bold d-inline text-purple">
+						Location
+					</button>
+					<button type="submit" name="actionButton" value="Date"
+							class="btn btn-toolbar p-0 ms-3 fw-bold d-inline text-purple">
+						Date
+					</button>
+				</div>
+
+				<div class="attendance-cards-grid mb-3">
 					@foreach (var item in Model)
 					{
 						var colors = (string[])ViewData["Colors"];
@@ -128,106 +186,54 @@
 						var idx = (item.LocationId - 1) % len;
 						var color = colors[idx];
 
-						<tr>
-							<td class="fw-bold text-purple">
-								<span style="border-left: 15px solid @color; padding-left: 20px;"
-									  class="me-1">
+						<div class="attendance-card"
+							 onclick="location.href='@Url.Action("Details", new { id = item.Id })'"
+							 style="border-left: 25px solid @color;">
+
+							<!-- location / date -->
+							<div class="card-inner-grid">
+
+								<div class="fw-bold text-purple">
 									@Html.DisplayFor(modelItem => item.Location.City)
-								</span>
-							</td>
-
-							<td class="d-none d-md-table-cell">
-								@Html.DisplayFor(modelItem => item.Director.FullName)
-							</td>
-							<td class="">
-								@{
-									var date = item.StartTime.ToString("MMM dd, yyyy");
-								}
-								@date
-							</td>
-							<td>
-								@Html.DisplayFor(modelItem => item.Attendees.Count)
-							</td>
-							<td>
-								<a asp-action="Edit" asp-route-id="@item.Id" class="text-purple text-decoration-none">Edit</a> |
-								<a asp-action="Details" asp-route-id="@item.Id" class="text-purple text-decoration-none">Details</a>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		</div>
-
-		<!-- CARDS -->
-		<div class="tab-pane fade @((string)ViewData["currentTab"] == "cards" ? "show active" : "")"
-			 id="cards" role="tabpanel" aria-labelledby="cards-tab">
-
-			<div class="fw-bold mb-3">
-				<span class="me-2">Sort by</span>
-				<button type="submit" name="actionButton" value="Location"
-						class="btn btn-outline-purple py-0 d-inline">
-					Location
-				</button>
-				<button type="submit" name="actionButton" value="Date"
-						class="btn btn-outline-purple py-0 d-inline">
-					Date
-				</button>
-			</div>
-
-			<div class="attendance-cards-grid mb-3">
-				@foreach (var item in Model)
-				{
-					var colors = (string[])ViewData["Colors"];
-					var len = colors.Length;
-					var idx = (item.LocationId - 1) % len;
-					var color = colors[idx];
-
-					<div class="attendance-card"
-						 onclick="location.href='@Url.Action("Details", new { id = item.Id })'"
-						 style="border-left: 25px solid @color;">
-
-						<div class="card-inner-grid">
-
-							<div class="fw-bold text-purple">
-								@Html.DisplayFor(modelItem => item.Location.City)
-							</div>
-							<div class="">
-								@{
-									var startDate = item.StartTime.ToString("ddd, MMMM dd, yyyy");
-									var startTime = item.StartTime.ToString("hh:mm tt");
-									var endTime = item.EndTime.ToString("hh:mm tt");
-								}
-								<div class="fw-bold">@startDate</div>
-								<div>@startTime - @endTime</div>
-							</div>
-						</div>
-
-						<div class="card-inner-grid">
-							<div class="sub-inner-grid">
-								<div class="fw-bold">
-									<span class="d-none d-md-block">Attendance</span>
-									<span class="d-block d-md-none me-3">Att.</span>
 								</div>
-								<div class="fw-bold text-purple">@item.Attendees.Count</div>
+								<div class="">
+									@{
+										var startDate = item.StartTime.ToString("ddd, MMMM dd, yyyy");
+										var startTime = item.StartTime.ToString("hh:mm tt");
+										var endTime = item.EndTime.ToString("hh:mm tt");
+									}
+									<div class="fw-bold">@startDate</div>
+									<div>@startTime - @endTime</div>
+								</div>
 							</div>
 
-							<div class="text-truncate d-none d-lg-block">
-								<div class="fw-bold text-gray">Notes</div>
-								@Html.DisplayFor(modelItem => item.Notes)
+							<!-- attendance / edit btn -->
+							<div class="card-inner-grid">
+								<div class="card-att fw-bold">
+									<div class="">
+										<i class="fa-solid fa-children" title="Attendance"></i>
+										<span class="me-3">Attendance</span>
+									</div>
+									<div class="text-purple">@item.Attendees.Count</div>
+								</div>
+
+								<div class="text-truncate d-none d-lg-block">
+									<div class="fw-bold text-gray">Notes</div>
+									@Html.DisplayFor(modelItem => item.Notes)
+								</div>
+							</div>
+
+							<div class="d-flex flex-column gap-1 justify-content-end align-content-end ms-3">
+								<a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-purple py-0">Edit</a>
 							</div>
 						</div>
-
-						<div class="d-flex flex-column gap-1 justify-content-end align-content-end ms-3">
-							<a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-purple py-0">Edit</a>
-						</div>
-					</div>
-				}
+					}
+				</div>
 			</div>
-		</div>
 
-	</div> <!-- tab-content end -->
+		</div> <!-- tab-content end -->
 
-	<partial name="_PagingNavBar" />
+		<partial name="_PagingNavBar" />
 </form>
 
 @section Scripts {

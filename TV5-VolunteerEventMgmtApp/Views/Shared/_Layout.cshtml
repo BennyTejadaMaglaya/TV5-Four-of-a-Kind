@@ -10,19 +10,21 @@
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/volunteer.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/TV5_VolunteerEventMgmtApp.styles.css" asp-append-version="true" />
-	@* Google Font: Montserrat *@
+	<!-- Google Font: Montserrat -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-	
+	<!-- font awesome -->
+	<script src="https://kit.fontawesome.com/65530d8b51.js" crossorigin="anonymous"></script>
+
 </head>
 <body>
 	<header>
-		<nav class="navbar navbar-expand-lg navbar-toggleable-lg navbar-dark mb-5"
-			 style="min-height: 60px; background: #040404; box-shadow: 0 0 10px #000000a0;">
+		<nav class="navbar navbar-expand-lg navbar-toggleable-lg navbar-light mb-5"
+			 style="min-height: 60px; box-shadow: 0 0 10px #000000a0;">
 			<div class="container">
 				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-					<img src="~/images/TV-Logo-white.png" alt="Tomorrow's Voices Logo" style="height: 44px; width: auto;">
+					<img src="~/images/TV-Logo-black.png" alt="Tomorrow's Voices Logo" style="height: 44px; width: auto;">
 				</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
 						aria-expanded="false" aria-label="Toggle navigation">
@@ -31,34 +33,33 @@
 				@* <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between"> *@
 				<div class="navbar-collapse collapse d-lg-inline-flex justify-content-center flex-grow-1">
 					@* <ul class="navbar-nav flex-grow-1"> *@
-					<ul class="navbar-nav text-uppercase ">
-						<!-- links in uppercase -->
+					<ul class="navbar-nav">
 						<li class="nav-item">
-							<a class="nav-link text-light" asp-area="" asp-controller="AttendanceSheet" asp-action="Dashboard">Dashboard</a>
+							<a class="nav-link text-dark" asp-area="" asp-controller="AttendanceSheet" asp-action="Dashboard">Dashboard</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link text-light" asp-area="" asp-controller="AttendanceSheet" asp-action="Index">Attendance</a>
+							<a class="nav-link text-dark" asp-area="" asp-controller="AttendanceSheet" asp-action="Index">Attendance</a>
 						</li>
-							
+
 						<li class="nav-item">
-							<a class="nav-link  text-light" asp-area="" asp-controller="Director" asp-action="Index">Directors</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link  text-light" asp-area="" asp-controller="Singer" asp-action="Index">Singers</a>
+							<a class="nav-link  text-dark" asp-area="" asp-controller="Director" asp-action="Index">Directors</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link  text-light" asp-area="" asp-controller="Location" asp-action="Index">Locations</a>
-						</li>
-						
-						<li class="nav-item">
-							<a class="nav-link  text-light" asp-area="" asp-controller="Summary" asp-action="Attendance">Summary</a>
+							<a class="nav-link  text-dark" asp-area="" asp-controller="Singer" asp-action="Index">Singers</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link  text-light" asp-area="" asp-controller="VolunteerEvent" asp-action="Index">Events</a>
+							<a class="nav-link  text-dark" asp-area="" asp-controller="Location" asp-action="Index">Locations</a>
 						</li>
-							
-						
-						
+
+						<li class="nav-item">
+							<a class="nav-link  text-dark" asp-area="" asp-controller="Summary" asp-action="Attendance">Summary</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link  text-dark" asp-area="" asp-controller="VolunteerEvent" asp-action="Index">Events</a>
+						</li>
+
+
+
 					</ul>
 
 				</div>
@@ -71,7 +72,9 @@
 		</main>
 	</div>
 
-	<footer class="border-top footer text-muted">
+	<footer class="border-top footer text-muted mt-5 py-5">
+
+
 		<div class="align-self-start container">
 			@{
 				// Retrieve the success details from TempData (if set)
@@ -89,16 +92,44 @@
 			}
 
 		</div>
-		<div class="container align-content-center">
-			&copy; 2025 - TV5_VolunteerEventMgmtApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+
+		<div class="container">
+
+			<div class="d-flex flex-column-reverse flex-md-row align-content-center justify-content-md-between flex-wrap gap-5">
+
+				<div class="" style="width: fit-content;">
+					&copy; 2025 - TV5_VolunteerEventMgmtApp
+				</div>
+
+				<div class="footer-links d-flex gap-5 w-auto justify-content-center">
+					<a href="https://www.instagram.com/tomorrows_voices/" target="_blank" title="Instagram">
+						<i class="fa-brands fa-instagram" style="font-size: 1.2em;"></i>
+					</a>
+					<a href="https://www.facebook.com/tomorrowsvoicesfdn/" target="_blank" title="Facebook">
+						<i class="fa-brands fa-facebook"></i>
+					</a>
+					<a href="https://x.com/TomVoicesFdn" target="_blank" title="X">
+						<i class="fa-brands fa-x-twitter"></i>
+					</a>
+					<a href="https://www.youtube.com/@@tomorrowsvoicesfoundation5107/videos" target="_blank" title="YouTube">
+						<i class="fa-brands fa-youtube"></i>
+					</a>
+					<a href="https://www.tiktok.com/@@tomorrowsvoices" target="_blank" title="YouTube">
+						<i class="fa-brands fa-tiktok"></i>
+					</a>
+				</div>
+
+			</div>
+
 		</div>
+
 	</footer>
+
 	<script src="/lib/jquery/dist/jquery.min.js"></script>
 	<script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 	<script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 	<script src="/lib/jquery-unobtrusive-ajax/jquery.unobtrusive-ajax.min.js"></script>
-
 
 
 	<!-- Your Site Scripts -->

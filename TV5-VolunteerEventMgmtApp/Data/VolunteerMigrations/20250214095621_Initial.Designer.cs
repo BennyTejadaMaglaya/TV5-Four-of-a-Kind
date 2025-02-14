@@ -11,8 +11,8 @@ using TV5_VolunteerEventMgmtApp.Data;
 namespace TV5_VolunteerEventMgmtApp.Data.VolunteerMigrations
 {
     [DbContext(typeof(VolunteerEventMgmtAppDbContext))]
-    [Migration("20250206032431_V2.2")]
-    partial class V22
+    [Migration("20250214095621_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -178,6 +178,32 @@ namespace TV5_VolunteerEventMgmtApp.Data.VolunteerMigrations
                     b.HasKey("FileContentID");
 
                     b.ToTable("FileContent");
+                });
+
+            modelBuilder.Entity("TV5_VolunteerEventMgmtApp.Models.HomeImage", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ButtonText")
+                        .HasMaxLength(60)
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Content")
+                        .HasColumnType("BLOB");
+
+                    b.Property<string>("MimeType")
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("WelcomeMessage")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("HomeImages");
                 });
 
             modelBuilder.Entity("TV5_VolunteerEventMgmtApp.Models.Location", b =>
@@ -651,7 +677,7 @@ namespace TV5_VolunteerEventMgmtApp.Data.VolunteerMigrations
                         .IsRequired();
 
                     b.HasOne("TV5_VolunteerEventMgmtApp.Models.Volunteer", "Volunteer")
-                        .WithMany()
+                        .WithMany("VolunteerLocations")
                         .HasForeignKey("VolunteerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -714,6 +740,11 @@ namespace TV5_VolunteerEventMgmtApp.Data.VolunteerMigrations
             modelBuilder.Entity("TV5_VolunteerEventMgmtApp.Models.Venue", b =>
                 {
                     b.Navigation("EventVenues");
+                });
+
+            modelBuilder.Entity("TV5_VolunteerEventMgmtApp.Models.Volunteer", b =>
+                {
+                    b.Navigation("VolunteerLocations");
                 });
 
             modelBuilder.Entity("TV5_VolunteerEventMgmtApp.Models.VolunteerEvent", b =>
