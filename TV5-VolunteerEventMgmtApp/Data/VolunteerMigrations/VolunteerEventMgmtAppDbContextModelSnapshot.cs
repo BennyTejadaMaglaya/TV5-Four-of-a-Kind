@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TV5_VolunteerEventMgmtApp.Data;
 
@@ -11,11 +10,9 @@ using TV5_VolunteerEventMgmtApp.Data;
 namespace TV5_VolunteerEventMgmtApp.Data.VolunteerMigrations
 {
     [DbContext(typeof(VolunteerEventMgmtAppDbContext))]
-    [Migration("20250206025343_V2.1")]
-    partial class V21
+    partial class VolunteerEventMgmtAppDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -178,6 +175,32 @@ namespace TV5_VolunteerEventMgmtApp.Data.VolunteerMigrations
                     b.HasKey("FileContentID");
 
                     b.ToTable("FileContent");
+                });
+
+            modelBuilder.Entity("TV5_VolunteerEventMgmtApp.Models.HomeImage", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ButtonText")
+                        .HasMaxLength(60)
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Content")
+                        .HasColumnType("BLOB");
+
+                    b.Property<string>("MimeType")
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("WelcomeMessage")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("HomeImages");
                 });
 
             modelBuilder.Entity("TV5_VolunteerEventMgmtApp.Models.Location", b =>
@@ -651,7 +674,7 @@ namespace TV5_VolunteerEventMgmtApp.Data.VolunteerMigrations
                         .IsRequired();
 
                     b.HasOne("TV5_VolunteerEventMgmtApp.Models.Volunteer", "Volunteer")
-                        .WithMany()
+                        .WithMany("VolunteerLocations")
                         .HasForeignKey("VolunteerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -714,6 +737,11 @@ namespace TV5_VolunteerEventMgmtApp.Data.VolunteerMigrations
             modelBuilder.Entity("TV5_VolunteerEventMgmtApp.Models.Venue", b =>
                 {
                     b.Navigation("EventVenues");
+                });
+
+            modelBuilder.Entity("TV5_VolunteerEventMgmtApp.Models.Volunteer", b =>
+                {
+                    b.Navigation("VolunteerLocations");
                 });
 
             modelBuilder.Entity("TV5_VolunteerEventMgmtApp.Models.VolunteerEvent", b =>

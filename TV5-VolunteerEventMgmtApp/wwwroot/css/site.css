@@ -1,15 +1,9 @@
 :root {
-    --purple: #9d2b9d;
-    --purple-hover: #871687;
+    --purple: #841484;
+    --purple-hover: #780878;
     --text-gray: #656565;
-}
-
-.border-solid {
-    border: solid
-}
-
-.rounded {
-    border-radius: 4px;
+    --grad-purple: linear-gradient( 135deg, #100040 0%, #841484 60%, #e00080 100%);
+    --grad-purple-hover: linear-gradient( 135deg, #000030 0%, #740474 60%, #c00070 100%);
 }
 
 html {
@@ -22,6 +16,14 @@ html {
     html {
         font-size: 16px;
     }
+}
+
+.border-solid {
+    border: solid
+}
+
+.rounded {
+    border-radius: 4px;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
@@ -56,10 +58,10 @@ form label {
     color: #fff;
 }
 
-.btn-purple:hover {
-    background: var(--purple-hover);
-    color: #fff;
-}
+    .btn-purple:hover {
+        background: var(--purple-hover);
+        color: #fff;
+    }
 
 /*btn-outline-purple*/
 .btn-outline-purple {
@@ -72,6 +74,20 @@ form label {
         color: #fff;
     }
 
+/*btn-grad-purple*/
+.btn-grad-purple {
+    border: none;
+    background: var(--grad-purple);
+    color: #fff;
+    transition: all 0.1s;
+}
+
+    .btn-grad-purple:hover {
+        background: var(--grad-purple-hover);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
 select option:focus, select option:hover, select option:checked {
     background: var(--purple) !important;
     color: #fff !important;
@@ -82,18 +98,31 @@ select option:focus, select option:hover, select option:checked {
     color: var(--purple);
 }
 
-.text-purple:hover { /* some things were blue on hover */
-    color: var(--purple) !important;
+    a:hover {
+        color: var(--purple-hover);
+    }
+
+    .text-purple:hover { 
+        color: var(--purple) !important;
+    }
+
+.bg-grad-purple {
+    background: var(--grad-purple);
 }
 
-a:hover {
-    color: var(--purple-hover);
+.bg-fff {
+    background: #fff;
+}
+
+.bg-000 {
+    background: #000;
 }
 
 .text-gray {
     color: var(--text-gray);
 }
 
+/* summary */
 .text-summary-poor {
     color: #f2a134;
 }
@@ -110,68 +139,6 @@ a:hover {
     color: #44ce1b;
 }
 
-/* Home header */
-#home-header-bg-container {
-    height: 85vh;
-    width: 100%;
-    position: absolute;
-    left: 0;
-    top: 20px;
-    z-index: -100;
-    background-image: url('../images/MK5D9717.jpg');
-    background-position: left top;
-    background-size: cover;
-    padding: 1vh 0;
-    overflow: hidden;
-    box-shadow: 0 0 20px 2px #000;
-}
-
-#home-header {
-    height: 70vh;
-    margin-top: -80px;
-}
-/* -- */
-
-/* Home big linkks */
-#home-links-container {
-    height: 100%;
-    display: grid;
-    grid-gap: 30px;
-    align-items: end;
-    justify-content: space-around;
-    margin-bottom: 80px;
-}
-
-#home-links-container a {
-    padding: 0;
-    width: 60vw;
-    height: 60vw;
-    max-height: 350px;
-    max-width: 350px;
-    margin: auto;
-}
-
-#home-links-container a > div {
-    height: 100%;
-    width: 100%;
-    background-image: url('../images/Hue_Saturation-6-02.png');
-    background-position: center;
-    background-size: cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#home-links-container a div div {
-    position: absolute;
-    height: 100px;
-    width: 100px;
-    border-radius: 50%;
-    box-shadow: 0 0 65px 50px #00000090;
-    z-index: -50;
-}
-/* -- */
-
 /* Modals */
 .modal-dialog {
     padding-top: 40px;
@@ -186,9 +153,9 @@ a:hover {
     max-width: 1400px;
 }
 
-.modal-width-1400 .modal-content {
-    padding: 20px;
-}
+    .modal-width-1400 .modal-content {
+        padding: 20px;
+    }
 /* -- */
 
 .filter-box {
@@ -202,10 +169,11 @@ a:hover {
     display: grid;
     grid-row-gap: 25px;
 }
+
 .event-cards-grid {
     grid-template-columns: 1fr;
     display: grid;
-    grid-row-gap: 25px;
+    grid-row-gap: 20px;
 }
 
 .attendance-card {
@@ -214,7 +182,7 @@ a:hover {
     grid-column-gap: 10px;
     border-radius: 10px;
     padding: 12px;
-    box-shadow: 0 4px 12px 4px #00000020;
+    box-shadow: 0 4px 10px 4px #00000020;
     cursor: pointer;
     transition: all .1s linear;
 }
@@ -230,19 +198,23 @@ a:hover {
         grid-template-columns: 1fr;
     }
 
-.sub-inner-grid {
+.card-att {
     display: grid;
     background: #f7f7f7;
     box-shadow: inset 0 0 10px #00000010;
+    text-align: center;
 }
+    .card-att span, .list-att span {
+        display: none;
+    }
 
-.card-inner-grid > * {
-    padding: 4px 8px;
-    border-radius: 6px;
-}
+    .card-inner-grid > * {
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
 
 .attendance-card:hover {
-    box-shadow: 0 4px 16px #00000060;
+    box-shadow: 0 4px 14px #00000050;
     transform: translateY(-2px);
 }
 
@@ -255,9 +227,10 @@ a:hover {
     border-radius: 10px;
     box-shadow: 0 4px 12px 4px #00000020;
 }
-.event-card{
-   display: grid;
-   grid-template-columns: 1fr 1fr;
+
+.event-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 }
 
 .gear-button {
@@ -272,9 +245,7 @@ a:hover {
     grid-template-columns: 1fr;
 }
 
-
-
-.time-slot-Volunteers-container{
+.time-slot-Volunteers-container {
     display: flex
 }
 
@@ -284,12 +255,11 @@ a:hover {
     grid-row-gap: 4px;
     grid-column-gap: 15px;
 }
+
 .volunteer-panel {
     background: #f8f9fa;
     padding: 10px;
     border-left: 3px solid #6f42c1;
-    
-   
     overflow-y: auto;
     transition: max-height 0.3s ease-in-out;
 }
@@ -314,17 +284,16 @@ a:hover {
     height: 32px;
     border-radius: 50%;
     background-color: #f0f0f0;
-    color: #6f42c1; 
+    color: #6f42c1;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer; 
-    border: 2px dashed #6f42c1; 
+    cursor: pointer;
+    border: 2px dashed #6f42c1;
 }
 
 .dimmed-event {
     opacity: 0.4;
-    
     pointer-events: none;
     user-select: none;
 }
@@ -340,20 +309,19 @@ a:hover {
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-.custom-context-menu button.dropdown-item {
-    width: 100%;
-    background: none;
-    border: none;
-    text-align: left;
-    padding: 8px 16px;
-    cursor: pointer;
-}
+    .custom-context-menu button.dropdown-item {
+        width: 100%;
+        background: none;
+        border: none;
+        text-align: left;
+        padding: 8px 16px;
+        cursor: pointer;
+    }
 
-.custom-context-menu button.dropdown-item:hover {
-    background-color: #f8f9fa;
+        .custom-context-menu button.dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
         
-}
-
 .d-none {
     display: none !important;
 }
@@ -371,43 +339,29 @@ a:hover {
 
 /* From 768px */
 @media(width > 768px) {
-    #home-links-container {
-        grid-template-columns: 1fr 1fr;
-    }
-    #home-links-container a div div {
-        box-shadow: 0 0 70px 50px #00000090;
-    }
-
     .attendance-card {
-        grid-template-columns: 3fr 2fr 1fr;
+        grid-template-columns: 4fr 3fr 1fr;
     }
-
     .card-inner-grid:nth-child(1) {
         grid-template-columns: 1fr 2fr;
     }
+    .card-att {
+        text-align: left;
+    }
+        .card-att span, .list-att span {
+            display: block;
+        }
+        .card-att i, .list-att i {
+            display: none;
+        }
 }
 
 /* From 1200px */
 @media(width > 1200px) {
-    #home-links-container a {
-        max-height: 450px;
-        max-width: 450px;
+    .attendance-card {
+        grid-template-columns: 6fr 4fr 1fr;
     }
-    #home-links-container a div div {
-        box-shadow: 0 0 100px 80px #00000090;
-    }
-
-    .attendance-cards-grid {
-        grid-template-columns: 1fr 1fr;
-        grid-row-gap: 30px;
-        grid-column-gap: 30px;
-    }
-
-    .card-inner-grid, .card-inner-grid:nth-child(1) {
-        grid-template-columns: 1fr;
-    }
-
-    .sub-inner-grid {
+    .card-att {
         grid-template-columns: 3fr 1fr;
         align-content: center;
     }

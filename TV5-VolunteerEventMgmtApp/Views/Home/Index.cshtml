@@ -1,32 +1,258 @@
-﻿@{
+﻿@model HomeImage
+
+@{
 	ViewData["Title"] = "Home Page";
 }
 
-<div id="home-header">
-	<!-- Background -->
-	<div id="home-header-bg-container">
+<!--///////////////////////////////////////////////////////-->
+
+<style>
+
+	#home-settings {
+		position: relative;
+		width: 100%;
+		height: 1px;
+	}
+
+		#home-settings > div {
+			position: absolute;
+			width: 100%;
+			display: flex;
+			justify-content: end;
+			padding: 6px;
+		}
+
+	#home-header-grid {
+		min-height: 80vh;
+		display: grid;
+		column-gap: 40px;
+		row-gap: 30px;
+	}
+
+	#home-header-first {
+		border-radius: 10px;
+		background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('../images/bg-01.jpg');
+		background-size: cover;
+		box-shadow: 0px 4px 10px 2px #00000040;
+		height: 50vh;
+	}
+
+		#home-header-first img {
+			height: 100%;
+			width: 100%;
+			object-fit: cover;
+			overflow: hidden;
+		}
+
+	#home-header-second {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		gap: 20px;
+		align-items: start;
+		justify-content: center;
+		margin-bottom: 80px;
+	}
+
+		#home-header-second .btn {
+			width: 100%;
+			max-width: 800px !important;
+			margin-left: auto !important;
+			margin-right: auto !important;
+		}
+
+		#home-header-second p {
+			text-align: center;
+		}
+
+	.home-event-card {
+		box-shadow: 0 2px 10px #00000040;
+	}
+
+	/* From 768px */
+	@@media(width > 768px) {
+	}
+
+	/* From 1200px */
+	@@media(width > 1200px) {
+		#home-header-grid {
+			grid-template-columns: 2fr 1fr;
+		}
+
+		#home-header-first {
+			height: 75vh;
+		}
+
+		#home-header-second p {
+			text-align: left;
+		}
+	}
+
+</style>
+
+<!--///////////////////////////////////////////////////////-->
+
+<div id="home-settings">
+	<div>
+		<button class="btn btn-outline-purple bg-fff"
+				data-bs-toggle="modal"
+				data-bs-target="#homeSettingsModal"
+				type="button">
+			<i class="fa-solid fa-gear"></i>
+		</button>
+	</div>
+</div>
+
+<partial name="_HomeSettingsModal" />
+
+<div id="home-header-grid">
+
+	<!-- Image -->
+	<div id="home-header-first">
+		@if (Model?.Content != null)
+		{
+			string imageBase64 = Convert.ToBase64String(Model.Content);
+			string imageSrc = $"data:{Model.MimeType};base64,{imageBase64}";
+			<img src="@imageSrc" alt="Home Image" class="img-fluid rounded" />
+		}
+		else
+		{
+			<img src="~/images/TV-choir-02.jpg" alt="Kids singing in a choir" />
+		}
+	</div>
+
+	<!-- Links -->
+	<div id="home-header-second">
+
+		@if (Model?.WelcomeMessage != null || Model?.WelcomeMessage == "")
+		{
+			<p class="fs-4 mb-4">
+				@Model.WelcomeMessage
+			</p>
+		}
+		else
+		{
+			<p class="fs-4 mb-4">
+				Tomorrow’s Voices is always on the lookout for passionate individuals with an affinity for music or just a passion to play a part in making our communities better
+			</p>
+		}
+		<a class="btn w-100 py-4 fs-2 btn-grad-purple" asp-area=""
+		   asp-controller="" asp-action="">
+			<!-- link -->
+			@if (Model?.ButtonText != null || Model?.ButtonText == "")
+			{
+				<span>
+					@Model.ButtonText
+				</span>
+			}
+			else
+			{
+				<span>
+					Sign Up to Volunteer
+				</span>
+			}
+		</a>
+
+		@* <a class="btn w-100 py-2 btn-dark mt-3" asp-area="" *@
+		@*    asp-controller="AttendanceSheet" asp-action="Dashboard"> *@
+		@* 	Choir Dashboard *@
+		@* </a> *@
+
 	</div>
 
 </div>
 
-<!-- Links -->
-<div id="home-links-container">
-	<a class="nav-link text-white fs-1 fw-bold" asp-area="" asp-controller="AttendanceSheet" asp-action="Dashboard">
-		<div>
-			CHOIR
-			<div></div>
+<!--///////////////////////////////////////////////////////-->
+
+<div class="" style="margin-top: 100px;">
+	<h2>Events</h2>
+
+	<div class="d-flex flex-column gap-4 mt-4">
+
+		<div class="home-event-card d-flex gap-3 border rounded p-3"
+			 style="background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('../images/bg-01.jpg'); background-size: cover;">
+			<img src="~/images/TV-choir-02.jpg" alt="Choir" width="50%" height="auto" class="rounded shadow"
+				 style="max-width: 200px; object-fit: cover" />
+			<div>
+				<p class="fw-bold">
+					Sample event card title
+				</p>
+				<p>
+					Description description description description description description description description description description description description description description description description description description description description description description description description.
+				</p>
+			</div>
 		</div>
-	</a>
-	<a class="nav-link text-gray fs-1 fw-bold disabled" asp-area="" asp-controller="AttendanceSheet" asp-action="Dashboard">
-		<div style="font-size: 0.7em;">
-			VOLUNTEERS
-			<div></div>
+
+		<div class="home-event-card d-flex gap-3 border rounded p-3"
+			 style="background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('../images/bg-02.jpg'); background-size: cover;">
+			<img src="~/images/TV-choir-02.jpg" alt="Choir" width="50%" height="auto" class="rounded shadow"
+				 style="max-width: 200px; object-fit: cover" />
+			<div>
+				<p class="fw-bold">
+					Sample event card title
+				</p>
+				<p>
+					Description description description description description description description description description description description description description description description description description description description description description description description description.
+				</p>
+			</div>
 		</div>
-	</a>
+
+		<div class="home-event-card d-flex gap-3 border rounded p-3"
+			 style="background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('../images/bg-03.jpg'); background-size: cover;">
+			<img src="~/images/TV-choir-02.jpg" alt="Choir" width="50%" height="auto" class="rounded shadow"
+				 style="max-width: 200px; object-fit: cover" />
+			<div>
+				<p class="fw-bold">
+					Sample event card title
+				</p>
+				<p>
+					Description description description description description description description description description description description description description description description description description description description description description description description description.
+				</p>
+			</div>
+		</div>
+
+		<div class="home-event-card d-flex gap-3 border rounded p-3"
+			 style="background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('../images/bg-04.jpg'); background-size: cover;">
+			<img src="~/images/TV-choir-02.jpg" alt="Choir" width="50%" height="auto" class="rounded shadow"
+				 style="max-width: 200px; object-fit: cover" />
+			<div>
+				<p class="fw-bold">
+					Sample event card title
+				</p>
+				<p>
+					Description description description description description description description description description description description description description description description description description description description description description description description description.
+				</p>
+			</div>
+		</div>
+
+		<div class="home-event-card d-flex gap-3 border rounded p-3"
+			 style="background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('../images/bg-05.jpg'); background-size: cover;">
+			<img src="~/images/TV-choir-02.jpg" alt="Choir" width="50%" height="auto" class="rounded shadow"
+				 style="max-width: 200px; object-fit: cover" />
+			<div>
+				<p class="fw-bold">
+					Sample event card title
+				</p>
+				<p>
+					Description description description description description description description description description description description description description description description description description description description description description description description description.
+				</p>
+			</div>
+		</div>
+
+	</div>
+
 </div>
 
-@* <div class="my-5" style="height: 200px; width: 100%; box-shadow: 0 3px 15px 2px #00000020;"> *@
-@* </div> *@
+@section Scripts {
 
-@* <div class="my-5" style="height: 200px; width: 100%; box-shadow: 0 3px 15px 2px #00000020;"> *@
-@* </div> *@
+	<script type="text/javascript">
+		var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+		var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+			return new bootstrap.Tooltip(tooltipTriggerEl);
+		});
+		function showModal(modalId) {
+			var modal = new bootstrap.Modal(document.querySelector(modalId));
+			modal.show();
+		}
+	</script>
+}

@@ -50,8 +50,9 @@ namespace TV5_VolunteerEventMgmtApp.Data
         public DbSet<VolunteerLocation> VolunteerLocations { get; set; }
         public DbSet<VolunteerEvent> VolunteerEvents { get; set; }
         public DbSet<Volunteer> Volunteers { get; set; }
+		public DbSet<HomeImage> HomeImages { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Location>()
                 .HasMany<VolunteerEvent>(d => d.VolunteerEvents)

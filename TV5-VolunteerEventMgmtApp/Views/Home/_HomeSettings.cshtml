@@ -1,0 +1,34 @@
+﻿@model TV5_VolunteerEventMgmtApp.Models.HomeImage
+
+@{
+	ViewBag.Title = "Home";
+}
+
+<div class="card mt-3 p-2 py-4">
+
+	<form asp-action="UpdateImage" method="post" enctype="multipart/form-data">
+		<div class="">
+			<div class="form-group">
+				<label for="imageFile">Upload New Image:</label>
+				<input type="file" class="form-control" name="imageFile" id="imageFile" />
+			</div>
+
+			<div class="form-group">
+				<label for="welcomeMessage">Welcome Message:</label><br/>
+				<small class="form-text text-muted">Leave empty for default message</small>
+				<textarea class="form-control" name="welcomeMessage" id="welcomeMessage" rows="4">@Model?.WelcomeMessage</textarea>
+				<span asp-validation-for="WelcomeMessage" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label for="buttonText">Button Text:</label><br />
+				<small class="form-text text-muted">Leave empty for default text</small>
+				<input type="text" class="form-control" name="buttonText" id="buttonText"
+					   value="@Model?.ButtonText" />
+				<span asp-validation-for="ButtonText" class="text-danger"></span>
+			</div>
+
+		</div>
+		<button type="submit" class="btn btn-purple">Submit</button>
+	</form>
+
+</div>

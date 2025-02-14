@@ -1,45 +1,44 @@
 ﻿@model IEnumerable<TV5_VolunteerEventMgmtApp.Models.VolunteerEvent>
 
 @{
-    ViewData["Title"] = "Index";
+	ViewData["Title"] = "Index";
 }
 
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+	<a asp-action="Create">Create New</a>
 </p>
-<div class="fw-bold mb-3">
+<div class="fw-bold my-4">
 	<span class="me-2">Sort by</span>
 	<button type="submit" name="actionButton" value="Location"
-			class="btn btn-outline-purple py-0 d-inline">
+			class="btn btn-toolbar p-0 ms-3 fw-bold d-inline text-purple">
 		Location
 	</button>
 	<button type="submit" name="actionButton" value="Date"
-			class="btn btn-outline-purple py-0 d-inline">
+			class="btn btn-toolbar p-0 ms-3 fw-bold d-inline text-purple">
 		Date
 	</button>
 </div>
 
 <div class="event-cards-grid mb-3">
-	
+
 	@foreach (var item in Model)
 	{
-		<partial name="_EventCard" model="@item"/>
+		<partial name="_EventCard" model="@item" />
 	}
 </div>
-	
 
-	<div id="volunteerContextMenu" class="custom-context-menu d-none" role="menu"> 
-		
-		<button type="button"
-				class="dropdown-item"
-				id="removeMenuItem"
-				role="menuitem"
-		>
-			Remove Volunteer
-		</button>
-	</div>
+
+<div id="volunteerContextMenu" class="custom-context-menu d-none" role="menu">
+
+	<button type="button"
+			class="dropdown-item"
+			id="removeMenuItem"
+			role="menuitem">
+		Remove Volunteer
+	</button>
+</div>
 
 @section Scripts {
 
