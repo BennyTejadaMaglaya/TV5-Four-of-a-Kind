@@ -1,11 +1,11 @@
 ﻿<partial name="_PageSizeModal" />
 
-<nav aria-label="Page navigation">
+<nav aria-label="Page navigation" id="pag-nav">
 	@{
 		if (Model.TotalPages == 0)
 		{
 			// no data
-			<ul class="pagination justify-content-center pagination-sm my-5 pt-3 mx-0">
+			<ul class="pagination justify-content-center pagination-sm my-4 pt-3 mx-0">
 				<li class="page-item">
 					<button type="button"
 							title="Click to change page size"
@@ -20,7 +20,7 @@
 		else if (Model.TotalPages == 1)
 		{
 			// just 1 page
-			<ul class="pagination justify-content-center pagination-sm my-5 pt-3 mx-0">
+			<ul class="pagination justify-content-center pagination-sm my-4 pt-3 mx-0">
 				<li class="page-item">
 					<button type="button"
 							onClick="showModal('#pageSizeModal')"
@@ -41,67 +41,102 @@
 			var stepBack = (Model.PageIndex <= jumpAmount) ? 1 : Model.PageIndex - jumpAmount;
 			var stepForward = (Model.PageIndex + jumpAmount > Model.TotalPages) ? Model.TotalPages : Model.PageIndex + jumpAmount;
 			//
-			<ul class="pagination justify-content-center pagination-sm my-5 pt-3 mx-0">
+			<ul class="pagination justify-content-center pagination-sm my-4 pt-3 mx-0">
 				<li class="page-item">
-					<button type="submit" name="page" value="1" @prevDisabled class="btn page-link text-purple border-0">
-						First
+					<!-- FIRST -->
+					<button type="submit"
+							name="page"
+							data-bs-toggle="tooltip"
+							value="1"
+					@prevDisabled
+							class="btn page-link text-purple border-0"
+							title="Go to First Page">
+						<span><i class="fa-solid fa-backward-step d-md-none"></i> </span>
+						<span class="d-none d-md-inline">First</span>
 					</button>
 				</li>
 				@if (Model.TotalPages > 10)
 				{
-					<li class="page-item d-none d-md-inline">
+					<li class="page-item">
+						<!-- JUMP BACK -->
 						<button type="submit"
 								name="page"
 								data-bs-toggle="tooltip"
 								value="@(stepBack)"
-								@prevDisabled
+						@prevDisabled
 								title="Jump Back @(Model.PageIndex - stepBack) Page@(Model.PageIndex - stepBack == 1 ? "" : "s")"
 								class="btn page-link text-purple border-0">
-							<span aria-hidden="true"><i class="fa-solid fa-backward"></i></span>
+							<i class="fa-solid fa-backward"></i>
 						</button>
 					</li>
 				}
 				<li class="page-item">
-					<button type="submit" name="page" @prevDisabled value="@(Model.PageIndex - 1)"
-							class="btn page-link text-purple border-0">
-						<span aria-hidden="true"><i class="fa-solid fa-caret-left"></i></span> <span class="d-none d-md-inline">Prev</span>
+					<!-- PREV -->
+					<button type="submit"
+							name="page"
+							data-bs-toggle="tooltip"
+					@prevDisabled
+							value="@(Model.PageIndex - 1)"
+							class="btn page-link text-purple border-0"
+							title="Go to Previous Page">
+
+						<span><i class="fa-solid fa-caret-left d-md-none"></i> </span>
+						<span class="d-none d-md-inline">Prev</span>
 					</button>
 				</li>
 
 				<li class="page-item">
+					<!-- CENTER BTN -->
 					<button type="button"
 							onClick="showModal('#pageSizeModal')"
 							data-bs-toggle="tooltip"
 							title="Click to change page size"
 							class="btn btn-outline-purple py-0 mx-1">
-						<span class="d-none d-md-inline">Pg. </span>@Model.PageIndex of @Model.TotalPages
+						@Model.PageIndex / @Model.TotalPages
 					</button>
 				</li>
 
 				<li class="page-item">
-					<button type="submit" name="page" @nextDisabled value="@(Model.PageIndex + 1)"
-							class="btn page-link text-purple border-0">
-						<span class="d-none d-md-inline">Next</span> <span aria-hidden="true"><i class="fa-solid fa-caret-right"></i></span>
+					<!-- NEXT -->
+					<button type="submit"
+							name="page"
+							data-bs-toggle="tooltip"
+					@nextDisabled
+							value="@(Model.PageIndex + 1)"
+							class="btn page-link text-purple border-0"
+							title="Go to Next Page">
+
+						<span class="d-none d-md-inline">Next</span>
+						<span> <i class="fa-solid fa-caret-right d-md-none"></i></span>
+
 					</button>
 				</li>
 				@if (Model.TotalPages > 10)
 				{
-					<li class="page-item d-none d-md-inline">
+					<li class="page-item">
+						<!-- JUMP FORWARD -->
 						<button type="submit"
 								data-bs-toggle="tooltip"
 								name="page"
-								@nextDisabled
+						@nextDisabled
 								value="@(stepForward)"
 								title="Jump Forward @(stepForward - Model.PageIndex) Page@(stepForward - Model.PageIndex == 1 ? "" : "s")"
 								class="btn page-link text-purple border-0">
-							<span aria-hidden="true"><i class="fa-solid fa-forward"></i></span>
+							<i class="fa-solid fa-forward"></i>
 						</button>
 					</li>
 				}
 				<li class="page-item">
-					<button type="submit" name="page" @nextDisabled value="@(Model.TotalPages)"
-							class="btn page-link text-purple border-0">
-						Last
+					<!-- LAST -->
+					<button type="submit"
+							name="page"
+							data-bs-toggle="tooltip"
+					@nextDisabled
+							value="@(Model.TotalPages)"
+							class="btn page-link text-purple border-0"
+							title="Go to Last Page">
+						<span class="d-none d-md-inline">Last</span>
+						<span> <i class="fa-solid fa-forward-step d-md-none"></i></span>
 					</button>
 				</li>
 			</ul>
