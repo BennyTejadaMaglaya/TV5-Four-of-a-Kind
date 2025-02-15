@@ -4,10 +4,11 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>@ViewData["Title"] - Tomorrow's Voices</title>
+	<!-- bootstrap -->
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="~/css/main.css" />
-	<script src="~/js/main.js"></script>
+	<!-- css -->
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/main.css" />
 	<link rel="stylesheet" href="~/css/volunteer.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/TV5_VolunteerEventMgmtApp.styles.css" asp-append-version="true" />
 	<!-- Google Font: Montserrat -->
@@ -102,19 +103,19 @@
 				</div>
 
 				<div class="footer-links d-flex gap-5 w-auto justify-content-center">
-					<a href="https://www.instagram.com/tomorrows_voices/" target="_blank" title="Instagram">
+					<a href="https://www.instagram.com/tomorrows_voices/" target="_blank" title="Instagram" data-bs-toggle="tooltip">
 						<i class="fa-brands fa-instagram" style="font-size: 1.2em;"></i>
 					</a>
-					<a href="https://www.facebook.com/tomorrowsvoicesfdn/" target="_blank" title="Facebook">
+					<a href="https://www.facebook.com/tomorrowsvoicesfdn/" target="_blank" title="Facebook" data-bs-toggle="tooltip">
 						<i class="fa-brands fa-facebook"></i>
 					</a>
-					<a href="https://x.com/TomVoicesFdn" target="_blank" title="X">
+					<a href="https://x.com/TomVoicesFdn" target="_blank" title="X" data-bs-toggle="tooltip">
 						<i class="fa-brands fa-x-twitter"></i>
 					</a>
-					<a href="https://www.youtube.com/@@tomorrowsvoicesfoundation5107/videos" target="_blank" title="YouTube">
+					<a href="https://www.youtube.com/@@tomorrowsvoicesfoundation5107/videos" target="_blank" title="YouTube" data-bs-toggle="tooltip">
 						<i class="fa-brands fa-youtube"></i>
 					</a>
-					<a href="https://www.tiktok.com/@@tomorrowsvoices" target="_blank" title="YouTube">
+					<a href="https://www.tiktok.com/@@tomorrowsvoices" target="_blank" title="YouTube" data-bs-toggle="tooltip">
 						<i class="fa-brands fa-tiktok"></i>
 					</a>
 				</div>
@@ -134,6 +135,7 @@
 
 	<!-- Your Site Scripts -->
 	<script src="/js/site.js" asp-append-version="true" defer></script>
+	<script src="~/js/main.js"></script>
 
 	<script>
 		$(document).ready(function () {
